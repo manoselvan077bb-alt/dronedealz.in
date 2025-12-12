@@ -426,3 +426,12 @@ p {
     gap: 6px;
   }
 }
+/* keep space so bottom nav is visible */
+body {
+  padding-bottom: 70px; /* height of bottom-nav */
+}
+
+/* make sure bottom nav is actually on top of content */
+.bottom-nav {
+  z-index: 9999;
+}
