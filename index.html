@@ -14,13 +14,12 @@
   <header class="navbar">
     <div class="nav-container">
       <div class="logo">
-  <img src="dronedealzlogo.jpg" alt="DroneDealz.in logo" class="logo-img">
-  <div class="logo-text">
-    <span class="logo-main">DroneDealz</span>
-    <span class="logo-sub">.in</span>
-  </div>
-</div>
-
+        <img src="dronedealzlogo.jpg" alt="DroneDealz.in logo" class="logo-img">
+        <div class="logo-text">
+          <span class="logo-main">DroneDealz</span>
+          <span class="logo-sub">.in</span>
+        </div>
+      </div>
 
       <div class="nav-right">
         <div class="hamburger">
@@ -30,12 +29,20 @@
         </div>
       </div>
 
-      <!-- dropdown menu for small screens -->
+      <!-- dropdown menu for small screens / desktop top nav -->
       <nav class="nav-menu">
-        <a href="#home" data-page="home" class="nav-link active"><i class="fas fa-home"></i> Home</a>
-        <a href="#search" data-page="search" class="nav-link"><i class="fas fa-search"></i> Search</a>
-        <a href="#deals" data-page="deals" class="nav-link"><i class="fas fa-tags"></i> Deals</a>
-        <a href="#about" data-page="about" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+        <a href="#account" data-page="account" class="nav-link">
+          <i class="fas fa-user-circle"></i> Account
+        </a>
+        <a href="#login" data-page="login" class="nav-link">
+          <i class="fas fa-right-to-bracket"></i> Log in
+        </a>
+        <a href="#signup" data-page="signup" class="nav-link">
+          <i class="fas fa-user-plus"></i> Sign up
+        </a>
+        <a href="#about" data-page="about" class="nav-link">
+          <i class="fas fa-info-circle"></i> About
+        </a>
       </nav>
     </div>
   </header>
@@ -44,7 +51,7 @@
   <section class="banner">
     <img src="electronics-banner.jpg" alt="Electronics and drone components">
     <div class="banner-overlay">
-      <h1>Drone & Electronics Parts Hub</h1>
+      <h1>Drone &amp; Electronics Parts Hub</h1>
       <p>Curated motors, ESCs, frames and batteries for Indian students</p>
     </div>
   </section>
@@ -58,141 +65,122 @@
     </div>
   </section>
 
-  <!-- Main Content -->
+  <!-- Main content wrapper -->
   <main class="main-content">
-    <!-- Home Page -->
-    <section id="home" class="page active">
+    <!-- Home page -->
+    <section class="page active" id="home" data-page="home">
       <div class="category-row">
-        <button class="cat-btn active" data-filter="all">All</button>
-        <button class="cat-btn" data-filter="motors">Motors</button>
-        <button class="cat-btn" data-filter="esc">ESC</button>
-        <button class="cat-btn" data-filter="frames">Frames</button>
-        <button class="cat-btn" data-filter="batteries">Batteries</button>
+        <button class="cat-btn active" data-category="all">All</button>
+        <button class="cat-btn" data-category="motors">Motors</button>
+        <button class="cat-btn" data-category="esc">ESC</button>
+        <button class="cat-btn" data-category="frames">Frames</button>
+        <button class="cat-btn" data-category="batteries">Batteries</button>
       </div>
 
-      <div class="products-grid home-grid">
-        <div class="product-card" data-category="motors">
-          <div class="product-image big-card">
-            <i class="fas fa-cogs"></i>
-          </div>
-          <div class="product-info">
-            <h3>2207 2400KV Brushless Motor (Set of 4)</h3>
-            <p class="product-desc">Perfect for 5&quot; FPV quads. High thrust, student budget friendly.</p>
-            <div class="price">₹780 <span class="old-price">₹999</span></div>
-            <div class="rating">⭐⭐⭐⭐⭐ 4.8 (127)</div>
-            <div class="buy-buttons">
-              <a href="#" class="buy-btn amazon">Buy on Amazon <i class="fab fa-amazon"></i></a>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="esc">
-          <div class="product-image big-card">
-            <i class="fas fa-microchip"></i>
-          </div>
-          <div class="product-info">
-            <h3>30A BLHeli-S ESC (Set of 4)</h3>
-            <p class="product-desc">Smooth throttle response, supports 3–4S LiPo, ideal for beginners.</p>
-            <div class="price">₹920 <span class="old-price">₹1,200</span></div>
-            <div class="rating">⭐⭐⭐⭐ 4.6 (89)</div>
-            <div class="buy-buttons">
-              <a href="#" class="buy-btn amazon">Buy on Amazon <i class="fab fa-amazon"></i></a>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="frames">
-          <div class="product-image big-card">
-            <i class="fas fa-cube"></i>
-          </div>
-          <div class="product-info">
-            <h3>5&quot; Carbon Fiber Frame</h3>
-            <p class="product-desc">Strong, lightweight frame for freestyle and racing builds.</p>
-            <div class="price">₹650</div>
-            <div class="rating">⭐⭐⭐⭐⭐ 4.9 (203)</div>
-            <div class="buy-buttons">
-              <a href="#" class="buy-btn flipkart">Buy on Flipkart <i class="fab fa-flipkart"></i></a>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="batteries">
-          <div class="product-image big-card">
-            <i class="fas fa-battery-full"></i>
-          </div>
-          <div class="product-info">
-            <h3>4S 1500mAh LiPo Battery</h3>
-            <p class="product-desc">Balanced pack for 5&quot; quads. Good flight time and punch.</p>
-            <div class="price">₹1,200</div>
-            <div class="rating">⭐⭐⭐⭐ 4.5 (62)</div>
-            <div class="buy-buttons">
-              <a href="#" class="buy-btn amazon">Buy on Amazon <i class="fab fa-amazon"></i></a>
-            </div>
-          </div>
-        </div>
+      <div class="products-grid" id="homeProducts">
+        <!-- cards filled by script.js -->
       </div>
     </section>
 
-    <!-- Search Page -->
-    <section id="search" class="page">
+    <!-- Search page -->
+    <section class="page" id="search" data-page="search">
       <div class="search-container">
-        <h2><i class="fas fa-search"></i> Search Drone Parts</h2>
+        <h2>Search parts</h2>
         <div class="search-bar">
           <input type="text" id="searchInput" placeholder="Search motors, ESC, frames, batteries...">
           <button id="searchBtn"><i class="fas fa-search"></i></button>
         </div>
-        <div id="searchResults" class="products-grid"></div>
+        <div class="products-grid" id="searchResults">
+          <!-- search results from script.js -->
+        </div>
       </div>
     </section>
 
-    <!-- Deals Page -->
-    <section id="deals" class="page">
-      <h2>Today's Best Deals</h2>
-      <p>More deals coming soon...</p>
+    <!-- Deals page -->
+    <section class="page" id="deals" data-page="deals">
+      <h2>Trending dealz</h2>
+      <div class="products-grid" id="dealsProducts">
+        <!-- deals filled by script.js -->
+      </div>
     </section>
 
-    <section id="about" class="page">
-  <h2>About DroneDealz.in</h2>
-  <p>
-    DroneDealz.in is a student‑run side project built to make life easier for Indian
-    makers, engineering students, and hobby pilots who are searching for the right
-    motors, ESCs, frames and batteries for their first serious builds.
-  </p>
-  <p>
-    While working on college drone and defense projects it became clear that
-    beginners waste a lot of time opening dozens of tabs, checking specs,
-    reviews, and prices for every part. DroneDealz.in tries to solve this by
-    collecting commonly used parts in one clean interface that loads quickly on mobile.
-  </p>
-  <p>
-    Parts shown here are picked for typical 3–5 inch quadcopters and DIY experiments,
-    with a focus on availability in India, student‑friendly pricing, and compatibility.
-    As more feedback comes from other students and labs, the plan is to expand into
-    tuned part lists for FPV, cinematic builds, and training drones.
-  </p>
-  <p>
-    In the future, DroneDealz.in aims to add simple build guides, wiring diagrams,
-    thrust‑to‑weight calculators, and ready‑made BOMs so that new builders can go from
-    idea to flying prototype much faster without getting stuck on component choices.
-  </p>
-  <p>
-    This site is not an online shop. All “Buy” buttons simply redirect you to trusted
-    marketplaces such as Amazon or Flipkart where you complete the purchase directly.
-    DroneDealz.in does not handle payments or shipping; it only helps you compare
-    and discover drone parts faster on top of those platforms.
-  </p>
-</section>
+    <!-- Cart page (placeholder) -->
+    <section class="page" id="cart" data-page="cart">
+      <h2>Your cart</h2>
+      <p>Cart features coming soon. Saved items will appear here.</p>
+    </section>
 
-    <!-- Cart Page -->
-    <section id="cart" class="page">
-      <h2>Your Cart</h2>
-      <p>No items yet.</p>
+    <!-- Account page (placeholder design) -->
+    <section class="page" id="account" data-page="account">
+      <h2>Your account</h2>
+      <p>Sign in to manage your profile and saved builds.</p>
+      <button class="buy-btn amazon" data-page="login">Go to Log in</button>
+    </section>
+
+    <!-- Login page (UI only for now) -->
+    <section class="page" id="login" data-page="login">
+      <h2>Log in</h2>
+      <form class="auth-form" id="loginForm">
+        <label>
+          Email
+          <input type="email" id="loginEmail" placeholder="you@example.com" required>
+        </label>
+        <label>
+          Password
+          <input type="password" id="loginPassword" placeholder="••••••••" required>
+        </label>
+        <button type="submit" class="buy-btn amazon">Log in</button>
+        <p class="auth-switch">
+          New here? <a href="#signup" data-page="signup" class="inline-link">Create an account</a>
+        </p>
+      </form>
+    </section>
+
+    <!-- Sign up page (UI only for now) -->
+    <section class="page" id="signup" data-page="signup">
+      <h2>Create account</h2>
+      <form class="auth-form" id="signupForm">
+        <label>
+          Name
+          <input type="text" id="signupName" placeholder="Your name" required>
+        </label>
+        <label>
+          Email
+          <input type="email" id="signupEmail" placeholder="you@example.com" required>
+        </label>
+        <label>
+          Password
+          <input type="password" id="signupPassword" placeholder="Min 8 characters" required>
+        </label>
+        <label>
+          Confirm password
+          <input type="password" id="signupConfirm" placeholder="Repeat password" required>
+        </label>
+        <button type="submit" class="buy-btn amazon">Sign up</button>
+        <p class="auth-switch">
+          Already have an account?
+          <a href="#login" data-page="login" class="inline-link">Log in</a>
+        </p>
+      </form>
+    </section>
+
+    <!-- About page -->
+    <section class="page" id="about" data-page="about">
+      <h2>About DroneDealz.in</h2>
+      <p>
+        DroneDealz.in is a student‑friendly hub that curates affordable drone motors,
+        ESCs, frames and batteries available on Indian marketplaces.
+      </p>
+      <p>
+        This is an experimental project to help Indian makers quickly compare
+        parts and find the best value for their FPV and DIY builds.
+      </p>
     </section>
   </main>
 
   <!-- Bottom navigation bar -->
   <nav class="bottom-nav">
-    <button class="bottom-item" data-page="home">
+    <button class="bottom-item active" data-page="home">
       <i class="fas fa-home"></i>
       <span>Home</span>
     </button>
