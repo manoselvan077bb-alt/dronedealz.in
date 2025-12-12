@@ -81,34 +81,95 @@ if (hamburger && navMenu) {
   });
 }
 
-// ===== CATEGORY FILTER (Home) =====
+// ===== PRODUCT DATA (shared by Home + Search + Deals) =====
+const products = [
+  {
+    name: '2207 2400KV Brushless Motor (Set of 4)',
+    price: '₹780',
+    category: 'motors',
+    platform: 'amazon'
+  },
+  {
+    name: '30A BLHeli-S ESC (Set of 4)',
+    price: '₹920',
+    category: 'esc',
+    platform: 'amazon'
+  },
+  {
+    name: '5" Carbon Fiber Frame',
+    price: '₹650',
+    category: 'frames',
+    platform: 'flipkart'
+  },
+  {
+    name: '4S 1500mAh LiPo Battery',
+    price: '₹1,200',
+    category: 'batteries',
+    platform: 'amazon'
+  }
+];
+
+// small helper to create a card element
+function createProductCard(p) {
+  const card = document.createElement('div');
+  card.className = 'product-card';
+  card.setAttribute('data-category', p.category);
+  card.innerHTML = `
+    <div class="product-image big-card">
+      <i class="fas fa-cogs"></i>
+    </div>
+    <div class="product-info">
+      <h3>${p.name}</h3>
+      <div class="price">${p.price}</div>
+      <div class="buy-buttons">
+        <a href="#" class="buy-btn ${p.platform}">
+          Buy on ${p.platform.charAt(0).toUpperCase() + p.platform.slice(1)}
+          <i class="fab fa-${p.platform}"></i>
+        </a>
+      </div>
+    </div>
+  `;
+  return card;
+}
+
+// ===== HOME: render + category filter =====
 const catButtons = document.querySelectorAll('.cat-btn');
-const homeProducts = document.querySelectorAll('#home .product-card');
+const homeProductsContainer = document.getElementById('homeProducts');
 
-catButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    catButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+function renderHome(category = 'all') {
+  if (!homeProductsContainer) return;
+  homeProductsContainer.innerHTML = '';
 
-    const filter = btn.getAttribute('data-filter');
-    homeProducts.forEach(card => {
-      const cat = card.getAttribute('data-category');
-      card.style.display = (filter === 'all' || cat === filter) ? 'block' : 'none';
+  const filtered =
+    category === 'all'
+      ? products
+      : products.filter(p => p.category === category);
+
+  filtered.forEach(p => {
+    const card = createProductCard(p);
+    homeProductsContainer.appendChild(card);
+  });
+}
+
+// set up category buttons
+if (catButtons && homeProductsContainer) {
+  catButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      catButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.getAttribute('data-category') || 'all';
+      renderHome(cat);
     });
   });
-});
+}
+
+// initial home render
+renderHome('all');
 
 // ===== SEARCH (Search page + top bar use same data) =====
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 const topSearchInput = document.getElementById('topSearchInput');
-
-const products = [
-  { name: '2207 2400KV Brushless Motor (Set of 4)', price: '₹780', platform: 'amazon' },
-  { name: '30A BLHeli-S ESC (Set of 4)', price: '₹920', platform: 'amazon' },
-  { name: '5\" Carbon Fiber Frame', price: '₹650', platform: 'flipkart' },
-  { name: '4S 1500mAh LiPo Battery', price: '₹1,200', platform: 'amazon' }
-];
 
 function renderSearch(query) {
   if (!searchResults) return;
@@ -123,28 +184,12 @@ function renderSearch(query) {
 
   if (filtered.length === 0) {
     searchResults.innerHTML =
-      '<p style=\"text-align:center;color:#9ca3af;\">No parts found. Try \"motor\" or \"ESC\".</p>';
+      '<p style="text-align:center;color:#9ca3af;">No parts found. Try "motor" or "ESC".</p>';
     return;
   }
 
   filtered.forEach(product => {
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    card.innerHTML = `
-      <div class="product-image big-card">
-        <i class="fas fa-cogs"></i>
-      </div>
-      <div class="product-info">
-        <h3>${product.name}</h3>
-        <div class="price">${product.price}</div>
-        <div class="buy-buttons">
-          <a href="#" class="buy-btn ${product.platform}">
-            Buy on ${product.platform.charAt(0).toUpperCase() + product.platform.slice(1)}
-            <i class="fab fa-${product.platform}"></i>
-          </a>
-        </div>
-      </div>
-    `;
+    const card = createProductCard(product);
     searchResults.appendChild(card);
   });
 }

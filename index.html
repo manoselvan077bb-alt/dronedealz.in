@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <!-- dropdown menu for small screens / desktop top nav -->
+      <!-- Top / dropdown menu -->
       <nav class="nav-menu">
         <a href="#account" data-page="account" class="nav-link">
           <i class="fas fa-user-circle"></i> Account
@@ -65,9 +65,9 @@
     </div>
   </section>
 
-  <!-- Main content wrapper -->
+  <!-- Main content -->
   <main class="main-content">
-    <!-- Home page -->
+    <!-- HOME (must stay exactly like this for script.js) -->
     <section class="page active" id="home" data-page="home">
       <div class="category-row">
         <button class="cat-btn active" data-category="all">All</button>
@@ -78,11 +78,11 @@
       </div>
 
       <div class="products-grid" id="homeProducts">
-        <!-- cards filled by script.js -->
+        <!-- product cards injected by script.js -->
       </div>
     </section>
 
-    <!-- Search page -->
+    <!-- SEARCH (IDs used by JS) -->
     <section class="page" id="search" data-page="search">
       <div class="search-container">
         <h2>Search parts</h2>
@@ -96,28 +96,28 @@
       </div>
     </section>
 
-    <!-- Deals page -->
+    <!-- DEALS (ID used by JS) -->
     <section class="page" id="deals" data-page="deals">
       <h2>Trending dealz</h2>
       <div class="products-grid" id="dealsProducts">
-        <!-- deals filled by script.js -->
+        <!-- deals from script.js -->
       </div>
     </section>
 
-    <!-- Cart page (placeholder) -->
+    <!-- CART placeholder -->
     <section class="page" id="cart" data-page="cart">
       <h2>Your cart</h2>
       <p>Cart features coming soon. Saved items will appear here.</p>
     </section>
 
-    <!-- Account page (placeholder design) -->
+    <!-- ACCOUNT placeholder -->
     <section class="page" id="account" data-page="account">
       <h2>Your account</h2>
       <p>Sign in to manage your profile and saved builds.</p>
       <button class="buy-btn amazon" data-page="login">Go to Log in</button>
     </section>
 
-    <!-- Login page (UI only for now) -->
+    <!-- LOGIN UI only -->
     <section class="page" id="login" data-page="login">
       <h2>Log in</h2>
       <form class="auth-form" id="loginForm">
@@ -131,12 +131,13 @@
         </label>
         <button type="submit" class="buy-btn amazon">Log in</button>
         <p class="auth-switch">
-          New here? <a href="#signup" data-page="signup" class="inline-link">Create an account</a>
+          New here?
+          <a href="#signup" data-page="signup" class="inline-link">Create an account</a>
         </p>
       </form>
     </section>
 
-    <!-- Sign up page (UI only for now) -->
+    <!-- SIGNUP UI only -->
     <section class="page" id="signup" data-page="signup">
       <h2>Create account</h2>
       <form class="auth-form" id="signupForm">
@@ -164,7 +165,7 @@
       </form>
     </section>
 
-    <!-- About page -->
+    <!-- ABOUT -->
     <section class="page" id="about" data-page="about">
       <h2>About DroneDealz.in</h2>
       <p>
@@ -178,7 +179,7 @@
     </section>
   </main>
 
-  <!-- Bottom navigation bar -->
+  <!-- Bottom navigation bar (unchanged) -->
   <nav class="bottom-nav">
     <button class="bottom-item active" data-page="home">
       <i class="fas fa-home"></i>
