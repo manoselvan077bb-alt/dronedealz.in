@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Top Navigation -->
+  <!-- Top Navigation -->
   <header class="navbar">
     <div class="nav-container">
       <div class="logo">
@@ -40,8 +40,7 @@
         <a href="#signup" data-page="signup" class="nav-link">
           <i class="fas fa-user-plus"></i> Sign up
         </a>
-        <a href="mailto:dronedealz8@gmail.com?subject=Support%20request%20from%20DroneDealz.in"
-           class="nav-link">
+        <a href="#support" data-page="support" class="nav-link">
           <i class="fas fa-headset"></i> Support
         </a>
         <a href="#about" data-page="about" class="nav-link">
@@ -50,7 +49,6 @@
       </nav>
     </div>
   </header>
-
 
   <!-- Banner -->
   <section class="banner">
@@ -72,7 +70,7 @@
 
   <!-- Main content -->
   <main class="main-content">
-    <!-- HOME (must stay exactly like this for script.js) -->
+    <!-- HOME -->
     <section class="page active" id="home" data-page="home">
       <div class="category-row">
         <button class="cat-btn active" data-category="all">All</button>
@@ -87,7 +85,7 @@
       </div>
     </section>
 
-    <!-- SEARCH (IDs used by JS) -->
+    <!-- SEARCH -->
     <section class="page" id="search" data-page="search">
       <div class="search-container">
         <h2>Search parts</h2>
@@ -101,28 +99,28 @@
       </div>
     </section>
 
-    <!-- DEALS (ID used by JS) -->
+    <!-- DEALS -->
     <section class="page" id="deals" data-page="deals">
       <h2>Trending dealz</h2>
       <div class="products-grid" id="dealsProducts">
-        <!-- deals from script.js -->
+        <!-- deals from script.js (optional for later) -->
       </div>
     </section>
 
-    <!-- CART placeholder -->
+    <!-- CART -->
     <section class="page" id="cart" data-page="cart">
       <h2>Your cart</h2>
       <p>Cart features coming soon. Saved items will appear here.</p>
     </section>
 
-    <!-- ACCOUNT placeholder -->
+    <!-- ACCOUNT -->
     <section class="page" id="account" data-page="account">
       <h2>Your account</h2>
       <p>Sign in to manage your profile and saved builds.</p>
       <button class="buy-btn amazon" data-page="login">Go to Log in</button>
     </section>
 
-    <!-- LOGIN UI only -->
+    <!-- LOGIN -->
     <section class="page" id="login" data-page="login">
       <h2>Log in</h2>
       <form class="auth-form" id="loginForm">
@@ -142,7 +140,7 @@
       </form>
     </section>
 
-    <!-- SIGNUP UI only -->
+    <!-- SIGNUP -->
     <section class="page" id="signup" data-page="signup">
       <h2>Create account</h2>
       <form class="auth-form" id="signupForm">
@@ -182,9 +180,17 @@
         parts and find the best value for their FPV and DIY builds.
       </p>
     </section>
+
+    <!-- SUPPORT -->
+    <section class="page" id="support" data-page="support">
+      <h2>Customer support</h2>
+      <p>If you face any problem with DroneDealz.in, please send an email to:</p>
+      <p style="font-weight:600;">dronedealz8@gmail.com</p>
+      <p>You can explain the issue clearly and attach screenshots if needed.</p>
+    </section>
   </main>
 
-  <!-- Bottom navigation bar (unchanged) -->
+  <!-- Bottom navigation bar -->
   <nav class="bottom-nav">
     <button class="bottom-item active" data-page="home">
       <i class="fas fa-home"></i>
