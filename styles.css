@@ -11,6 +11,7 @@ body {
     sans-serif;
   background: #ffffff;
   color: #111827;
+  padding-bottom: 72px; /* space for bottom nav */
 }
 
 /* Navbar */
@@ -347,7 +348,7 @@ body {
   cursor: pointer;
 }
 
-/* Bottom nav */
+/* Bottom nav – ALWAYS visible */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -358,7 +359,7 @@ body {
   display: flex;
   justify-content: space-around;
   padding: 4px 0 6px;
-  z-index: 40;
+  z-index: 9999;
 }
 
 .bottom-item {
@@ -382,7 +383,7 @@ body {
   color: #22c55e;
 }
 
-/* Typography for sections */
+/* Typography */
 h1, h2 {
   color: #111827;
 }
@@ -394,9 +395,7 @@ p {
 
 /* Responsive tweaks */
 @media (min-width: 768px) {
-  .bottom-nav {
-    display: none;
-  }
+  /* KEEP bottom-nav visible; only hide hamburger on desktop */
   .hamburger {
     display: none;
   }
@@ -425,13 +424,4 @@ p {
     flex-wrap: wrap;
     gap: 6px;
   }
-}
-/* keep space so bottom nav is visible */
-body {
-  padding-bottom: 70px; /* height of bottom-nav */
-}
-
-/* make sure bottom nav is actually on top of content */
-.bottom-nav {
-  z-index: 9999;
 }
