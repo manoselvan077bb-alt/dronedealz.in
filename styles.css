@@ -11,10 +11,10 @@ body {
     sans-serif;
   background: #ffffff;
   color: #111827;
-  padding-bottom: 72px; /* space for bottom nav */
+  padding-bottom: 72px; /* space so bottom nav never covers content */
 }
 
-/* Navbar */
+/* Navbar (top) */
 .navbar {
   position: sticky;
   top: 0;
@@ -64,7 +64,7 @@ body {
   color: #0ea5e9;
 }
 
-/* Nav menu (top) */
+/* Nav menu (top links) */
 .nav-menu {
   display: flex;
   gap: 10px;
@@ -95,7 +95,7 @@ body {
   color: #ffffff;
 }
 
-/* Hamburger (mobile) */
+/* Hamburger (shown only on mobile) */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -348,7 +348,7 @@ body {
   cursor: pointer;
 }
 
-/* Bottom nav – ALWAYS visible */
+/* Bottom nav: visible on ALL screens */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -384,7 +384,8 @@ body {
 }
 
 /* Typography */
-h1, h2 {
+h1,
+h2 {
   color: #111827;
 }
 
@@ -395,16 +396,18 @@ p {
 
 /* Responsive tweaks */
 @media (min-width: 768px) {
-  /* KEEP bottom-nav visible; only hide hamburger on desktop */
+  /* desktop: show top nav, hide hamburger, keep bottom nav */
   .hamburger {
     display: none;
   }
+
   .nav-menu {
     display: flex;
   }
 }
 
 @media (max-width: 767px) {
+  /* mobile: show hamburger, collapse top nav */
   .nav-menu {
     display: none;
     flex-direction: column;
