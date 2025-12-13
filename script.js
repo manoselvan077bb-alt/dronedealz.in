@@ -462,4 +462,51 @@ window.droneLogout = async function () {
     console.error(e);
   }
 };
-//
+
+// ===== SIMPLE ADMIN: ADD PRODUCT TO FIRESTORE =====
+window.addEventListener('load', () => {
+  const adminProductForm = document.getElementById('adminProductForm');
+  const adminStatus = document.getElementById('adminStatus');
+
+  console.log('adminProductForm is', adminProductForm);
+
+  if (!adminProductForm) return;
+
+  adminProductForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('adminProdName').value.trim();
+    const price = document.getElementById('adminProdPrice').value.trim();
+    const category = document.getElementById('adminProdCategory').value.trim().toLowerCase();
+    const platform = document.getElementById('adminProdPlatform').value.trim().toLowerCase();
+    const url = document.getElementById('adminProdUrl').value.trim();
+
+    if (!name || !price || !category || !platform || !url) {
+      alert('Please fill all fields.');
+      return;
+    }
+
+    try {
+      const docRef = await db.collection('products').add({
+        name,
+        price,
+        category,
+        platform,
+        url,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      console.log('Saved product with id:', docRef.id);
+      adminProductForm.reset();
+      if (adminStatus) {
+        adminStatus.innerHTML = '<p>Saved to Firestore collection <strong>products</strong>.</p>';
+      }
+    } catch (err) {
+      console.error('Error saving product:', err);
+      if (adminStatus) {
+        adminStatus.innerHTML = '<p>Could not save product. Check console.</p>';
+      }
+      alert('Could not save product: ' + err.message);
+    }
+  });
+});
