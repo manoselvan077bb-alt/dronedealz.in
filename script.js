@@ -414,10 +414,11 @@ window.addEventListener('load', () => {
 
     const name = document.getElementById('adminProdName').value.trim();
     const price = Number(document.getElementById('adminProdPrice').value.trim());
-    const mrp = Number(document.getElementById('adminProdMrp').value.trim() || 0);
+    const mrp   = Number(document.getElementById('adminProdMrp').value.trim() || 0);
     const category = document.getElementById('adminProdCategory').value.trim().toLowerCase();
     const platform = document.getElementById('adminProdPlatform').value.trim().toLowerCase();
     const url = document.getElementById('adminProdUrl').value.trim();
+
 
     if (!name || !price || !category || !platform || !url) {
       alert('Please fill all fields.');
