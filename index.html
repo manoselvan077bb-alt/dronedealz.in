@@ -117,8 +117,11 @@
     <!-- ACCOUNT -->
     <section class="page" id="account" data-page="account">
       <h2>Your account</h2>
-      <p>Sign in to manage your profile and saved builds.</p>
-      <button class="buy-btn amazon" data-page="login">Go to Log in</button>
+      <div class="info-card">
+        <p>Sign in to manage your profile and saved builds.</p>
+      </div>
+      <button class="primary-btn" data-page="login">Go to Log in</button>
+      <button class="primary-btn" style="margin-left:8px;" onclick="droneLogout()">Log out</button>
     </section>
 
     <!-- LOGIN -->
@@ -133,7 +136,7 @@
           Password
           <input type="password" id="loginPassword" placeholder="••••••••" required>
         </label>
-        <button type="submit" class="buy-btn amazon">Log in</button>
+        <button type="submit" class="primary-btn">Log in</button>
         <p class="auth-switch">
           New here?
           <a href="#signup" data-page="signup" class="inline-link">Create an account</a>
@@ -161,7 +164,7 @@
           Confirm password
           <input type="password" id="signupConfirm" placeholder="Repeat password" required>
         </label>
-        <button type="submit" class="buy-btn amazon">Sign up</button>
+        <button type="submit" class="primary-btn">Sign up</button>
         <p class="auth-switch">
           Already have an account?
           <a href="#login" data-page="login" class="inline-link">Log in</a>
@@ -172,22 +175,20 @@
     <!-- ABOUT -->
     <section class="page" id="about" data-page="about">
       <h2>About DroneDealz.in</h2>
-      <p>
-        DroneDealz.in is a student‑friendly hub that curates affordable drone motors,
-        ESCs, frames and batteries available on Indian marketplaces.
-      </p>
-      <p>
-        This is an experimental project to help Indian makers quickly compare
-        parts and find the best value for their FPV and DIY builds.
-      </p>
+      <div class="info-card">
+        <p class="info-highlight">DroneDealz.in is a student‑friendly hub that curates affordable drone parts.</p>
+        <p>It helps Indian makers quickly compare motors, ESCs, frames and batteries from popular marketplaces.</p>
+      </div>
     </section>
 
     <!-- SUPPORT -->
     <section class="page" id="support" data-page="support">
       <h2>Customer support</h2>
-      <p>If you face any problem with DroneDealz.in, please send an email to:</p>
-      <p style="font-weight:600;">dronedealz8@gmail.com</p>
-      <p>You can explain the issue clearly and attach screenshots if needed.</p>
+      <div class="info-card">
+        <p>If you face any problem with DroneDealz.in, please send an email to:</p>
+        <p class="info-email">dronedealz8@gmail.com</p>
+        <p>You can explain the issue clearly and attach screenshots if needed.</p>
+      </div>
     </section>
   </main>
 
@@ -214,6 +215,27 @@
       <span>Menu</span>
     </button>
   </nav>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBpdGTUyYikdXiyQez4HF34cA3Sgmy3JNw",
+      authDomain: "dronedealz-6c6be.firebaseapp.com",
+      projectId: "dronedealz-6c6be",
+      storageBucket: "dronedealz-6c6be.firebasestorage.app",
+      messagingSenderId: "995697001234",
+      appId: "1:995697001234:web:73c7891f400f258a17e9cb",
+      measurementId: "G-QGH3Q76ZH0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
 
   <script src="script.js"></script>
 </body>

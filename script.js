@@ -238,3 +238,103 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
     console.log('Speech recognition error:', event.error);
   });
 }
+// ===== AUTH: SIGNUP & LOGIN WITH FIREBASE =====
+const signupForm = document.getElementById('signupForm');
+const loginForm = document.getElementById('loginForm');
+
+function showMessage(msg) {
+  alert(msg);
+}
+
+// SIGN UP
+if (signupForm) {
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const confirm = document.getElementById('signupConfirm').value;
+
+    if (password !== confirm) {
+      showMessage('Passwords do not match');
+      return;
+    }
+
+    try {
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      await db.collection('users').doc(cred.user.uid).set({
+        name,
+        email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showMessage('Account created. You are logged in.');
+      showPage('account', true);
+    } catch (err) {
+      console.error(err);
+      showMessage(err.message);
+    }
+  });
+}
+
+// LOGIN
+if (loginForm) {
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      showMessage('Logged in successfully');
+      showPage('account', true);
+    } catch (err) {
+      console.error(err);
+      showMessage(err.message);
+    }
+  });
+}
+
+// UPDATE ACCOUNT PAGE WHEN LOGIN STATE CHANGES
+const accountPage = document.getElementById('account');
+
+auth.onAuthStateChanged(async (user) => {
+  if (!accountPage) return;
+  const infoCard = accountPage.querySelector('.info-card');
+
+  if (user) {
+    let displayName = user.email;
+    try {
+      const snap = await db.collection('users').doc(user.uid).get();
+      if (snap.exists && snap.data().name) {
+        displayName = snap.data().name;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    if (infoCard) {
+      infoCard.innerHTML = `
+        <p class="info-highlight">Welcome, ${displayName}</p>
+        <p>You are signed in with <strong>${user.email}</strong>.</p>
+      `;
+    }
+  } else {
+    if (infoCard) {
+      infoCard.innerHTML = `
+        <p>Sign in to manage your profile and saved builds.</p>
+      `;
+    }
+  }
+});
+
+// LOG OUT helper (called from Account page button)
+window.droneLogout = async function () {
+  try {
+    await auth.signOut();
+    showMessage('Logged out');
+    showPage('home', true);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
