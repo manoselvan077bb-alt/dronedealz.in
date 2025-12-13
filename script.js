@@ -5,6 +5,7 @@ const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 const bottomItems = document.querySelectorAll('.bottom-item');
 
+
 function showPage(pageId, push = true) {
   // top nav
   navLinks.forEach(l => {
@@ -12,26 +13,31 @@ function showPage(pageId, push = true) {
     l.classList.toggle('active', target === pageId);
   });
 
+
   // sections
   pages.forEach(p => p.classList.remove('active'));
   const pageEl = document.getElementById(pageId);
   if (pageEl) pageEl.classList.add('active');
+
 
   // history for phone back
   if (push) {
     history.pushState({ page: pageId }, '', '#' + pageId);
   }
 
+
   // close mobile menu
   if (window.innerWidth <= 768 && navMenu) {
     navMenu.style.display = 'none';
   }
+
 
   // bottom nav
   bottomItems.forEach(b => {
     b.classList.toggle('active', b.getAttribute('data-page') === pageId);
   });
 }
+
 
 // top nav clicks
 navLinks.forEach(link => {
@@ -41,6 +47,7 @@ navLinks.forEach(link => {
     if (targetPage) showPage(targetPage, true);
   });
 });
+
 
 // bottom nav clicks
 bottomItems.forEach(btn => {
@@ -60,11 +67,13 @@ if (goLoginBtn) {
 
 
 
+
 // phone / browser back
 window.addEventListener('popstate', (event) => {
   const pageId = event.state && event.state.page ? event.state.page : 'home';
   showPage(pageId, false);
 });
+
 
 // initial load
 window.addEventListener('load', () => {
@@ -72,6 +81,7 @@ window.addEventListener('load', () => {
   const startPage = hash && document.getElementById(hash) ? hash : 'home';
   showPage(startPage, false);
 });
+
 
 // hamburger toggle + click outside to close
 if (hamburger && navMenu) {
@@ -81,9 +91,11 @@ if (hamburger && navMenu) {
     navMenu.style.display = current === 'flex' ? 'none' : 'flex';
   });
 
+
   document.addEventListener('click', (e) => {
     // Only auto-close the dropdown on small screens (mobile)
     if (window.innerWidth > 768) return;
+
 
     const target = e.target;
     const clickedInsideMenu = navMenu.contains(target);
@@ -94,69 +106,11 @@ if (hamburger && navMenu) {
   });
 }
 
-// ===== PRODUCT DATA (shared by Home + Search + Deals) =====
-const products = [
-  {
-    name: '2207 2400KV Brushless Motor (Set of 4)',
-    price: '₹780',
-    category: 'motors',
-    platform: 'amazon'
-  },
-  {
-    name: '2306 2500KV FPV Motor (Set of 4)',
-    price: '₹1,150',
-    category: 'motors',
-    platform: 'flipkart'
-  },
-  {
-    name: '30A BLHeli-S ESC (Set of 4)',
-    price: '₹920',
-    category: 'esc',
-    platform: 'amazon'
-  },
-  {
-    name: '40A BLHeli-32 ESC (Set of 4)',
-    price: '₹1,450',
-    category: 'esc',
-    platform: 'flipkart'
-  },
-  {
-    name: '5" Carbon Fiber Frame',
-    price: '₹650',
-    category: 'frames',
-    platform: 'flipkart'
-  },
-  {
-    name: '7" Long Range Frame',
-    price: '₹1,250',
-    category: 'frames',
-    platform: 'amazon'
-  },
-  {
-    name: '4S 1500mAh LiPo Battery',
-    price: '₹1,200',
-    category: 'batteries',
-    platform: 'amazon'
-  },
-  {
-    name: '6S 1300mAh LiPo Battery',
-    price: '₹1,650',
-    category: 'batteries',
-    platform: 'flipkart'
-  },
-  {
-    name: 'DIY 5" FPV Drone Kit (No Radio)',
-    price: '₹5,800',
-    category: 'drones',
-    platform: 'amazon'
-  },
-  {
-    name: 'Tiny Whoop Indoor Drone',
-    price: '₹3,200',
-    category: 'drones',
-    platform: 'flipkart'
-  }
-];
+
+
+
+// ===== PRODUCT DATA (now loaded from Firestore) =====
+let products = [];
 
 // ===== SMALL HELPERS =====
 
@@ -173,7 +127,7 @@ function createProductCard(p) {
       <h3>${p.name}</h3>
       <div class="price">${p.price}</div>
       <div class="buy-buttons">
-        <a href="#" class="buy-btn ${p.platform}">
+        <a href="${p.url || '#'}" target="_blank" rel="noopener" class="buy-btn ${p.platform}">
           Buy on ${p.platform.charAt(0).toUpperCase() + p.platform.slice(1)}
           <i class="fab fa-${p.platform}"></i>
         </a>
@@ -203,7 +157,8 @@ async function handleFavouriteClick(product, buttonEl) {
         name: product.name,
         price: product.price,
         category: product.category,
-        platform: product.platform
+        platform: product.platform,
+        url: product.url || null
       })
     });
     buttonEl.textContent = '✅ Saved';
@@ -241,9 +196,9 @@ async function renderFavourites(userId) {
           <span class="fav-item-name">${f.name}</span>
           <span class="fav-item-meta">${f.category} • ${f.price}</span>
         </div>
-        <span class="fav-item-platform ${f.platform}">
+        <a class="fav-item-platform ${f.platform}" href="${f.url || '#'}" target="_blank" rel="noopener">
           ${f.platform}
-        </span>
+        </a>
       `;
       listEl.appendChild(item);
     });
@@ -257,7 +212,7 @@ async function renderFavourites(userId) {
 const catButtons = document.querySelectorAll('.cat-btn');
 const homeProductsContainer = document.getElementById('homeProducts');
 
-function renderHome(category = 'all') {
+function renderHomeProducts(category = 'all') {
   if (!homeProductsContainer) return;
   homeProductsContainer.innerHTML = '';
 
@@ -279,20 +234,17 @@ if (catButtons && homeProductsContainer) {
       catButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const cat = btn.getAttribute('data-category') || 'all';
-      renderHome(cat);
+      renderHomeProducts(cat);
     });
   });
 }
-
-// initial home render
-renderHome('all');
 
 // ===== SEARCH (Search page + top bar use same data) =====
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 const topSearchInput = document.getElementById('topSearchInput');
 
-function renderSearch(query) {
+function renderSearchResults(query) {
   if (!searchResults) return;
   searchResults.innerHTML = '';
 
@@ -318,7 +270,7 @@ function renderSearch(query) {
 // search input on Search page
 if (searchInput && searchResults) {
   searchInput.addEventListener('input', (e) => {
-    renderSearch(e.target.value);
+    renderSearchResults(e.target.value);
   });
 }
 
@@ -326,47 +278,42 @@ if (searchInput && searchResults) {
 if (topSearchInput) {
   topSearchInput.addEventListener('input', (e) => {
     showPage('search', true);
-    renderSearch(e.target.value);
+    renderSearchResults(e.target.value);
   });
 }
 
-// ===== VOICE SEARCH (Web Speech API, Chrome) =====
-const voiceBtn = document.getElementById('topSearchVoice');
+// ===== LOAD PRODUCTS FROM FIRESTORE ON STARTUP =====
+async function loadProductsFromFirestore() {
+  try {
+    const snap = await db.collection('products')
+      .orderBy('createdAt', 'desc')
+      .get();
 
-if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'en-IN';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
+    products = snap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
-  voiceBtn.addEventListener('click', () => {
-    try {
-      recognition.start();
-    } catch (e) {}
-  });
-
-  recognition.addEventListener('result', (event) => {
-    const transcript = event.results[0][0].transcript;
-    if (topSearchInput) {
-      topSearchInput.value = transcript;
-      showPage('search', true);
-      renderSearch(transcript);
-    }
-  });
-
-  recognition.addEventListener('error', (event) => {
-    console.log('Speech recognition error:', event.error);
-  });
+    renderHomeProducts('all');
+  } catch (err) {
+    console.error('Error loading products from Firestore:', err);
+  }
 }
+
+// call once after script loads
+loadProductsFromFirestore();
+
+
 
 // ===== AUTH: SIGNUP & LOGIN WITH FIREBASE (namespaced v8 style) =====
 const signupForm = document.getElementById('signupForm');
 const loginForm = document.getElementById('loginForm');
 
+
 function showMessage(msg) {
   alert(msg);
 }
+
 
 // SIGN UP
 if (signupForm) {
@@ -377,10 +324,12 @@ if (signupForm) {
     const password = document.getElementById('signupPassword').value;
     const confirm = document.getElementById('signupConfirm').value;
 
+
     if (password !== confirm) {
       showMessage('Passwords do not match');
       return;
     }
+
 
     try {
       const cred = await auth.createUserWithEmailAndPassword(email, password);
@@ -399,12 +348,14 @@ if (signupForm) {
   });
 }
 
+
 // LOGIN
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
+
 
     try {
       await auth.signInWithEmailAndPassword(email, password);
@@ -417,12 +368,15 @@ if (loginForm) {
   });
 }
 
+
 // UPDATE ACCOUNT PAGE WHEN LOGIN STATE CHANGES
 const accountPage = document.getElementById('account');
+
 
 auth.onAuthStateChanged(async (user) => {
   if (!accountPage) return;
   const infoCard = accountPage.querySelector('.info-card');
+
 
   if (user) {
     let displayName = user.email;
@@ -435,12 +389,14 @@ auth.onAuthStateChanged(async (user) => {
       console.error(e);
     }
 
+
     if (infoCard) {
       infoCard.innerHTML = `
         <p class="info-highlight">Welcome, ${displayName}</p>
         <p>You are signed in with <strong>${user.email}</strong>.</p>
       `;
     }
+
 
     await renderFavourites(user.uid);
   } else {
@@ -451,6 +407,7 @@ auth.onAuthStateChanged(async (user) => {
     }
   }
 });
+
 
 // LOG OUT helper (called from Account page button)
 window.droneLogout = async function () {
@@ -463,17 +420,22 @@ window.droneLogout = async function () {
   }
 };
 
+
 // ===== SIMPLE ADMIN: ADD PRODUCT TO FIRESTORE =====
 window.addEventListener('load', () => {
   const adminProductForm = document.getElementById('adminProductForm');
   const adminStatus = document.getElementById('adminStatus');
 
+
   console.log('adminProductForm is', adminProductForm);
+
 
   if (!adminProductForm) return;
 
+
   adminProductForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
 
     const name = document.getElementById('adminProdName').value.trim();
     const price = document.getElementById('adminProdPrice').value.trim();
@@ -481,10 +443,12 @@ window.addEventListener('load', () => {
     const platform = document.getElementById('adminProdPlatform').value.trim().toLowerCase();
     const url = document.getElementById('adminProdUrl').value.trim();
 
+
     if (!name || !price || !category || !platform || !url) {
       alert('Please fill all fields.');
       return;
     }
+
 
     try {
       const docRef = await db.collection('products').add({
@@ -495,6 +459,7 @@ window.addEventListener('load', () => {
         url,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
+
 
       console.log('Saved product with id:', docRef.id);
       adminProductForm.reset();
@@ -509,4 +474,4 @@ window.addEventListener('load', () => {
       alert('Could not save product: ' + err.message);
     }
   });
-});
+}); 
