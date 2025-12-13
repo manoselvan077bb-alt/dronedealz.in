@@ -86,11 +86,68 @@ if (hamburger && navMenu) {
 
 // ===== PRODUCT DATA (shared by Home + Search + Deals) =====
 const products = [
-  { name: '2207 2400KV Brushless Motor (Set of 4)', price: '₹780', category: 'motors',    platform: 'amazon' },
-  { name: '30A BLHeli-S ESC (Set of 4)',             price: '₹920', category: 'esc',       platform: 'amazon' },
-  { name: '5" Carbon Fiber Frame',                   price: '₹650', category: 'frames',    platform: 'flipkart' },
-  { name: '4S 1500mAh LiPo Battery',                 price: '₹1,200',category: 'batteries',platform: 'amazon' }
+  {
+    name: '2207 2400KV Brushless Motor (Set of 4)',
+    price: '₹780',
+    category: 'motors',
+    platform: 'amazon'
+  },
+  {
+    name: '2306 2500KV FPV Motor (Set of 4)',
+    price: '₹1,150',
+    category: 'motors',
+    platform: 'flipkart'
+  },
+  {
+    name: '30A BLHeli-S ESC (Set of 4)',
+    price: '₹920',
+    category: 'esc',
+    platform: 'amazon'
+  },
+  {
+    name: '40A BLHeli-32 ESC (Set of 4)',
+    price: '₹1,450',
+    category: 'esc',
+    platform: 'flipkart'
+  },
+  {
+    name: '5" Carbon Fiber Frame',
+    price: '₹650',
+    category: 'frames',
+    platform: 'flipkart'
+  },
+  {
+    name: '7" Long Range Frame',
+    price: '₹1,250',
+    category: 'frames',
+    platform: 'amazon'
+  },
+  {
+    name: '4S 1500mAh LiPo Battery',
+    price: '₹1,200',
+    category: 'batteries',
+    platform: 'amazon'
+  },
+  {
+    name: '6S 1300mAh LiPo Battery',
+    price: '₹1,650',
+    category: 'batteries',
+    platform: 'flipkart'
+  },
+  {
+    name: 'DIY 5" FPV Drone Kit (No Radio)',
+    price: '₹5,800',
+    category: 'drones',
+    platform: 'amazon'
+  },
+  {
+    name: 'Tiny Whoop Indoor Drone',
+    price: '₹3,200',
+    category: 'drones',
+    platform: 'flipkart'
+  }
 ];
+
 
 // small helper to create a card element
 function createProductCard(p) {
