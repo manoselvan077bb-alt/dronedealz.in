@@ -114,15 +114,23 @@
       <p>Cart features coming soon. Saved items will appear here.</p>
     </section>
 
-    <!-- ACCOUNT -->
-    <section class="page" id="account" data-page="account">
-      <h2>Your account</h2>
-      <div class="info-card">
-        <p>Sign in to manage your profile and saved builds.</p>
-      </div>
-      <button class="primary-btn" data-page="login">Go to Log in</button>
-      <button class="primary-btn" style="margin-left:8px;" onclick="droneLogout()">Log out</button>
-    </section>
+   <!-- ACCOUNT -->
+<section class="page" id="account" data-page="account">
+  <h2>Your account</h2>
+  <div class="info-card">
+    <p>Sign in to manage your profile and saved builds.</p>
+  </div>
+  <button class="primary-btn" data-page="login">Go to Log in</button>
+  <button class="primary-btn" style="margin-left:8px;" onclick="droneLogout()">Log out</button>
+
+  <div class="favourites-card">
+    <h3>Your saved favourites</h3>
+    <div id="favouritesList" class="favourites-list">
+      <p class="empty-msg">No favourites yet. Save parts from Home or Search.</p>
+    </div>
+  </div>
+</section>
+
 
     <!-- LOGIN -->
     <section class="page" id="login" data-page="login">

@@ -148,8 +148,9 @@ const products = [
   }
 ];
 
+// ===== SMALL HELPERS =====
 
-// small helper to create a card element
+// create a card element (with ❤️ Save button)
 function createProductCard(p) {
   const card = document.createElement('div');
   card.className = 'product-card';
@@ -166,10 +167,80 @@ function createProductCard(p) {
           Buy on ${p.platform.charAt(0).toUpperCase() + p.platform.slice(1)}
           <i class="fab fa-${p.platform}"></i>
         </a>
+        <button class="fav-btn">❤️ Save</button>
       </div>
     </div>
   `;
+
+  const favBtn = card.querySelector('.fav-btn');
+  favBtn.addEventListener('click', () => handleFavouriteClick(p, favBtn));
+
   return card;
+}
+
+// save favourite to Firestore (array field)
+async function handleFavouriteClick(product, buttonEl) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert('Please log in to save favourites.');
+    return;
+  }
+
+  try {
+    const userRef = db.collection('users').doc(user.uid);
+    await userRef.update({
+      favourites: firebase.firestore.FieldValue.arrayUnion({
+        name: product.name,
+        price: product.price,
+        category: product.category,
+        platform: product.platform
+      })
+    });
+    buttonEl.textContent = '✅ Saved';
+    buttonEl.classList.add('saved');
+    renderFavourites(user.uid);
+  } catch (error) {
+    console.error('Error saving favourite:', error);
+    alert('Could not save. Try again.');
+  }
+}
+
+// render favourites list in Account page
+async function renderFavourites(userId) {
+  const listEl = document.getElementById('favouritesList');
+  if (!listEl) return;
+
+  listEl.innerHTML = '<p class="empty-msg">Loading favourites...</p>';
+
+  try {
+    const snap = await db.collection('users').doc(userId).get();
+    const data = snap.exists ? snap.data() : {};
+    const favs = data.favourites || [];
+
+    if (!favs.length) {
+      listEl.innerHTML = '<p class="empty-msg">No favourites yet. Save parts from Home or Search.</p>';
+      return;
+    }
+
+    listEl.innerHTML = '';
+    favs.forEach(f => {
+      const item = document.createElement('div');
+      item.className = 'fav-item';
+      item.innerHTML = `
+        <div class="fav-item-main">
+          <span class="fav-item-name">${f.name}</span>
+          <span class="fav-item-meta">${f.category} • ${f.price}</span>
+        </div>
+        <span class="fav-item-platform ${f.platform}">
+          ${f.platform}
+        </span>
+      `;
+      listEl.appendChild(item);
+    });
+  } catch (e) {
+    console.error(e);
+    listEl.innerHTML = '<p class="empty-msg">Could not load favourites.</p>';
+  }
 }
 
 // ===== HOME: render + category filter =====
@@ -279,7 +350,7 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
   });
 }
 
-// ===== AUTH: SIGNUP & LOGIN WITH FIREBASE =====
+// ===== AUTH: SIGNUP & LOGIN WITH FIREBASE (namespaced v8 style) =====
 const signupForm = document.getElementById('signupForm');
 const loginForm = document.getElementById('loginForm');
 
@@ -306,6 +377,7 @@ if (signupForm) {
       await db.collection('users').doc(cred.user.uid).set({
         name,
         email,
+        favourites: [], // important for favourites feature
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       showMessage('Account created. You are logged in.');
@@ -359,6 +431,8 @@ auth.onAuthStateChanged(async (user) => {
         <p>You are signed in with <strong>${user.email}</strong>.</p>
       `;
     }
+
+    await renderFavourites(user.uid);
   } else {
     if (infoCard) {
       infoCard.innerHTML = `
