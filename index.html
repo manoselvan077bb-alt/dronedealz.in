@@ -46,10 +46,9 @@
         <a href="#about" data-page="about" class="nav-link">
           <i class="fas fa-info-circle"></i> About
         </a>
-          <a href="#admin" data-page="admin" class="nav-link" style="display:none;">
-    <i class="fas fa-lock"></i> Admin
-  </a>
-
+        <a href="#admin" data-page="admin" class="nav-link" style="display:none;">
+          <i class="fas fa-lock"></i> Admin
+        </a>
       </nav>
     </div>
   </header>
@@ -84,8 +83,12 @@
           <input type="text" id="adminProdName" required>
         </label>
         <label>
-          Price (text)
-          <input type="text" id="adminProdPrice" placeholder="₹999" required>
+          Price (selling price)
+          <input type="number" id="adminProdPrice" placeholder="1999" required>
+        </label>
+        <label>
+          MRP (original price)
+          <input type="number" id="adminProdMrp" placeholder="2499">
         </label>
         <label>
           Category (motors / esc / frames / batteries / drones)
