@@ -202,18 +202,29 @@ async function renderFavourites(userId) {
   }
 }
 
-// ===== HOME: render + category filter =====
+// ===== HOME: render + category filter + sort =====
 const catButtons = document.querySelectorAll('.cat-btn');
 const homeProductsContainer = document.getElementById('homeProducts');
+const sortSelect = document.getElementById('sortSelect');
 
 function renderHomeProducts(category = 'all') {
   if (!homeProductsContainer) return;
   homeProductsContainer.innerHTML = '';
 
-  const filtered =
+  let filtered =
     category === 'all'
-      ? products
+      ? [...products]
       : products.filter(p => p.category === category);
+
+  // apply sort
+  const sortValue = sortSelect ? sortSelect.value : 'default';
+  const toNumber = x => Number(x || 0);
+
+  if (sortValue === 'price-asc') {
+    filtered.sort((a, b) => toNumber(a.price) - toNumber(b.price));
+  } else if (sortValue === 'price-desc') {
+    filtered.sort((a, b) => toNumber(b.price) - toNumber(a.price));
+  }
 
   filtered.forEach(p => {
     const card = createProductCard(p);
@@ -230,6 +241,15 @@ if (catButtons && homeProductsContainer) {
       const cat = btn.getAttribute('data-category') || 'all';
       renderHomeProducts(cat);
     });
+  });
+}
+
+// sort dropdown change
+if (sortSelect) {
+  sortSelect.addEventListener('change', () => {
+    const activeBtn = document.querySelector('.cat-btn.active');
+    const cat = activeBtn ? activeBtn.getAttribute('data-category') || 'all' : 'all';
+    renderHomeProducts(cat);
   });
 }
 
@@ -418,7 +438,6 @@ window.addEventListener('load', () => {
     const category = document.getElementById('adminProdCategory').value.trim().toLowerCase();
     const platform = document.getElementById('adminProdPlatform').value.trim().toLowerCase();
     const url = document.getElementById('adminProdUrl').value.trim();
-
 
     if (!name || !price || !category || !platform || !url) {
       alert('Please fill all fields.');
