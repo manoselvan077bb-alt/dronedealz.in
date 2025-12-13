@@ -49,6 +49,16 @@ bottomItems.forEach(btn => {
     if (page) showPage(page, true);
   });
 });
+// "Go to Log in" button inside Account page
+const goLoginBtn = document.querySelector('#account .primary-btn[data-page="login"]');
+if (goLoginBtn) {
+  goLoginBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    showPage('login', true);
+  });
+}
+
+
 
 // phone / browser back
 window.addEventListener('popstate', (event) => {
