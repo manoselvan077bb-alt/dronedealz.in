@@ -5,7 +5,6 @@ const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 const bottomItems = document.querySelectorAll('.bottom-item');
 
-
 function showPage(pageId, push = true) {
   // top nav
   navLinks.forEach(l => {
@@ -13,31 +12,26 @@ function showPage(pageId, push = true) {
     l.classList.toggle('active', target === pageId);
   });
 
-
   // sections
   pages.forEach(p => p.classList.remove('active'));
   const pageEl = document.getElementById(pageId);
   if (pageEl) pageEl.classList.add('active');
-
 
   // history for phone back
   if (push) {
     history.pushState({ page: pageId }, '', '#' + pageId);
   }
 
-
   // close mobile menu
   if (window.innerWidth <= 768 && navMenu) {
     navMenu.style.display = 'none';
   }
-
 
   // bottom nav
   bottomItems.forEach(b => {
     b.classList.toggle('active', b.getAttribute('data-page') === pageId);
   });
 }
-
 
 // top nav clicks
 navLinks.forEach(link => {
@@ -48,7 +42,6 @@ navLinks.forEach(link => {
   });
 });
 
-
 // bottom nav clicks
 bottomItems.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -56,6 +49,7 @@ bottomItems.forEach(btn => {
     if (page) showPage(page, true);
   });
 });
+
 // "Go to Log in" button inside Account page
 const goLoginBtn = document.querySelector('#account .primary-btn[data-page="login"]');
 if (goLoginBtn) {
@@ -65,15 +59,11 @@ if (goLoginBtn) {
   });
 }
 
-
-
-
 // phone / browser back
 window.addEventListener('popstate', (event) => {
   const pageId = event.state && event.state.page ? event.state.page : 'home';
   showPage(pageId, false);
 });
-
 
 // initial load
 window.addEventListener('load', () => {
@@ -81,7 +71,6 @@ window.addEventListener('load', () => {
   const startPage = hash && document.getElementById(hash) ? hash : 'home';
   showPage(startPage, false);
 });
-
 
 // hamburger toggle + click outside to close
 if (hamburger && navMenu) {
@@ -91,11 +80,9 @@ if (hamburger && navMenu) {
     navMenu.style.display = current === 'flex' ? 'none' : 'flex';
   });
 
-
   document.addEventListener('click', (e) => {
     // Only auto-close the dropdown on small screens (mobile)
     if (window.innerWidth > 768) return;
-
 
     const target = e.target;
     const clickedInsideMenu = navMenu.contains(target);
@@ -105,9 +92,6 @@ if (hamburger && navMenu) {
     }
   });
 }
-
-
-
 
 // ===== PRODUCT DATA (now loaded from Firestore) =====
 let products = [];
@@ -119,13 +103,23 @@ function createProductCard(p) {
   const card = document.createElement('div');
   card.className = 'product-card';
   card.setAttribute('data-category', p.category);
+
+  const price = Number(p.price || 0);
+  const mrp = Number(p.mrp || 0);
+  const hasMrp = mrp > price && mrp > 0;
+  const discount = hasMrp ? Math.round((mrp - price) / mrp * 100) : null;
+
   card.innerHTML = `
     <div class="product-image big-card">
       <i class="fas fa-cogs"></i>
     </div>
     <div class="product-info">
       <h3>${p.name}</h3>
-      <div class="price">${p.price}</div>
+      <div class="price">
+        ₹${price}
+        ${hasMrp ? `<span class="old-price">₹${mrp}</span>` : ''}
+        ${discount ? `<span class="discount">${discount}% off</span>` : ''}
+      </div>
       <div class="buy-buttons">
         <a href="${p.url || '#'}" target="_blank" rel="noopener" class="buy-btn ${p.platform}">
           Buy on ${p.platform.charAt(0).toUpperCase() + p.platform.slice(1)}
@@ -303,17 +297,13 @@ async function loadProductsFromFirestore() {
 // call once after script loads
 loadProductsFromFirestore();
 
-
-
 // ===== AUTH: SIGNUP & LOGIN WITH FIREBASE (namespaced v8 style) =====
 const signupForm = document.getElementById('signupForm');
 const loginForm = document.getElementById('loginForm');
 
-
 function showMessage(msg) {
   alert(msg);
 }
-
 
 // SIGN UP
 if (signupForm) {
@@ -324,19 +314,17 @@ if (signupForm) {
     const password = document.getElementById('signupPassword').value;
     const confirm = document.getElementById('signupConfirm').value;
 
-
     if (password !== confirm) {
       showMessage('Passwords do not match');
       return;
     }
-
 
     try {
       const cred = await auth.createUserWithEmailAndPassword(email, password);
       await db.collection('users').doc(cred.user.uid).set({
         name,
         email,
-        favourites: [], // important for favourites feature
+        favourites: [],
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       showMessage('Account created. You are logged in.');
@@ -348,14 +336,12 @@ if (signupForm) {
   });
 }
 
-
 // LOGIN
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
-
 
     try {
       await auth.signInWithEmailAndPassword(email, password);
@@ -368,15 +354,12 @@ if (loginForm) {
   });
 }
 
-
 // UPDATE ACCOUNT PAGE WHEN LOGIN STATE CHANGES
 const accountPage = document.getElementById('account');
-
 
 auth.onAuthStateChanged(async (user) => {
   if (!accountPage) return;
   const infoCard = accountPage.querySelector('.info-card');
-
 
   if (user) {
     let displayName = user.email;
@@ -389,14 +372,12 @@ auth.onAuthStateChanged(async (user) => {
       console.error(e);
     }
 
-
     if (infoCard) {
       infoCard.innerHTML = `
         <p class="info-highlight">Welcome, ${displayName}</p>
         <p>You are signed in with <strong>${user.email}</strong>.</p>
       `;
     }
-
 
     await renderFavourites(user.uid);
   } else {
@@ -407,7 +388,6 @@ auth.onAuthStateChanged(async (user) => {
     }
   }
 });
-
 
 // LOG OUT helper (called from Account page button)
 window.droneLogout = async function () {
@@ -420,46 +400,40 @@ window.droneLogout = async function () {
   }
 };
 
-
 // ===== SIMPLE ADMIN: ADD PRODUCT TO FIRESTORE =====
 window.addEventListener('load', () => {
   const adminProductForm = document.getElementById('adminProductForm');
   const adminStatus = document.getElementById('adminStatus');
 
-
   console.log('adminProductForm is', adminProductForm);
 
-
   if (!adminProductForm) return;
-
 
   adminProductForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-
     const name = document.getElementById('adminProdName').value.trim();
-    const price = document.getElementById('adminProdPrice').value.trim();
+    const price = Number(document.getElementById('adminProdPrice').value.trim());
+    const mrp = Number(document.getElementById('adminProdMrp').value.trim() || 0);
     const category = document.getElementById('adminProdCategory').value.trim().toLowerCase();
     const platform = document.getElementById('adminProdPlatform').value.trim().toLowerCase();
     const url = document.getElementById('adminProdUrl').value.trim();
-
 
     if (!name || !price || !category || !platform || !url) {
       alert('Please fill all fields.');
       return;
     }
 
-
     try {
       const docRef = await db.collection('products').add({
         name,
         price,
+        mrp,
         category,
         platform,
         url,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-
 
       console.log('Saved product with id:', docRef.id);
       adminProductForm.reset();
@@ -474,4 +448,4 @@ window.addEventListener('load', () => {
       alert('Could not save product: ' + err.message);
     }
   });
-}); 
+});
