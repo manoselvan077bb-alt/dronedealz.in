@@ -72,6 +72,9 @@ if (hamburger && navMenu) {
   });
 
   document.addEventListener('click', (e) => {
+    // Only auto-close the dropdown on small screens (mobile)
+    if (window.innerWidth > 768) return;
+
     const target = e.target;
     const clickedInsideMenu = navMenu.contains(target);
     const clickedHamburger = hamburger.contains(target);
@@ -83,30 +86,10 @@ if (hamburger && navMenu) {
 
 // ===== PRODUCT DATA (shared by Home + Search + Deals) =====
 const products = [
-  {
-    name: '2207 2400KV Brushless Motor (Set of 4)',
-    price: '₹780',
-    category: 'motors',
-    platform: 'amazon'
-  },
-  {
-    name: '30A BLHeli-S ESC (Set of 4)',
-    price: '₹920',
-    category: 'esc',
-    platform: 'amazon'
-  },
-  {
-    name: '5" Carbon Fiber Frame',
-    price: '₹650',
-    category: 'frames',
-    platform: 'flipkart'
-  },
-  {
-    name: '4S 1500mAh LiPo Battery',
-    price: '₹1,200',
-    category: 'batteries',
-    platform: 'amazon'
-  }
+  { name: '2207 2400KV Brushless Motor (Set of 4)', price: '₹780', category: 'motors',    platform: 'amazon' },
+  { name: '30A BLHeli-S ESC (Set of 4)',             price: '₹920', category: 'esc',       platform: 'amazon' },
+  { name: '5" Carbon Fiber Frame',                   price: '₹650', category: 'frames',    platform: 'flipkart' },
+  { name: '4S 1500mAh LiPo Battery',                 price: '₹1,200',category: 'batteries',platform: 'amazon' }
 ];
 
 // small helper to create a card element
@@ -238,6 +221,7 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
     console.log('Speech recognition error:', event.error);
   });
 }
+
 // ===== AUTH: SIGNUP & LOGIN WITH FIREBASE =====
 const signupForm = document.getElementById('signupForm');
 const loginForm = document.getElementById('loginForm');
@@ -337,4 +321,3 @@ window.droneLogout = async function () {
     console.error(e);
   }
 };
-
