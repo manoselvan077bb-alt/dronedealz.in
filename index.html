@@ -67,6 +67,37 @@
       <button id="topSearchVoice"><i class="fas fa-microphone"></i></button>
     </div>
   </section>
+      <!-- ADMIN (simple local panel) -->
+    <section class="page" id="admin" data-page="admin" style="display:none;">
+      <h2>Admin: Products</h2>
+      <form class="auth-form" id="adminProductForm">
+        <label>
+          Name
+          <input type="text" id="adminProdName" required>
+        </label>
+        <label>
+          Price (text)
+          <input type="text" id="adminProdPrice" placeholder="₹999" required>
+        </label>
+        <label>
+          Category (motors / esc / frames / batteries / drones)
+          <input type="text" id="adminProdCategory" required>
+        </label>
+        <label>
+          Platform (amazon / flipkart)
+          <input type="text" id="adminProdPlatform" required>
+        </label>
+        <label>
+          Product URL
+          <input type="url" id="adminProdUrl" placeholder="https://..." required>
+        </label>
+        <button type="submit" class="primary-btn">Save product</button>
+      </form>
+      <div class="info-card" id="adminStatus" style="margin-top:10px;">
+        <p>Fill the form and click “Save product” to write into Firestore collection <strong>products</strong>.</p>
+      </div>
+    </section>
+
 
   <!-- Main content -->
   <main class="main-content">
