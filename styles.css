@@ -741,3 +741,15 @@ p {
   color: #6b7280;
   font-size: 0.8rem;
 }
+.old-price {
+  text-decoration: line-through;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  margin-left: 4px;
+}
+.discount {
+  color: #16a34a;
+  font-size: 0.8rem;
+  margin-left: 4px;
+  font-weight: 600;
+}

@@ -108,6 +108,15 @@
         <p>Fill the form and click “Save product” to write into Firestore collection <strong>products</strong>.</p>
       </div>
     </section>
+    <div class="sort-row">
+  <label>Sort:</label>
+  <select id="sortSelect">
+    <option value="default">Default</option>
+    <option value="price-asc">Price: Low to high</option>
+    <option value="price-desc">Price: High to low</option>
+  </select>
+</div>
+
 
     <!-- HOME -->
     <section class="page active" id="home" data-page="home">
@@ -119,6 +128,8 @@
         <button class="cat-btn" data-category="frames">Frames</button>
         <button class="cat-btn" data-category="batteries">Batteries</button>
       </div>
+      
+
 
       <div class="products-grid" id="homeProducts">
         <!-- product cards injected by script.js -->
