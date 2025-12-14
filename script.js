@@ -284,7 +284,6 @@ function renderProductDetail() {
     </div>
   `;
 
-
   const backBtn = container.querySelector('#backToHomeBtn');
   if (backBtn) {
     backBtn.addEventListener('click', () => {
@@ -519,6 +518,49 @@ function renderDealsProducts() {
   });
 }
 
+// ===== GUIDES (AUTO FROM PRODUCTS) =====
+function renderGuideMotors() {
+  const body = document.getElementById('guideMotorsBody');
+  if (!body) return;
+  body.innerHTML = '';
+
+  const items = products.filter(p => Array.isArray(p.tags) && p.tags.includes('5inch-motor'));
+  items.forEach(p => {
+    const { price } = calcPriceMeta(p);
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${p.name}</td>
+      <td>${p.kv || '-'}</td>
+      <td>₹${price}</td>
+      <td><a href="${p.url || '#'}" target="_blank" rel="noopener">
+        ${p.platform}
+      </a></td>
+    `;
+    body.appendChild(row);
+  });
+}
+
+function renderGuideBuild5000() {
+  const body = document.getElementById('guideBuild5000Body');
+  if (!body) return;
+  body.innerHTML = '';
+
+  const items = products.filter(p => Array.isArray(p.tags) && p.tags.includes('build5000'));
+  items.forEach(p => {
+    const { price } = calcPriceMeta(p);
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${p.category}</td>
+      <td>${p.name}</td>
+      <td>₹${price}</td>
+      <td><a href="${p.url || '#'}" target="_blank" rel="noopener">
+        ${p.platform}
+      </a></td>
+    `;
+    body.appendChild(row);
+  });
+}
+
 // ===== MINI CART PREVIEW ON HOME =====
 function renderHomeCartPreview() {
   const box = document.getElementById('homeCartPreview');
@@ -740,6 +782,10 @@ window.addEventListener('load', () => {
     const platform = document.getElementById('adminProdPlatform').value.trim().toLowerCase();
     const url = document.getElementById('adminProdUrl').value.trim();
     const image = document.getElementById('adminProdImage')?.value.trim() || '';
+    const tagsRaw = document.getElementById('adminProdTags')?.value.trim() || '';
+    const tags = tagsRaw
+      ? tagsRaw.split(',').map(t => t.trim().toLowerCase()).filter(Boolean)
+      : [];
 
     if (!name || !price || !category || !platform || !url) {
       alert('Please fill all fields.');
@@ -761,6 +807,7 @@ window.addEventListener('load', () => {
         platform,
         url,
         image,
+        tags,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
@@ -795,6 +842,8 @@ async function loadProductsFromFirestore() {
 
     renderHomeProducts('all');
     renderDealsProducts();
+    renderGuideMotors();
+    renderGuideBuild5000();
   } catch (err) {
     console.error('Error loading products from Firestore:', err);
   }
