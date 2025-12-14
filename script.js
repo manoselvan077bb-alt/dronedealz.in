@@ -300,7 +300,6 @@ function renderProductDetail() {
     });
   }
 
-  // related products
   const relatedWrap = document.createElement('div');
   relatedWrap.style.marginTop = '16px';
 
@@ -499,7 +498,7 @@ function renderDealsProducts() {
   if (!dealsProductsContainer) return;
   dealsProductsContainer.innerHTML = '';
 
-  const HIGH_DISCOUNT = 40; // % threshold
+  const HIGH_DISCOUNT = 40;
 
   const highDealz = products.filter(p => {
     const { hasMrp, discount } = calcPriceMeta(p);
@@ -519,8 +518,6 @@ function renderDealsProducts() {
 }
 
 // ===== GUIDES (AUTO FROM PRODUCTS) =====
-
-// Tag-based 5-inch motors
 function renderGuideMotors() {
   const body = document.getElementById('guideMotorsBody');
   if (!body) return;
@@ -542,7 +539,6 @@ function renderGuideMotors() {
   });
 }
 
-// Tag-based starter build under 5000
 function renderGuideBuild5000() {
   const body = document.getElementById('guideBuild5000Body');
   if (!body) return;
@@ -564,7 +560,6 @@ function renderGuideBuild5000() {
   });
 }
 
-// Price-tier motors (under 1000 / 2000)
 function renderGuideMotorsByPrice() {
   const under1000 = document.getElementById('guideMotorsUnder1000');
   const under2000 = document.getElementById('guideMotorsUnder2000');

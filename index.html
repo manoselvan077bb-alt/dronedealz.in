@@ -74,7 +74,7 @@
   <!-- Main content -->
   <main class="main-content">
 
-    <!-- ADMIN (simple local panel) -->
+    <!-- ADMIN -->
     <section class="page" id="admin" data-page="admin">
       <h2>Admin: Products</h2>
       <form class="auth-form" id="adminProductForm">
@@ -156,25 +156,20 @@
           <input type="text" id="searchInput" placeholder="Search motors, ESC, frames, batteries...">
           <button id="searchBtn"><i class="fas fa-search"></i></button>
         </div>
-        <div class="products-grid" id="searchResults">
-          <!-- search results from script.js -->
-        </div>
+        <div class="products-grid" id="searchResults"></div>
       </div>
     </section>
 
     <!-- DEALS -->
     <section class="page" id="deals" data-page="deals">
       <h2>Trending dealz</h2>
-      <div class="products-grid" id="dealsProducts">
-        <!-- deals from script.js -->
-      </div>
+      <div class="products-grid" id="dealsProducts"></div>
     </section>
 
     <!-- GUIDES -->
     <section class="page" id="guides" data-page="guides">
       <h2>Build guides</h2>
 
-      <!-- Existing tag-based guide -->
       <div class="info-card">
         <h3>Best ₹1000–1500 motors for 5-inch quad</h3>
         <p style="font-size:0.85rem;">
@@ -193,7 +188,6 @@
         </table>
       </div>
 
-      <!-- New price-tier guides (will be filled by JS) -->
       <div class="info-card">
         <h3>Motors under ₹1000</h3>
         <p style="font-size:0.85rem;">
@@ -230,7 +224,6 @@
         </table>
       </div>
 
-      <!-- Existing starter build guide -->
       <div class="info-card">
         <h3>Starter drone build under ₹5000</h3>
         <p style="font-size:0.85rem;">
@@ -249,7 +242,24 @@
         </table>
       </div>
 
-      <!-- ESC + motor combos (still static for now) -->
+      <div class="info-card">
+        <h3>5-inch starter combo</h3>
+        <p style="font-size:0.85rem;">
+          One recommended parts combo for a basic 5-inch quad.
+        </p>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Part</th>
+              <th>Model</th>
+              <th>Approx. price</th>
+              <th>Buy</th>
+            </tr>
+          </thead>
+          <tbody id="guideCombo5inchStarter"></tbody>
+        </table>
+      </div>
+
       <div class="info-card">
         <h3>ESC + motor combos that match</h3>
         <p style="font-size:0.85rem;">
@@ -405,7 +415,7 @@
     </button>
   </nav>
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDKs (compat v12) -->
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore-compat.js"></script>
@@ -426,7 +436,7 @@
     const db = firebase.firestore();
   </script>
 
-  <!-- bump version so browser loads latest JS -->
-  <script src="script.js?v=3"></script>
+  <!-- Main JS -->
+  <script src="script.js?v=4"></script>
 </body>
 </html>
