@@ -296,21 +296,25 @@
       </div>
     </section>
 
-    <!-- PRODUCT DETAIL -->
+        <!-- PRODUCT DETAIL -->
     <section class="page" id="productDetail" data-page="productDetail">
       <h2>Product details</h2>
 
-      <!-- Amazon-style two column layout -->
       <div class="info-card">
-        <div class="product-detail-layout" id="productDetailContent">
-          <!-- LEFT: main image -->
+        <!-- Amazon-style two-column layout -->
+        <div class="product-detail-layout">
+          <!-- LEFT: main image with arrows -->
           <div class="product-detail-left">
-            <div class="product-image big-card" id="detailImageBox">
+            <div id="detailImageBox">
+              <button class="gallery-nav gallery-prev" id="detailPrevBtn">&lt;</button>
+
               <img src="" alt="" class="product-img-real" id="detailImage">
+
+              <button class="gallery-nav gallery-next" id="detailNextBtn">&gt;</button>
             </div>
           </div>
 
-          <!-- RIGHT: title, price, description, buttons -->
+          <!-- RIGHT: title, price, meta, buttons -->
           <div class="product-detail-right">
             <h1 class="product-detail-title" id="detailTitle">
               Loading product...
@@ -323,6 +327,7 @@
         </div>
       </div>
     </section>
+
 
     <!-- CART -->
     <section class="page" id="cart" data-page="cart">
