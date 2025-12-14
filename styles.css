@@ -287,15 +287,30 @@ body {
   gap: 8px;
 }
 
+/* SMALL image box for cards */
 .product-image.big-card {
-  height: 80px;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: radial-gradient(circle at 0 0, #4ade80, #22d3ee, #1d4ed8);
-  color: #020617;
-  font-size: 1.5rem;
+  background: #ffffff;
+}
+
+/* Detail page image box a bit taller */
+#productDetail #detailImageBox.product-image.big-card {
+  height: 220px;
+}
+
+/* Product image itself */
+.product-img-real {
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #ffffff;
 }
 
 .product-info h3 {
@@ -574,7 +589,7 @@ p {
   margin-bottom: 6px;
 }
 
-.info-highlight {
+info-highlight {
   font-weight: 600;
   color: #111827;
 }
@@ -748,14 +763,6 @@ p {
   padding: 0 16px;
 }
 
-.product-img-real {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 10px;
-  background: #ffffff;
-}
-
 /* Cart badge on bottom nav icon */
 .cart-badge {
   position: absolute;
@@ -921,6 +928,7 @@ p {
   box-shadow: none;
 }
 
+/* Guides tables */
 .guide-table {
   width: 100%;
   border-collapse: collapse;
@@ -950,8 +958,7 @@ p {
   text-decoration: underline;
 }
 
-/* === NEW: Full-width Guides page like Product detail === */
-
+/* Full-width Guides page like Product detail */
 #guides.page.active {
   max-width: 100%;
   padding-left: 0;
@@ -965,6 +972,7 @@ p {
   padding-left: 16px;
   padding-right: 16px;
 }
+
 /* Guides page visual styling */
 #guides {
   background: #f3f4f6;
@@ -1000,4 +1008,31 @@ p {
 #guides .info-card p {
   font-size: 0.8rem;
   color: #6b7280;
+}
+/* Small square image box for all cards */
+.product-image.big-card {
+  width: 260px;
+  height: 260px;
+  margin: 12px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+/* Use the same box on product detail page */
+#productDetail #detailImageBox {
+  width: 260px;
+  height: 260px;
+  margin: 12px auto;
+}
+
+/* Image fits inside the box */
+.product-img-real {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }

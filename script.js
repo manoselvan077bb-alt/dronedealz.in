@@ -252,7 +252,7 @@ function renderProductDetail() {
 
   container.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:12px;">
-      <div class="product-image big-card" style="height:220px; position:relative;" id="detailImageBox">
+      <div class="product-image big-card detail-box" id="detailImageBox">
         ${images.length
           ? `<img src="${images[0]}" alt="${p.name}" class="product-img-real">`
           : `<i class="fas fa-cogs"></i>`}
