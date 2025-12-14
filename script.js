@@ -237,38 +237,80 @@ function createProductCard(p) {
   return card;
 }
 
-// ===== PRODUCT DETAIL (NEW AMAZON-STYLE IMPLEMENTATION) =====
+// ===== PRODUCT DETAIL (SCROLLABLE GALLERY) =====
 function renderProductDetail() {
   if (!currentProduct) return;
 
   const p = currentProduct;
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
 
+  // images array from Firestore
   const images = Array.isArray(p.images) && p.images.length
     ? p.images
-    : (p.image ? [p.image] : []);
+    : (p.image ? String(p.image).split(',').map(s => s.trim()).filter(Boolean) : []);
 
-  const mainImgEl = document.getElementById('detailImage');
   const titleEl = document.getElementById('detailTitle');
   const priceEl = document.getElementById('detailPrice');
   const metaEl = document.getElementById('detailMeta');
   const btnBox = document.getElementById('detailBuyButtons');
+  const box = document.getElementById('detailImageBox');
 
-  if (!mainImgEl || !titleEl || !priceEl || !metaEl || !btnBox) {
+  if (!titleEl || !priceEl || !metaEl || !btnBox || !box) {
     return;
   }
 
-  let currentImageIndex = 0;
+  let currentIndex = 0;
 
-  // main image
-  if (images.length) {
-    mainImgEl.src = images[0];
-  } else {
-    mainImgEl.removeAttribute('src');
+  // build gallery inside box
+  box.innerHTML = `
+    <button class="gallery-nav gallery-prev">&lt;</button>
+    <img id="detailImage" class="product-img-real" alt="">
+    <button class="gallery-nav gallery-next">&gt;</button>
+  `;
+
+  const mainImg = box.querySelector('#detailImage');
+
+  function showImage(idx) {
+    if (!images.length) return;
+    currentIndex = (idx + images.length) % images.length;
+    mainImg.src = images[currentIndex];
   }
-  mainImgEl.alt = p.name || '';
 
-  // text
+  if (images.length) {
+    showImage(0);
+  } else {
+    mainImg.removeAttribute('src');
+  }
+  mainImg.alt = p.name || '';
+
+  const prevBtn = box.querySelector('.gallery-prev');
+  const nextBtn = box.querySelector('.gallery-next');
+
+  if (prevBtn && nextBtn && images.length > 1) {
+    prevBtn.onclick = (e) => {
+      e.stopPropagation();
+      showImage(currentIndex - 1);
+    };
+    nextBtn.onclick = (e) => {
+      e.stopPropagation();
+      showImage(currentIndex + 1);
+    };
+  }
+
+  // click to open big image
+  box.onclick = () => {
+    if (!images.length) return;
+    const url = images[currentIndex];
+    const win = window.open('', '_blank');
+    if (win && url) {
+      win.document.write(
+        `<img src="${url}" style="width:100%;height:100%;object-fit:contain;margin:0;">`
+      );
+      win.document.title = p.name || 'Image';
+    }
+  };
+
+  // text + buttons
   titleEl.textContent = p.name || '';
   priceEl.innerHTML = `
     ₹${price}
@@ -277,7 +319,6 @@ function renderProductDetail() {
   `;
   metaEl.textContent = `${p.category || '-'} • ${p.platform || '-'}`;
 
-  // buy buttons
   btnBox.innerHTML = `
     <a href="${p.url || '#'}" target="_blank" rel="noopener"
        class="buy-btn ${p.platform}">
@@ -295,22 +336,6 @@ function renderProductDetail() {
       addBtn.textContent = 'Added';
       setTimeout(() => (addBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to cart'), 800);
     });
-  }
-
-  // simple click-to-open full image (no extra big image in DOM)
-  const box = document.getElementById('detailImageBox');
-  if (box && images.length) {
-    box.onclick = () => {
-      const url = images[currentImageIndex];
-      if (!url) return;
-      const win = window.open('', '_blank');
-      if (win) {
-        win.document.write(
-          `<img src="${url}" style="width:100%;height:100%;object-fit:contain;margin:0;">`
-        );
-        win.document.title = p.name || 'Image';
-      }
-    };
   }
 }
 
@@ -584,7 +609,7 @@ function renderGuideMotorsByPrice() {
   });
 }
 
-// A–F guides using tags guide-a ... guide-f (lowercase to match saved tags)
+// A–F guides using tags guide-a ... guide-f
 function renderGuideGeneric(tagName, tbodyId) {
   const body = document.getElementById(tbodyId);
   if (!body) return;
