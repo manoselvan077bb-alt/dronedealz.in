@@ -132,8 +132,15 @@ function updateCartBadge() {
   badge.textContent = count;
 }
 
+// ==== UPDATED: ADD TO CART WITH IMAGE ====
 function addToCart(product) {
   const existing = cart.find(item => item.id === product.id);
+
+  const image =
+    Array.isArray(product.images) && product.images.length
+      ? product.images[0]
+      : (product.image || null);
+
   if (existing) {
     existing.qty += 1;
   } else {
@@ -144,6 +151,7 @@ function addToCart(product) {
       platform: product.platform,
       url: product.url || null,
       category: product.category,
+      image: image,
       qty: 1
     });
   }
@@ -358,7 +366,6 @@ function renderMoreProducts() {
 
   const base = currentProduct;
 
-  // Prefer same category, but always fall back to all others
   let related = products.filter(p =>
     base && p.id !== base.id &&
     (p.category || '').toLowerCase() === (base.category || '').toLowerCase()
@@ -762,8 +769,15 @@ function renderCartPage() {
     row.className = 'cart-item';
     row.innerHTML = `
       <div class="cart-item-main">
-        <span class="cart-item-name">${item.name}</span>
-        <span class="cart-item-meta">${item.category} • ₹${item.price} × ${item.qty}</span>
+        <div class="cart-item-thumb">
+          ${item.image
+            ? `<img src="${item.image}" alt="${item.name}">`
+            : `<i class="fas fa-cogs"></i>`}
+        </div>
+        <div class="cart-item-text">
+          <span class="cart-item-name">${item.name}</span>
+          <span class="cart-item-meta">${item.category} • ₹${item.price} × ${item.qty}</span>
+        </div>
       </div>
       <div class="cart-item-actions">
         <button class="cart-remove" data-id="${item.id}">Remove</button>

@@ -1081,3 +1081,21 @@ info-highlight {
     max-width: 100%;
   }
 }
+.cart-item-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-item-thumb img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.cart-item-text {
+  display: flex;
+  flex-direction: column;
+}
