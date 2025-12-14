@@ -150,6 +150,7 @@ function addToCart(product) {
   saveCartToStorage();
   updateCartBadge();
   renderCartPage();
+  renderHomeCartPreview();
 }
 
 function removeFromCart(productId) {
@@ -157,6 +158,7 @@ function removeFromCart(productId) {
   saveCartToStorage();
   updateCartBadge();
   renderCartPage();
+  renderHomeCartPreview();
 }
 
 function calcCartTotal() {
@@ -244,47 +246,42 @@ function renderProductDetail() {
   const p = currentProduct;
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
 
-  // images array from Firestore
   const images = Array.isArray(p.images) && p.images.length
     ? p.images
     : (p.image ? String(p.image).split(',').map(s => s.trim()).filter(Boolean) : []);
 
   const titleEl = document.getElementById('detailTitle');
   const priceEl = document.getElementById('detailPrice');
-  const metaEl = document.getElementById('detailMeta');
-  const btnBox = document.getElementById('detailBuyButtons');
-  const box = document.getElementById('detailImageBox');
+  const metaEl  = document.getElementById('detailMeta');
+  const btnBox  = document.getElementById('detailBuyButtons');
+  const box     = document.getElementById('detailImageBox');
 
-  if (!titleEl || !priceEl || !metaEl || !btnBox || !box) {
-    return;
-  }
+  if (!titleEl || !priceEl || !metaEl || !btnBox || !box) return;
 
   let currentIndex = 0;
 
-  // build gallery inside box
   box.innerHTML = `
-    <button class="gallery-nav gallery-prev">&lt;</button>
+    <button class="gallery-nav gallery-prev" id="detailPrevBtn">&lt;</button>
     <img id="detailImage" class="product-img-real" alt="">
-    <button class="gallery-nav gallery-next">&gt;</button>
+    <button class="gallery-nav gallery-next" id="detailNextBtn">&gt;</button>
   `;
 
-  const mainImg = box.querySelector('#detailImage');
+  const mainImg = document.getElementById('detailImage');
+  const prevBtn = document.getElementById('detailPrevBtn');
+  const nextBtn = document.getElementById('detailNextBtn');
 
   function showImage(idx) {
-    if (!images.length) return;
+    if (!images.length || !mainImg) return;
     currentIndex = (idx + images.length) % images.length;
     mainImg.src = images[currentIndex];
   }
 
   if (images.length) {
     showImage(0);
-  } else {
+  } else if (mainImg) {
     mainImg.removeAttribute('src');
   }
-  mainImg.alt = p.name || '';
-
-  const prevBtn = box.querySelector('.gallery-prev');
-  const nextBtn = box.querySelector('.gallery-next');
+  if (mainImg) mainImg.alt = p.name || '';
 
   if (prevBtn && nextBtn && images.length > 1) {
     prevBtn.onclick = (e) => {
@@ -297,8 +294,9 @@ function renderProductDetail() {
     };
   }
 
-  // click to open big image
-  box.onclick = () => {
+  box.onclick = (e) => {
+    const clickedButton = e.target.closest('.gallery-nav');
+    if (clickedButton) return;
     if (!images.length) return;
     const url = images[currentIndex];
     const win = window.open('', '_blank');
@@ -310,7 +308,6 @@ function renderProductDetail() {
     }
   };
 
-  // text + buttons
   titleEl.textContent = p.name || '';
   priceEl.innerHTML = `
     ₹${price}
@@ -322,7 +319,9 @@ function renderProductDetail() {
   btnBox.innerHTML = `
     <a href="${p.url || '#'}" target="_blank" rel="noopener"
        class="buy-btn ${p.platform}">
-      Buy on ${p.platform ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1) : 'site'}
+      Buy on ${p.platform
+        ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1)
+        : 'site'}
     </a>
     <button class="cart-btn" id="detailAddToCart">
       <i class="fas fa-shopping-cart"></i> Add to cart
@@ -334,9 +333,54 @@ function renderProductDetail() {
     addBtn.addEventListener('click', () => {
       addToCart(p);
       addBtn.textContent = 'Added';
-      setTimeout(() => (addBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to cart'), 800);
+      setTimeout(
+        () => (addBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to cart'),
+        800
+      );
     });
   }
+
+  renderMoreProducts();
+}
+
+// ===== MORE PRODUCTS UNDER DETAIL =====
+function renderMoreProducts() {
+  const listEl = document.getElementById('moreProductsList');
+  const card   = document.getElementById('moreProductsCard');
+  if (!listEl || !card) return;
+
+  listEl.innerHTML = '';
+
+  if (!products.length) {
+    card.style.display = 'none';
+    return;
+  }
+
+  const base = currentProduct;
+
+  // Prefer same category, but always fall back to all others
+  let related = products.filter(p =>
+    base && p.id !== base.id &&
+    (p.category || '').toLowerCase() === (base.category || '').toLowerCase()
+  );
+
+  if (!related.length) {
+    related = products.filter(p => !base || p.id !== base.id);
+  }
+
+  related = related.slice(0, 8);
+
+  if (!related.length) {
+    card.style.display = 'none';
+    return;
+  }
+
+  card.style.display = 'block';
+
+  related.forEach(p => {
+    const cardEl = createProductCard(p);
+    listEl.appendChild(cardEl);
+  });
 }
 
 // ===== FAVOURITES (Firestore) =====
@@ -943,6 +987,7 @@ async function loadProductsFromFirestore() {
     renderGuideD();
     renderGuideE();
     renderGuideF();
+    renderHomeCartPreview();
   } catch (err) {
     console.error('Error loading products from Firestore:', err);
   }
@@ -952,4 +997,4 @@ loadCartFromStorage();
 updateCartBadge();
 loadProductsFromFirestore();
 renderCartPage();
-// renderHomeCartPreview(); // disabled mini cart on home
+renderHomeCartPreview();

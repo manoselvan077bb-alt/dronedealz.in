@@ -296,37 +296,35 @@
       </div>
     </section>
 
-        <!-- PRODUCT DETAIL -->
+            <!-- PRODUCT DETAIL -->
     <section class="page" id="productDetail" data-page="productDetail">
       <h2>Product details</h2>
 
       <div class="info-card">
-        <!-- Amazon-style two-column layout -->
+        <!-- existing layout stays exactly the same -->
         <div class="product-detail-layout">
-          <!-- LEFT: main image with arrows -->
+          <!-- LEFT: image box -->
           <div class="product-detail-left">
-            <div id="detailImageBox">
-              <button class="gallery-nav gallery-prev" id="detailPrevBtn">&lt;</button>
-
-              <img src="" alt="" class="product-img-real" id="detailImage">
-
-              <button class="gallery-nav gallery-next" id="detailNextBtn">&gt;</button>
-            </div>
+            <div id="detailImageBox"></div>
           </div>
 
           <!-- RIGHT: title, price, meta, buttons -->
           <div class="product-detail-right">
-            <h1 class="product-detail-title" id="detailTitle">
-              Loading product...
-            </h1>
+            <h1 class="product-detail-title" id="detailTitle">Loading product...</h1>
             <p class="product-detail-price" id="detailPrice"></p>
             <p class="product-detail-meta" id="detailMeta"></p>
-
             <div class="buy-buttons" id="detailBuyButtons"></div>
           </div>
         </div>
       </div>
+
+      <!-- NEW: more products list under main card -->
+      <div class="info-card" id="moreProductsCard">
+        <h3 style="margin-bottom:8px;">More motors & parts</h3>
+        <div class="products-grid" id="moreProductsList"></div>
+      </div>
     </section>
+
 
 
     <!-- CART -->
