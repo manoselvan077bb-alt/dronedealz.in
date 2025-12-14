@@ -64,6 +64,7 @@ window.addEventListener('load', () => {
   showPage(startPage, false);
 });
 
+// mobile nav toggle
 if (hamburger && navMenu) {
   hamburger.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -86,7 +87,7 @@ if (hamburger && navMenu) {
 let products = [];
 let currentProduct = null;
 
-// ===== CART (localStorage, works even without login) =====
+// ===== CART (localStorage) =====
 let cart = [];
 
 function loadCartFromStorage() {
@@ -149,6 +150,7 @@ function addToCart(product) {
   saveCartToStorage();
   updateCartBadge();
   renderCartPage();
+  renderHomeCartPreview();
 }
 
 function removeFromCart(productId) {
@@ -156,6 +158,7 @@ function removeFromCart(productId) {
   saveCartToStorage();
   updateCartBadge();
   renderCartPage();
+  renderHomeCartPreview();
 }
 
 function calcCartTotal() {
@@ -171,7 +174,7 @@ function calcPriceMeta(p) {
   return { price, mrp, hasMrp, discount };
 }
 
-// ===== PRODUCT CARDS =====
+// ===== PRODUCT CARD COMPONENT =====
 function createProductCard(p) {
   const card = document.createElement('div');
   card.className = 'product-card';
@@ -196,7 +199,7 @@ function createProductCard(p) {
           <i class="fab fa-${p.platform}"></i>
         </a>
         <button class="fav-btn">❤️ Save</button>
-        <button class="cart-btn">+ Cart</button>
+        <button class="cart-btn"><i class="fas fa-shopping-cart"></i> Cart</button>
       </div>
     </div>
   `;
@@ -212,7 +215,7 @@ function createProductCard(p) {
     e.stopPropagation();
     addToCart(p);
     cartBtn.textContent = 'Added';
-    setTimeout(() => (cartBtn.textContent = '+ Cart'), 800);
+    setTimeout(() => (cartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Cart'), 800);
   });
 
   card.addEventListener('click', (e) => {
@@ -294,6 +297,7 @@ function renderProductDetail() {
     });
   }
 
+  // related products
   const relatedWrap = document.createElement('div');
   relatedWrap.style.marginTop = '16px';
 
@@ -316,7 +320,7 @@ function renderProductDetail() {
   }
 }
 
-// ===== FAVOURITES (Firestore array) =====
+// ===== FAVOURITES (Firestore) =====
 async function handleFavouriteClick(product, buttonEl) {
   const user = auth.currentUser;
   if (!user) {
@@ -381,7 +385,7 @@ async function renderFavourites(userId) {
   }
 }
 
-// ===== HOME (render + filters) =====
+// ===== HOME =====
 const catButtons = document.querySelectorAll('.cat-btn');
 const homeProductsContainer = document.getElementById('homeProducts');
 const sortSelect = document.getElementById('sortSelect');
@@ -485,22 +489,127 @@ if (topSearchInput) {
   });
 }
 
-// ===== LOAD PRODUCTS FROM FIRESTORE =====
-async function loadProductsFromFirestore() {
-  try {
-    const snap = await db.collection('products')
-      .orderBy('createdAt', 'desc')
-      .get();
+// ===== DEALZ (high-discount products) =====
+const dealsProductsContainer = document.getElementById('dealsProducts');
 
-    products = snap.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+function renderDealsProducts() {
+  if (!dealsProductsContainer) return;
+  dealsProductsContainer.innerHTML = '';
 
-    renderHomeProducts('all');
-  } catch (err) {
-    console.error('Error loading products from Firestore:', err);
+  const HIGH_DISCOUNT = 40; // % threshold
+
+  const highDealz = products.filter(p => {
+    const { hasMrp, discount } = calcPriceMeta(p);
+    return hasMrp && discount >= HIGH_DISCOUNT;
+  });
+
+  if (!highDealz.length) {
+    dealsProductsContainer.innerHTML =
+      '<p style="text-align:center;color:#9ca3af;font-size:0.85rem;">No big dealz right now. New high-discount parts will appear here.</p>';
+    return;
   }
+
+  highDealz.forEach(p => {
+    const card = createProductCard(p);
+    dealsProductsContainer.appendChild(card);
+  });
+}
+
+// ===== MINI CART PREVIEW ON HOME =====
+function renderHomeCartPreview() {
+  const box = document.getElementById('homeCartPreview');
+  if (!box) return;
+
+  if (!cart.length) {
+    box.innerHTML = '';
+    box.style.display = 'none';
+    return;
+  }
+
+  const totalItems = getCartCount();
+  const totalAmount = calcCartTotal();
+  const previewItems = cart.slice(0, 2);
+
+  box.style.display = 'block';
+  box.innerHTML = `
+    <div class="home-cart-header">
+      <span class="home-cart-title">Cart</span>
+      <span class="home-cart-meta">${totalItems} item(s) • ₹${totalAmount}</span>
+    </div>
+    <div class="home-cart-items">
+      ${previewItems
+        .map(
+          it => `
+        <div class="home-cart-item">
+          <span class="home-cart-item-name">${it.name}</span>
+          <span class="home-cart-item-meta">₹${it.price} × ${it.qty}</span>
+        </div>
+      `
+        )
+        .join('')}
+    </div>
+    <button class="primary-btn home-cart-btn" onclick="showPage('cart', true)">
+      View cart
+    </button>
+  `;
+}
+
+// ===== CART PAGE RENDER =====
+function renderCartPage() {
+  const cartPage = document.getElementById('cart');
+  if (!cartPage) return;
+
+  let container = cartPage.querySelector('.cart-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'cart-container';
+    cartPage.appendChild(container);
+  }
+
+  if (!cart.length) {
+    container.innerHTML = `
+      <p class="cart-empty">Your cart is empty. Add parts from Home or Search.</p>
+    `;
+    return;
+  }
+
+  const total = calcCartTotal();
+  container.innerHTML = `
+    <div class="cart-summary">
+      <span class="cart-summary-title">Cart total</span>
+      <span class="cart-summary-amount">₹${total}</span>
+    </div>
+    <div class="cart-items"></div>
+    <p class="cart-note">
+      Cart is only a helper list. Checkout, payment and delivery happen on Amazon / Flipkart.
+    </p>
+  `;
+
+  const listEl = container.querySelector('.cart-items');
+
+  cart.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'cart-item';
+    row.innerHTML = `
+      <div class="cart-item-main">
+        <span class="cart-item-name">${item.name}</span>
+        <span class="cart-item-meta">${item.category} • ₹${item.price} × ${item.qty}</span>
+      </div>
+      <div class="cart-item-actions">
+        <button class="cart-remove" data-id="${item.id}">Remove</button>
+        ${item.url ? `<a href="${item.url}" target="_blank" rel="noopener" class="cart-buy-link">Buy</a>` : ''}
+      </div>
+    `;
+    listEl.appendChild(row);
+  });
+
+  listEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.cart-remove');
+    if (!btn) return;
+    const id = btn.getAttribute('data-id');
+    if (!id) return;
+    removeFromCart(id);
+  });
 }
 
 // ===== AUTH =====
@@ -666,66 +775,27 @@ window.addEventListener('load', () => {
   });
 });
 
-// ===== CART PAGE RENDER =====
-function renderCartPage() {
-  const cartPage = document.getElementById('cart');
-  if (!cartPage) return;
+// ===== LOAD PRODUCTS FROM FIRESTORE & INIT =====
+async function loadProductsFromFirestore() {
+  try {
+    const snap = await db.collection('products')
+      .orderBy('createdAt', 'desc')
+      .get();
 
-  let container = cartPage.querySelector('.cart-container');
-  if (!container) {
-    container = document.createElement('div');
-    container.className = 'cart-container';
-    cartPage.appendChild(container);
+    products = snap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    renderHomeProducts('all');
+    renderDealsProducts();
+  } catch (err) {
+    console.error('Error loading products from Firestore:', err);
   }
-
-  if (!cart.length) {
-    container.innerHTML = `
-      <p class="cart-empty">Your cart is empty. Add parts from Home or Search.</p>
-    `;
-    return;
-  }
-
-  const total = calcCartTotal();
-  container.innerHTML = `
-    <div class="cart-summary">
-      <span class="cart-summary-title">Cart total</span>
-      <span class="cart-summary-amount">₹${total}</span>
-    </div>
-    <div class="cart-items"></div>
-    <p class="cart-note">
-      Cart is only a helper list. Checkout, payment and delivery happen on Amazon / Flipkart.
-    </p>
-  `;
-
-  const listEl = container.querySelector('.cart-items');
-
-  cart.forEach(item => {
-    const row = document.createElement('div');
-    row.className = 'cart-item';
-    row.innerHTML = `
-      <div class="cart-item-main">
-        <span class="cart-item-name">${item.name}</span>
-        <span class="cart-item-meta">${item.category} • ₹${item.price} × ${item.qty}</span>
-      </div>
-      <div class="cart-item-actions">
-        <button class="cart-remove" data-id="${item.id}">Remove</button>
-        ${item.url ? `<a href="${item.url}" target="_blank" rel="noopener" class="cart-buy-link">Buy</a>` : ''}
-      </div>
-    `;
-    listEl.appendChild(row);
-  });
-
-  listEl.addEventListener('click', (e) => {
-    const btn = e.target.closest('.cart-remove');
-    if (!btn) return;
-    const id = btn.getAttribute('data-id');
-    if (!id) return;
-    removeFromCart(id);
-  });
 }
 
-// ===== INIT =====
 loadCartFromStorage();
 updateCartBadge();
 loadProductsFromFirestore();
 renderCartPage();
+renderHomeCartPreview();
