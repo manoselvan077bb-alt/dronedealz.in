@@ -923,4 +923,4 @@ loadCartFromStorage();
 updateCartBadge();
 loadProductsFromFirestore();
 renderCartPage();
-renderHomeCartPreview();
+// renderHomeCartPreview(); // disabled mini cart on home
