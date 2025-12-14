@@ -592,6 +592,38 @@ function renderGuideMotorsByPrice() {
   });
 }
 
+// A–F guides using tags guide-A ... guide-F
+function renderGuideGeneric(tagName, tbodyId) {
+  const body = document.getElementById(tbodyId);
+  if (!body) return;
+  body.innerHTML = '';
+
+  const items = products.filter(
+    p => Array.isArray(p.tags) && p.tags.includes(tagName)
+  );
+
+  items.forEach(p => {
+    const { price } = calcPriceMeta(p);
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${p.category}</td>
+      <td>${p.name}</td>
+      <td>₹${price}</td>
+      <td><a href="${p.url || '#'}" target="_blank" rel="noopener">
+        ${p.platform}
+      </a></td>
+    `;
+    body.appendChild(row);
+  });
+}
+
+function renderGuideA() { renderGuideGeneric('guide-A', 'guideA'); }
+function renderGuideB() { renderGuideGeneric('guide-B', 'guideB'); }
+function renderGuideC() { renderGuideGeneric('guide-C', 'guideC'); }
+function renderGuideD() { renderGuideGeneric('guide-D', 'guideD'); }
+function renderGuideE() { renderGuideGeneric('guide-E', 'guideE'); }
+function renderGuideF() { renderGuideGeneric('guide-F', 'guideF'); }
+
 // ===== MINI CART PREVIEW ON HOME =====
 function renderHomeCartPreview() {
   const box = document.getElementById('homeCartPreview');
@@ -876,6 +908,12 @@ async function loadProductsFromFirestore() {
     renderGuideMotors();
     renderGuideBuild5000();
     renderGuideMotorsByPrice();
+    renderGuideA();
+    renderGuideB();
+    renderGuideC();
+    renderGuideD();
+    renderGuideE();
+    renderGuideF();
   } catch (err) {
     console.error('Error loading products from Firestore:', err);
   }

@@ -91,7 +91,7 @@
           <input type="number" id="adminProdMrp" placeholder="2499">
         </label>
         <label>
-          Category (motors / esc / frames / batteries / drones)
+          Category (motors / esc / frames / batteries / drones / propellers)
           <input type="text" id="adminProdCategory" required>
         </label>
         <label>
@@ -108,7 +108,7 @@
         </label>
         <label>
           Guide tags (comma separated, optional)
-          <input type="text" id="adminProdTags" placeholder="5inch-motor, build5000">
+          <input type="text" id="adminProdTags" placeholder="5inch-motor, build5000, guide-A">
         </label>
         <button type="submit" class="primary-btn">Save product</button>
       </form>
@@ -126,7 +126,7 @@
         <button class="cat-btn" data-category="esc">ESC</button>
         <button class="cat-btn" data-category="frames">Frames</button>
         <button class="cat-btn" data-category="batteries">Batteries</button>
-        <button class="cat-btn" data-category="propellers">Propellers</button> <!-- NEW -->
+        <button class="cat-btn" data-category="propellers">Propellers</button>
       </div>
 
       <p id="resultCount" class="result-count">
@@ -143,6 +143,8 @@
           <option value="price-desc">Price: High to low</option>
         </select>
       </div>
+
+      <div id="homeCartPreview" class="home-cart-preview"></div>
 
       <div class="products-grid" id="homeProducts">
         <!-- product cards injected by script.js -->
@@ -258,6 +260,97 @@
             </tr>
           </thead>
           <tbody id="guideCombo5inchStarter"></tbody>
+        </table>
+      </div>
+
+      <!-- New A–F guides -->
+      <div class="info-card">
+        <h3>A: Motor + ESC + batteries</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Part</th>
+              <th>Model</th>
+              <th>Approx. price</th>
+              <th>Buy</th>
+            </tr>
+          </thead>
+          <tbody id="guideA"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>B: Frames + motor</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Part</th>
+              <th>Model</th>
+              <th>Approx. price</th>
+              <th>Buy</th>
+            </tr>
+          </thead>
+          <tbody id="guideB"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>C: ESC + frames + motor</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Part</th>
+              <th>Model</th>
+              <th>Approx. price</th>
+              <th>Buy</th>
+            </tr>
+          </thead>
+          <tbody id="guideC"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>D: Motor + propellers</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Part</th>
+              <th>Model</th>
+              <th>Approx. price</th>
+              <th>Buy</th>
+            </tr>
+          </thead>
+          <tbody id="guideD"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>E: Batteries + frames + propellers</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Part</th>
+              <th>Model</th>
+              <th>Approx. price</th>
+              <th>Buy</th>
+            </tr>
+          </thead>
+          <tbody id="guideE"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>F: Batteries + propellers</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Part</th>
+              <th>Model</th>
+              <th>Approx. price</th>
+              <th>Buy</th>
+            </tr>
+          </thead>
+          <tbody id="guideF"></tbody>
         </table>
       </div>
 
@@ -438,6 +531,6 @@
   </script>
 
   <!-- Main JS -->
-  <script src="script.js?v=4"></script>
+  <script src="script.js?v=5"></script>
 </body>
 </html>
