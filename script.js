@@ -237,10 +237,9 @@ function createProductCard(p) {
   return card;
 }
 
-// ===== PRODUCT DETAIL + RELATED =====
+// ===== PRODUCT DETAIL (NEW AMAZON-STYLE IMPLEMENTATION) =====
 function renderProductDetail() {
-  const container = document.getElementById('productDetailContent');
-  if (!container || !currentProduct) return;
+  if (!currentProduct) return;
 
   const p = currentProduct;
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
@@ -248,104 +247,60 @@ function renderProductDetail() {
   const images = Array.isArray(p.images) && p.images.length
     ? p.images
     : (p.image ? [p.image] : []);
+
+  const mainImgEl = document.getElementById('detailImage');
+  const titleEl = document.getElementById('detailTitle');
+  const priceEl = document.getElementById('detailPrice');
+  const metaEl = document.getElementById('detailMeta');
+  const btnBox = document.getElementById('detailBuyButtons');
+
+  if (!mainImgEl || !titleEl || !priceEl || !metaEl || !btnBox) {
+    return;
+  }
+
   let currentImageIndex = 0;
 
-  container.innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div class="product-image big-card detail-box" id="detailImageBox">
-        ${images.length
-          ? `<img src="${images[0]}" alt="${p.name}" class="product-img-real">`
-          : `<i class="fas fa-cogs"></i>`}
-        ${images.length > 1 ? `
-          <button class="gallery-nav prev">&lt;</button>
-          <button class="gallery-nav next">&gt;</button>
-        ` : ''}
-      </div>
+  // main image
+  if (images.length) {
+    mainImgEl.src = images[0];
+  } else {
+    mainImgEl.removeAttribute('src');
+  }
+  mainImgEl.alt = p.name || '';
 
-      ${images.length ? `
-        <div class="thumb-row">
-          ${images.map((url, idx) => `
-            <button class="thumb ${idx === 0 ? 'active' : ''}" data-index="${idx}">
-              <img src="${url}" alt="">
-            </button>
-          `).join('')}
-        </div>
-      ` : ''}
+  // text
+  titleEl.textContent = p.name || '';
+  priceEl.innerHTML = `
+    ₹${price}
+    ${hasMrp ? `<span class="old-price">₹${mrp}</span>` : ''}
+    ${discount ? `<span class="discount">${discount}% off</span>` : ''}
+  `;
+  metaEl.textContent = `${p.category || '-'} • ${p.platform || '-'}`;
 
-      <div>
-        <h2 style="font-size:1.1rem;margin-bottom:4px;">${p.name}</h2>
-        <p style="font-size:0.85rem;color:#6b7280;">Category: ${p.category || '-'}</p>
-        <p style="font-size:0.85rem;color:#6b7280;">Platform: ${p.platform || '-'}</p>
-      </div>
-
-      <div style="font-size:1rem;font-weight:600;">
-        ₹${price}
-        ${hasMrp ? `<span class="old-price">₹${mrp}</span>` : ''}
-        ${discount ? `<span class="discount">${discount}% off</span>` : ''}
-      </div>
-
-      <a href="${p.url || '#'}" target="_blank" rel="noopener"
-         class="primary-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-        Go to ${p.platform ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1) : 'seller'}
-        <i class="fas fa-external-link-alt"></i>
-      </a>
-
-      <p style="font-size:0.75rem;color:#9ca3af;">
-        Price, stock and delivery details are shown on the seller page.
-      </p>
-      <p style="font-size:0.75rem;color:#6b7280;">
-        Some links on DroneDealz.in are affiliate links, which means DroneDealz may earn a small commission if you buy through them at no extra cost to you.
-      </p>
-
-      <button class="primary-btn" style="background:#22c55e;color:#ffffff;" id="addDetailToCart">
-        + Add to cart
-      </button>
-
-      <button class="primary-btn" style="background:#e5e7eb;color:#111827;" id="backToHomeBtn">
-        ← Back to Home
-      </button>
-    </div>
+  // buy buttons
+  btnBox.innerHTML = `
+    <a href="${p.url || '#'}" target="_blank" rel="noopener"
+       class="buy-btn ${p.platform}">
+      Buy on ${p.platform ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1) : 'site'}
+    </a>
+    <button class="cart-btn" id="detailAddToCart">
+      <i class="fas fa-shopping-cart"></i> Add to cart
+    </button>
   `;
 
-  // gallery logic
-  if (images.length) {
-    const box = container.querySelector('#detailImageBox');
-    const mainImg = box.querySelector('img');
-
-    function showImage(idx) {
-      currentImageIndex = idx;
-      mainImg.src = images[idx];
-      const thumbs = container.querySelectorAll('.thumb');
-      thumbs.forEach((btn, i) => btn.classList.toggle('active', i === idx));
-    }
-
-    const prevBtn = box.querySelector('.gallery-nav.prev');
-    const nextBtn = box.querySelector('.gallery-nav.next');
-
-    if (prevBtn && nextBtn) {
-      prevBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const idx = (currentImageIndex - 1 + images.length) % images.length;
-        showImage(idx);
-      });
-      nextBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const idx = (currentImageIndex + 1) % images.length;
-        showImage(idx);
-      });
-    }
-
-    const thumbButtons = container.querySelectorAll('.thumb');
-    thumbButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const idx = Number(btn.getAttribute('data-index') || 0);
-        showImage(idx);
-      });
+  const addBtn = document.getElementById('detailAddToCart');
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      addToCart(p);
+      addBtn.textContent = 'Added';
+      setTimeout(() => (addBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to cart'), 800);
     });
+  }
 
-    // full-screen view (new tab) on click
-    box.addEventListener('click', () => {
+  // simple click-to-open full image (no extra big image in DOM)
+  const box = document.getElementById('detailImageBox');
+  if (box && images.length) {
+    box.onclick = () => {
       const url = images[currentImageIndex];
       if (!url) return;
       const win = window.open('', '_blank');
@@ -355,44 +310,7 @@ function renderProductDetail() {
         );
         win.document.title = p.name || 'Image';
       }
-    });
-  }
-
-  const backBtn = container.querySelector('#backToHomeBtn');
-  if (backBtn) {
-    backBtn.addEventListener('click', () => {
-      showPage('home', true);
-    });
-  }
-
-  const addDetailBtn = container.querySelector('#addDetailToCart');
-  if (addDetailBtn) {
-    addDetailBtn.addEventListener('click', () => {
-      addToCart(p);
-      addDetailBtn.textContent = 'Added';
-      setTimeout(() => (addDetailBtn.textContent = '+ Add to cart'), 800);
-    });
-  }
-
-  const relatedWrap = document.createElement('div');
-  relatedWrap.style.marginTop = '16px';
-
-  const sameCategory = products
-    .filter(x => x.id !== p.id && x.category === p.category)
-    .slice(0, 8);
-
-  if (sameCategory.length) {
-    relatedWrap.innerHTML = `
-      <h3 style="font-size:0.95rem;margin:8px 0;">More in ${p.category}</h3>
-      <div class="products-grid" id="detailRelatedGrid"></div>
-    `;
-    container.appendChild(relatedWrap);
-
-    const grid = relatedWrap.querySelector('#detailRelatedGrid');
-    sameCategory.forEach(prod => {
-      const card = createProductCard(prod);
-      grid.appendChild(card);
-    });
+    };
   }
 }
 
@@ -666,7 +584,7 @@ function renderGuideMotorsByPrice() {
   });
 }
 
-// A–F guides using tags guide-A ... guide-F
+// A–F guides using tags guide-a ... guide-f (lowercase to match saved tags)
 function renderGuideGeneric(tagName, tbodyId) {
   const body = document.getElementById(tbodyId);
   if (!body) return;
@@ -691,12 +609,12 @@ function renderGuideGeneric(tagName, tbodyId) {
   });
 }
 
-function renderGuideA() { renderGuideGeneric('guide-A', 'guideA'); }
-function renderGuideB() { renderGuideGeneric('guide-B', 'guideB'); }
-function renderGuideC() { renderGuideGeneric('guide-C', 'guideC'); }
-function renderGuideD() { renderGuideGeneric('guide-D', 'guideD'); }
-function renderGuideE() { renderGuideGeneric('guide-E', 'guideE'); }
-function renderGuideF() { renderGuideGeneric('guide-F', 'guideF'); }
+function renderGuideA() { renderGuideGeneric('guide-a', 'guideA'); }
+function renderGuideB() { renderGuideGeneric('guide-b', 'guideB'); }
+function renderGuideC() { renderGuideGeneric('guide-c', 'guideC'); }
+function renderGuideD() { renderGuideGeneric('guide-d', 'guideD'); }
+function renderGuideE() { renderGuideGeneric('guide-e', 'guideE'); }
+function renderGuideF() { renderGuideGeneric('guide-f', 'guideF'); }
 
 // ===== MINI CART PREVIEW ON HOME =====
 function renderHomeCartPreview() {

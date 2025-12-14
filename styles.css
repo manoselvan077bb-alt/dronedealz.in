@@ -1009,30 +1009,157 @@ info-highlight {
   font-size: 0.8rem;
   color: #6b7280;
 }
-/* Small square image box for all cards */
-.product-image.big-card {
+/* Detail page: small centered image like Amazon */
+#productDetailContent {
+  max-width: 420px;
+  margin: 0 auto 16px;
+  padding: 0 16px;
+}
+
+#detailImageBox {
   width: 260px;
   height: 260px;
   margin: 12px auto;
+  border: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
   background: #ffffff;
 }
 
-/* Use the same box on product detail page */
-#productDetail #detailImageBox {
-  width: 260px;
-  height: 260px;
-  margin: 12px auto;
-}
-
-/* Image fits inside the box */
-.product-img-real {
+/* Image must NOT override box size */
+#detailImageBox img.product-img-real {
   max-width: 100%;
   max-height: 100%;
-  width: auto;
-  height: auto;
+  width: auto !important;
+  height: auto !important;
   object-fit: contain;
+}
+/* ---------- PRODUCT DETAIL (AMAZON STYLE) ---------- */
+
+/* Full-width background for the section */
+#productDetail.page.active {
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  background: #f3f4f6;
+}
+
+/* Two-column layout: image left, details right */
+.product-detail-layout {
+  max-width: 1100px;
+  margin: 12px auto 16px;
+  padding: 0 16px;
+  display: flex;
+  gap: 24px;
+}
+
+/* Left column: image */
+.product-detail-left {
+  flex: 0 0 38%;
+}
+
+/* Right column: text/details */
+.product-detail-right {
+  flex: 1;
+}
+
+/* Single small square image box like Amazon */
+#detailImageBox {
+  width: 260px;
+  height: 260px;
+  margin: 0 auto 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Actual image – never larger than box */
+#detailImageBox img.product-img-real {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+}
+
+/* Title, price etc. */
+.product-detail-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.product-detail-price {
+  color: #b12704;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.product-detail-meta {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+/* Mobile: stack image above details */
+@media (max-width: 768px) {
+  .product-detail-layout {
+    flex-direction: column;
+  }
+
+  .product-detail-left,
+  .product-detail-right {
+    flex: 1 1 auto;
+  }
+
+  #detailImageBox {
+    margin: 0 auto 12px;
+  }
+}
+/* Product detail section full-width background */
+#productDetail.page.active {
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  background: #f3f4f6;
+}
+
+/* Center the big white card and let it use most of the screen */
+#productDetail .info-card {
+  max-width: none;      /* remove 1100px limit */
+  width: 100%;
+  margin: 0;            /* no side margins */
+  border-radius: 0;     /* optional: flat edges like full-bleed */
+}
+
+
+/* Two-column layout inside: image left, text right */
+.product-detail-layout {
+  display: flex;
+  gap: 24px;
+}
+
+/* Left column ~40%, right column fills rest */
+.product-detail-left {
+  flex: 0 0 40%;
+}
+
+.product-detail-right {
+  flex: 1;
+}
+
+/* On small screens, stack full width */
+@media (max-width: 768px) {
+  .product-detail-layout {
+    flex-direction: column;
+  }
+  .product-detail-left,
+  .product-detail-right {
+    flex: 1 1 auto;
+  }
 }

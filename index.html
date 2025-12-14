@@ -108,7 +108,7 @@
         </label>
         <label>
           Guide tags (comma separated, optional)
-          <input type="text" id="adminProdTags" placeholder="5inch-motor, build5000, guide-A">
+          <input type="text" id="adminProdTags" placeholder="5inch-motor, build5000, guide-a">
         </label>
         <button type="submit" class="primary-btn">Save product</button>
       </form>
@@ -172,186 +172,7 @@
         Ready-made parts combos for motors, ESCs, frames, batteries and propellers.
       </p>
 
-      <div class="info-card">
-        <h3>Best ₹1000–1500 motors for 5-inch quad</h3>
-        <p style="font-size:0.85rem;">
-          Shortlisted motors for 5-inch freestyle/racing drones in India.
-        </p>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Motor</th>
-              <th>KV</th>
-              <th>Price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideMotorsBody"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Motors under ₹1000</h3>
-        <p style="font-size:0.85rem;">
-          Budget motors for tiny builds and experiments.
-        </p>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Motor</th>
-              <th>KV</th>
-              <th>Price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideMotorsUnder1000"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Motors under ₹2000</h3>
-        <p style="font-size:0.85rem;">
-          Better 5-inch motors still in student budget.
-        </p>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Motor</th>
-              <th>KV</th>
-              <th>Price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideMotorsUnder2000"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Starter drone build under ₹5000</h3>
-        <p style="font-size:0.85rem;">
-          One simple parts list for a basic DIY quad for college projects.
-        </p>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Part</th>
-              <th>Model</th>
-              <th>Approx. price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideBuild5000Body"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>5-inch starter combo</h3>
-        <p style="font-size:0.85rem;">
-          One recommended parts combo for a basic 5-inch quad.
-        </p>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Part</th>
-              <th>Model</th>
-              <th>Approx. price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideCombo5inchStarter"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Motor + ESC + batteries</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Part</th>
-              <th>Model</th>
-              <th>Approx. price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideA"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Frames + motor</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Part</th>
-              <th>Model</th>
-              <th>Approx. price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideB"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>ESC + frames + motor</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Part</th>
-              <th>Model</th>
-              <th>Approx. price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideC"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Motor + propellers</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Part</th>
-              <th>Model</th>
-              <th>Approx. price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideD"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Batteries + frames + propellers</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Part</th>
-              <th>Model</th>
-              <th>Approx. price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideE"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Batteries + propellers</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Part</th>
-              <th>Model</th>
-              <th>Approx. price</th>
-              <th>Buy</th>
-            </tr>
-          </thead>
-          <tbody id="guideF"></tbody>
-        </table>
-      </div>
-
+      <!-- ESC + motor combos that match (static) -->
       <div class="info-card">
         <h3>ESC + motor combos that match</h3>
         <p style="font-size:0.85rem;">
@@ -382,13 +203,124 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Firestore-driven build combos A–F -->
+      <div class="info-card">
+        <h3>Combo A – Beginner 5" build</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Part</th>
+              <th>Price</th>
+              <th>Platform</th>
+            </tr>
+          </thead>
+          <tbody id="guideA"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>Combo B – Long range build</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Part</th>
+              <th>Price</th>
+              <th>Platform</th>
+            </tr>
+          </thead>
+          <tbody id="guideB"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>Combo C – Cinewhoop build</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Part</th>
+              <th>Price</th>
+              <th>Platform</th>
+            </tr>
+          </thead>
+          <tbody id="guideC"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>Combo D – Freestyle build</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Part</th>
+              <th>Price</th>
+              <th>Platform</th>
+            </tr>
+          </thead>
+          <tbody id="guideD"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>Combo E – Tiny whoop build</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Part</th>
+              <th>Price</th>
+              <th>Platform</th>
+            </tr>
+          </thead>
+          <tbody id="guideE"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>Combo F – Experimental build</h3>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Part</th>
+              <th>Price</th>
+              <th>Platform</th>
+            </tr>
+          </thead>
+          <tbody id="guideF"></tbody>
+        </table>
+      </div>
     </section>
 
     <!-- PRODUCT DETAIL -->
     <section class="page" id="productDetail" data-page="productDetail">
       <h2>Product details</h2>
-      <div class="info-card" id="productDetailContent">
-        <p>Loading product...</p>
+
+      <!-- Amazon-style two column layout -->
+      <div class="info-card">
+        <div class="product-detail-layout" id="productDetailContent">
+          <!-- LEFT: main image -->
+          <div class="product-detail-left">
+            <div class="product-image big-card" id="detailImageBox">
+              <img src="" alt="" class="product-img-real" id="detailImage">
+            </div>
+          </div>
+
+          <!-- RIGHT: title, price, description, buttons -->
+          <div class="product-detail-right">
+            <h1 class="product-detail-title" id="detailTitle">
+              Loading product...
+            </h1>
+            <p class="product-detail-price" id="detailPrice"></p>
+            <p class="product-detail-meta" id="detailMeta"></p>
+
+            <div class="buy-buttons" id="detailBuyButtons"></div>
+          </div>
+        </div>
       </div>
     </section>
 
