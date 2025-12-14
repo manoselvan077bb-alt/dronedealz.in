@@ -5,6 +5,9 @@ const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 const bottomItems = document.querySelectorAll('.bottom-item');
 
+// ADMIN EMAIL (only this user can use Admin)
+const ADMIN_EMAIL = 'testweb123@gmail.com';
+
 function showPage(pageId, push = true) {
   // top nav
   navLinks.forEach(l => {
@@ -380,6 +383,7 @@ const accountPage = document.getElementById('account');
 auth.onAuthStateChanged(async (user) => {
   if (!accountPage) return;
   const infoCard = accountPage.querySelector('.info-card');
+  const adminSection = document.getElementById('admin');
 
   if (user) {
     let displayName = user.email;
@@ -399,12 +403,19 @@ auth.onAuthStateChanged(async (user) => {
       `;
     }
 
+    if (adminSection) {
+      adminSection.style.display = user.email === ADMIN_EMAIL ? 'block' : 'none';
+    }
+
     await renderFavourites(user.uid);
   } else {
     if (infoCard) {
       infoCard.innerHTML = `
         <p>Sign in to manage your profile and saved builds.</p>
       `;
+    }
+    if (adminSection) {
+      adminSection.style.display = 'none';
     }
   }
 });
@@ -441,6 +452,12 @@ window.addEventListener('load', () => {
 
     if (!name || !price || !category || !platform || !url) {
       alert('Please fill all fields.');
+      return;
+    }
+
+    const currentUser = auth.currentUser;
+    if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+      alert('Admin access only.');
       return;
     }
 
