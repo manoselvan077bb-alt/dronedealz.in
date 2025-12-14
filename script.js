@@ -179,12 +179,16 @@ function createProductCard(p) {
   card.setAttribute('data-category', p.category || '');
 
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
-  const hasImage = p.image && typeof p.image === 'string';
+
+  const mainImage = Array.isArray(p.images) && p.images.length
+    ? p.images[0]
+    : (p.image || null);
+  const hasImage = !!mainImage;
 
   card.innerHTML = `
     <div class="product-image big-card">
       ${hasImage
-        ? `<img src="${p.image}" alt="${p.name}" class="product-img-real">`
+        ? `<img src="${mainImage}" alt="${p.name}" class="product-img-real">`
         : `<i class="fas fa-cogs"></i>`}
     </div>
     <div class="product-info">
@@ -241,13 +245,32 @@ function renderProductDetail() {
   const p = currentProduct;
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
 
+  const images = Array.isArray(p.images) && p.images.length
+    ? p.images
+    : (p.image ? [p.image] : []);
+  let currentImageIndex = 0;
+
   container.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:12px;">
-      <div class="product-image big-card" style="height:120px;">
-        ${p.image
-          ? `<img src="${p.image}" alt="${p.name}" class="product-img-real">`
+      <div class="product-image big-card" style="height:220px; position:relative;" id="detailImageBox">
+        ${images.length
+          ? `<img src="${images[0]}" alt="${p.name}" class="product-img-real">`
           : `<i class="fas fa-cogs"></i>`}
+        ${images.length > 1 ? `
+          <button class="gallery-nav prev">&lt;</button>
+          <button class="gallery-nav next">&gt;</button>
+        ` : ''}
       </div>
+
+      ${images.length ? `
+        <div class="thumb-row">
+          ${images.map((url, idx) => `
+            <button class="thumb ${idx === 0 ? 'active' : ''}" data-index="${idx}">
+              <img src="${url}" alt="">
+            </button>
+          `).join('')}
+        </div>
+      ` : ''}
 
       <div>
         <h2 style="font-size:1.1rem;margin-bottom:4px;">${p.name}</h2>
@@ -283,6 +306,57 @@ function renderProductDetail() {
       </button>
     </div>
   `;
+
+  // gallery logic
+  if (images.length) {
+    const box = container.querySelector('#detailImageBox');
+    const mainImg = box.querySelector('img');
+
+    function showImage(idx) {
+      currentImageIndex = idx;
+      mainImg.src = images[idx];
+      const thumbs = container.querySelectorAll('.thumb');
+      thumbs.forEach((btn, i) => btn.classList.toggle('active', i === idx));
+    }
+
+    const prevBtn = box.querySelector('.gallery-nav.prev');
+    const nextBtn = box.querySelector('.gallery-nav.next');
+
+    if (prevBtn && nextBtn) {
+      prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = (currentImageIndex - 1 + images.length) % images.length;
+        showImage(idx);
+      });
+      nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = (currentImageIndex + 1) % images.length;
+        showImage(idx);
+      });
+    }
+
+    const thumbButtons = container.querySelectorAll('.thumb');
+    thumbButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = Number(btn.getAttribute('data-index') || 0);
+        showImage(idx);
+      });
+    });
+
+    // full-screen view (new tab) on click
+    box.addEventListener('click', () => {
+      const url = images[currentImageIndex];
+      if (!url) return;
+      const win = window.open('', '_blank');
+      if (win) {
+        win.document.write(
+          `<img src="${url}" style="width:100%;height:100%;object-fit:contain;margin:0;">`
+        );
+        win.document.title = p.name || 'Image';
+      }
+    });
+  }
 
   const backBtn = container.querySelector('#backToHomeBtn');
   if (backBtn) {
@@ -898,10 +972,22 @@ async function loadProductsFromFirestore() {
       .orderBy('createdAt', 'desc')
       .get();
 
-    products = snap.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    products = snap.docs.map(doc => {
+      const data = doc.data();
+      let images = [];
+
+      if (Array.isArray(data.images)) {
+        images = data.images;
+      } else if (typeof data.image === 'string' && data.image.trim()) {
+        images = data.image.split(',').map(s => s.trim()).filter(Boolean);
+      }
+
+      return {
+        id: doc.id,
+        ...data,
+        images
+      };
+    });
 
     renderHomeProducts('all');
     renderDealsProducts();
