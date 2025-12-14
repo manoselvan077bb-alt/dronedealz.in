@@ -106,6 +106,10 @@
           Image URL (from Amazon/Flipkart widget)
           <input type="url" id="adminProdImage" placeholder="https://...">
         </label>
+        <label>
+          Guide tags (comma separated, optional)
+          <input type="text" id="adminProdTags" placeholder="5inch-motor, build5000">
+        </label>
         <button type="submit" class="primary-btn">Save product</button>
       </form>
       <div class="info-card" id="adminStatus" style="margin-top:10px;">
@@ -184,20 +188,7 @@
               <th>Buy</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>Example 2207 Motor A</td>
-              <td>1700 KV</td>
-              <td>₹1299</td>
-              <td><a href="YOUR_AFFILIATE_LINK_1" target="_blank" rel="noopener">Amazon</a></td>
-            </tr>
-            <tr>
-              <td>Example 2306 Motor B</td>
-              <td>1800 KV</td>
-              <td>₹1399</td>
-              <td><a href="YOUR_AFFILIATE_LINK_2" target="_blank" rel="noopener">Flipkart</a></td>
-            </tr>
-          </tbody>
+          <tbody id="guideMotorsBody"></tbody>
         </table>
       </div>
 
@@ -215,20 +206,7 @@
               <th>Buy</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>Frame</td>
-              <td>Example 210mm frame</td>
-              <td>₹900</td>
-              <td><a href="AFF_LINK_FRAME" target="_blank" rel="noopener">Amazon</a></td>
-            </tr>
-            <tr>
-              <td>Motors (x4)</td>
-              <td>Example 2205 2300KV</td>
-              <td>₹1600</td>
-              <td><a href="AFF_LINK_MOTOR" target="_blank" rel="noopener">Flipkart</a></td>
-            </tr>
-          </tbody>
+          <tbody id="guideBuild5000Body"></tbody>
         </table>
       </div>
 
@@ -251,13 +229,13 @@
               <td>2205 2300KV</td>
               <td>≈20A</td>
               <td>30A ESC</td>
-              <td><a href="AFF_LINK_ESC30" target="_blank" rel="noopener">Amazon</a></td>
+              <td><a href="#" target="_blank" rel="noopener">Amazon</a></td>
             </tr>
             <tr>
               <td>2207 1700KV</td>
               <td>≈30A</td>
               <td>35–40A ESC</td>
-              <td><a href="AFF_LINK_ESC40" target="_blank" rel="noopener">Flipkart</a></td>
+              <td><a href="#" target="_blank" rel="noopener">Flipkart</a></td>
             </tr>
           </tbody>
         </table>
@@ -365,28 +343,27 @@
 
   <!-- Bottom navigation bar -->
   <nav class="bottom-nav">
-  <button class="bottom-item active" data-page="home">
-    <i class="fas fa-home"></i>
-    <span>Home</span>
-  </button>
-  <button class="bottom-item" data-page="deals">
-    <i class="fas fa-tags"></i>
-    <span>Dealz</span>
-  </button>
-  <button class="bottom-item" data-page="guides">
-    <i class="fas fa-list"></i>
-    <span>Guides</span>
-  </button>
-  <button class="bottom-item" data-page="cart">
-    <i class="fas fa-shopping-cart"></i>
-    <span>Cart</span>
-  </button>
-  <button class="bottom-item" data-page="account">
-    <i class="fas fa-user-circle"></i>
-    <span>Account</span>
-  </button>
-</nav>
-
+    <button class="bottom-item active" data-page="home">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </button>
+    <button class="bottom-item" data-page="deals">
+      <i class="fas fa-tags"></i>
+      <span>Dealz</span>
+    </button>
+    <button class="bottom-item" data-page="guides">
+      <i class="fas fa-list"></i>
+      <span>Guides</span>
+    </button>
+    <button class="bottom-item" data-page="cart">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Cart</span>
+    </button>
+    <button class="bottom-item" data-page="account">
+      <i class="fas fa-user-circle"></i>
+      <span>Account</span>
+    </button>
+  </nav>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app-compat.js"></script>
