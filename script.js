@@ -519,6 +519,8 @@ function renderDealsProducts() {
 }
 
 // ===== GUIDES (AUTO FROM PRODUCTS) =====
+
+// Tag-based 5-inch motors
 function renderGuideMotors() {
   const body = document.getElementById('guideMotorsBody');
   if (!body) return;
@@ -540,6 +542,7 @@ function renderGuideMotors() {
   });
 }
 
+// Tag-based starter build under 5000
 function renderGuideBuild5000() {
   const body = document.getElementById('guideBuild5000Body');
   if (!body) return;
@@ -558,6 +561,39 @@ function renderGuideBuild5000() {
       </a></td>
     `;
     body.appendChild(row);
+  });
+}
+
+// Price-tier motors (under 1000 / 2000)
+function renderGuideMotorsByPrice() {
+  const under1000 = document.getElementById('guideMotorsUnder1000');
+  const under2000 = document.getElementById('guideMotorsUnder2000');
+  if (!under1000 || !under2000) return;
+
+  under1000.innerHTML = '';
+  under2000.innerHTML = '';
+
+  const motors = products.filter(p => p.category === 'motors');
+
+  motors.forEach(p => {
+    const { price } = calcPriceMeta(p);
+    const rowHtml = `
+      <td>${p.name}</td>
+      <td>${p.kv || '-'}</td>
+      <td>₹${price}</td>
+      <td><a href="${p.url || '#'}" target="_blank" rel="noopener">
+        ${p.platform}
+      </a></td>
+    `;
+    if (price <= 1000) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = rowHtml;
+      under1000.appendChild(tr);
+    } else if (price <= 2000) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = rowHtml;
+      under2000.appendChild(tr);
+    }
   });
 }
 
@@ -844,6 +880,7 @@ async function loadProductsFromFirestore() {
     renderDealsProducts();
     renderGuideMotors();
     renderGuideBuild5000();
+    renderGuideMotorsByPrice();
   } catch (err) {
     console.error('Error loading products from Firestore:', err);
   }

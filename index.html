@@ -174,6 +174,7 @@
     <section class="page" id="guides" data-page="guides">
       <h2>Build guides</h2>
 
+      <!-- Existing tag-based guide -->
       <div class="info-card">
         <h3>Best ₹1000–1500 motors for 5-inch quad</h3>
         <p style="font-size:0.85rem;">
@@ -192,6 +193,44 @@
         </table>
       </div>
 
+      <!-- New price-tier guides (will be filled by JS) -->
+      <div class="info-card">
+        <h3>Motors under ₹1000</h3>
+        <p style="font-size:0.85rem;">
+          Budget motors for tiny builds and experiments.
+        </p>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Motor</th>
+              <th>KV</th>
+              <th>Price</th>
+              <th>Buy</th>
+            </tr>
+          </thead>
+          <tbody id="guideMotorsUnder1000"></tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <h3>Motors under ₹2000</h3>
+        <p style="font-size:0.85rem;">
+          Better 5-inch motors still in student budget.
+        </p>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Motor</th>
+              <th>KV</th>
+              <th>Price</th>
+              <th>Buy</th>
+            </tr>
+          </thead>
+          <tbody id="guideMotorsUnder2000"></tbody>
+        </table>
+      </div>
+
+      <!-- Existing starter build guide -->
       <div class="info-card">
         <h3>Starter drone build under ₹5000</h3>
         <p style="font-size:0.85rem;">
@@ -210,6 +249,7 @@
         </table>
       </div>
 
+      <!-- ESC + motor combos (still static for now) -->
       <div class="info-card">
         <h3>ESC + motor combos that match</h3>
         <p style="font-size:0.85rem;">
