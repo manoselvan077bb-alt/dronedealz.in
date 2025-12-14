@@ -734,3 +734,15 @@ p {
   font-weight: 600;
 }
 
+/* Full-width product detail page */
+#productDetail.page.active {
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#productDetailContent {
+  max-width: 1100px;
+  margin: 0 auto 16px;
+  padding: 0 16px;
+}

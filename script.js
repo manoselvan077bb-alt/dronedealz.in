@@ -75,7 +75,7 @@ window.addEventListener('load', () => {
   showPage(startPage, false);
 });
 
-// hamburger toggle + click outside to close
+// hamburger toggle + click outside to close (only on mobile)
 if (hamburger && navMenu) {
   hamburger.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -84,9 +84,7 @@ if (hamburger && navMenu) {
   });
 
   document.addEventListener('click', (e) => {
-    // Only auto-close the dropdown on small screens (mobile)
     if (window.innerWidth > 768) return;
-
     const target = e.target;
     const clickedInsideMenu = navMenu.contains(target);
     const clickedHamburger = hamburger.contains(target);
@@ -96,22 +94,26 @@ if (hamburger && navMenu) {
   });
 }
 
-// ===== PRODUCT DATA (now loaded from Firestore) =====
+// ===== PRODUCT DATA (loaded from Firestore) =====
 let products = [];
 let currentProduct = null; // for detail page
 
-// ===== SMALL HELPERS =====
+// ===== HELPERS =====
+function calcPriceMeta(p) {
+  const price = Number(p.price || 0);
+  const mrp = Number(p.mrp || 0);
+  const hasMrp = mrp > price && mrp > 0;
+  const discount = hasMrp ? Math.round((mrp - price) / mrp * 100) : null;
+  return { price, mrp, hasMrp, discount };
+}
 
 // create a card element (with ❤️ Save button)
 function createProductCard(p) {
   const card = document.createElement('div');
   card.className = 'product-card';
-  card.setAttribute('data-category', p.category);
+  card.setAttribute('data-category', p.category || '');
 
-  const price = Number(p.price || 0);
-  const mrp = Number(p.mrp || 0);
-  const hasMrp = mrp > price && mrp > 0;
-  const discount = hasMrp ? Math.round((mrp - price) / mrp * 100) : null;
+  const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
 
   card.innerHTML = `
     <div class="product-image big-card">
@@ -126,7 +128,7 @@ function createProductCard(p) {
       </div>
       <div class="buy-buttons">
         <a href="${p.url || '#'}" target="_blank" rel="noopener" class="buy-btn ${p.platform}">
-          Buy on ${p.platform.charAt(0).toUpperCase() + p.platform.slice(1)}
+          Buy on ${p.platform ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1) : 'site'}
           <i class="fab fa-${p.platform}"></i>
         </a>
         <button class="fav-btn">❤️ Save</button>
@@ -154,16 +156,13 @@ function createProductCard(p) {
   return card;
 }
 
-// render product detail content + related products
+// ===== PRODUCT DETAIL + RELATED =====
 function renderProductDetail() {
   const container = document.getElementById('productDetailContent');
   if (!container || !currentProduct) return;
 
   const p = currentProduct;
-  const price = Number(p.price || 0);
-  const mrp = Number(p.mrp || 0);
-  const hasMrp = mrp > price && mrp > 0;
-  const discount = hasMrp ? Math.round((mrp - price) / mrp * 100) : null;
+  const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
 
   container.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:12px;">
@@ -206,7 +205,7 @@ function renderProductDetail() {
     });
   }
 
-  // ---- more products from same category under this product ----
+  // ---- More products from same category (scroll content) ----
   const relatedWrap = document.createElement('div');
   relatedWrap.style.marginTop = '16px';
 
@@ -229,7 +228,7 @@ function renderProductDetail() {
   }
 }
 
-// save favourite to Firestore (array field)
+// ===== FAVOURITES (Firestore array) =====
 async function handleFavouriteClick(product, buttonEl) {
   const user = auth.currentUser;
   if (!user) {
@@ -257,7 +256,6 @@ async function handleFavouriteClick(product, buttonEl) {
   }
 }
 
-// render favourites list in Account page
 async function renderFavourites(userId) {
   const listEl = document.getElementById('favouritesList');
   if (!listEl) return;
@@ -281,7 +279,7 @@ async function renderFavourites(userId) {
       item.innerHTML = `
         <div class="fav-item-main">
           <span class="fav-item-name">${f.name}</span>
-          <span class="fav-item-meta">${f.category} • ${f.price}</span>
+          <span class="fav-item-meta">${f.category} • ₹${f.price}</span>
         </div>
         <a class="fav-item-platform ${f.platform}" href="${f.url || '#'}" target="_blank" rel="noopener">
           ${f.platform}
@@ -359,7 +357,7 @@ if (sortSelect) {
   });
 }
 
-// ===== SEARCH (Search page + top bar use same data) =====
+// ===== SEARCH (Search page + top bar) =====
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 const topSearchInput = document.getElementById('topSearchInput');
@@ -409,7 +407,7 @@ if (topSearchInput) {
   });
 }
 
-// ===== LOAD PRODUCTS FROM FIRESTORE ON STARTUP =====
+// ===== LOAD PRODUCTS FROM FIRESTORE =====
 async function loadProductsFromFirestore() {
   try {
     const snap = await db.collection('products')
@@ -427,10 +425,9 @@ async function loadProductsFromFirestore() {
   }
 }
 
-// call once after script loads
 loadProductsFromFirestore();
 
-// ===== AUTH: SIGNUP & LOGIN WITH FIREBASE (namespaced v8 style) =====
+// ===== AUTH: SIGNUP & LOGIN =====
 const signupForm = document.getElementById('signupForm');
 const loginForm = document.getElementById('loginForm');
 
@@ -487,13 +484,13 @@ if (loginForm) {
   });
 }
 
-// UPDATE ACCOUNT PAGE WHEN LOGIN STATE CHANGES
+// ===== ACCOUNT + ADMIN VISIBILITY =====
 const accountPage = document.getElementById('account');
+const adminSection = document.getElementById('admin');
 
 auth.onAuthStateChanged(async (user) => {
   if (!accountPage) return;
   const infoCard = accountPage.querySelector('.info-card');
-  const adminSection = document.getElementById('admin');
 
   if (user) {
     let displayName = user.email;
@@ -546,8 +543,6 @@ window.addEventListener('load', () => {
   const adminProductForm = document.getElementById('adminProductForm');
   const adminStatus = document.getElementById('adminStatus');
 
-  console.log('adminProductForm is', adminProductForm);
-
   if (!adminProductForm) return;
 
   adminProductForm.addEventListener('submit', async (e) => {
@@ -587,6 +582,9 @@ window.addEventListener('load', () => {
       if (adminStatus) {
         adminStatus.innerHTML = '<p>Saved to Firestore collection <strong>products</strong>.</p>';
       }
+
+      // optional: reload products so new one appears immediately
+      await loadProductsFromFirestore();
     } catch (err) {
       console.error('Error saving product:', err);
       if (adminStatus) {
