@@ -5,38 +5,31 @@ const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 const bottomItems = document.querySelectorAll('.bottom-item');
 
-// ADMIN EMAIL (only this user can use Admin)
 const ADMIN_EMAIL = 'testweb123@gmail.com';
 
 function showPage(pageId, push = true) {
-  // top nav
   navLinks.forEach(l => {
     const target = l.getAttribute('data-page');
     l.classList.toggle('active', target === pageId);
   });
 
-  // sections
   pages.forEach(p => p.classList.remove('active'));
   const pageEl = document.getElementById(pageId);
   if (pageEl) pageEl.classList.add('active');
 
-  // history for phone back
   if (push) {
     history.pushState({ page: pageId }, '', '#' + pageId);
   }
 
-  // close mobile menu
   if (window.innerWidth <= 768 && navMenu) {
     navMenu.style.display = 'none';
   }
 
-  // bottom nav
   bottomItems.forEach(b => {
     b.classList.toggle('active', b.getAttribute('data-page') === pageId);
   });
 }
 
-// top nav clicks
 navLinks.forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
@@ -45,7 +38,6 @@ navLinks.forEach(link => {
   });
 });
 
-// bottom nav clicks
 bottomItems.forEach(btn => {
   btn.addEventListener('click', () => {
     const page = btn.getAttribute('data-page');
@@ -53,7 +45,6 @@ bottomItems.forEach(btn => {
   });
 });
 
-// "Go to Log in" button inside Account page
 const goLoginBtn = document.querySelector('#account .primary-btn[data-page="login"]');
 if (goLoginBtn) {
   goLoginBtn.addEventListener('click', (e) => {
@@ -62,20 +53,17 @@ if (goLoginBtn) {
   });
 }
 
-// phone / browser back
 window.addEventListener('popstate', (event) => {
   const pageId = event.state && event.state.page ? event.state.page : 'home';
   showPage(pageId, false);
 });
 
-// initial load
 window.addEventListener('load', () => {
   const hash = location.hash.replace('#', '');
   const startPage = hash && document.getElementById(hash) ? hash : 'home';
   showPage(startPage, false);
 });
 
-// hamburger toggle + click outside to close (only on mobile)
 if (hamburger && navMenu) {
   hamburger.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -94,9 +82,85 @@ if (hamburger && navMenu) {
   });
 }
 
-// ===== PRODUCT DATA (loaded from Firestore) =====
+// ===== PRODUCT DATA =====
 let products = [];
-let currentProduct = null; // for detail page
+let currentProduct = null;
+
+// ===== CART (localStorage, works even without login) =====
+let cart = [];
+
+function loadCartFromStorage() {
+  try {
+    const raw = localStorage.getItem('dd_cart');
+    cart = raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.error('Error reading cart from localStorage', e);
+    cart = [];
+  }
+}
+
+function saveCartToStorage() {
+  try {
+    localStorage.setItem('dd_cart', JSON.stringify(cart));
+  } catch (e) {
+    console.error('Error saving cart to localStorage', e);
+  }
+}
+
+function getCartCount() {
+  return cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+}
+
+function updateCartBadge() {
+  const cartBtn = document.querySelector('.bottom-item[data-page="cart"]');
+  if (!cartBtn) return;
+
+  let badge = cartBtn.querySelector('.cart-badge');
+  const count = getCartCount();
+
+  if (count === 0) {
+    if (badge) badge.remove();
+    return;
+  }
+
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.className = 'cart-badge';
+    cartBtn.appendChild(badge);
+  }
+  badge.textContent = count;
+}
+
+function addToCart(product) {
+  const existing = cart.find(item => item.id === product.id);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({
+      id: product.id,
+      name: product.name,
+      price: Number(product.price || 0),
+      platform: product.platform,
+      url: product.url || null,
+      category: product.category,
+      qty: 1
+    });
+  }
+  saveCartToStorage();
+  updateCartBadge();
+  renderCartPage();
+}
+
+function removeFromCart(productId) {
+  cart = cart.filter(item => item.id !== productId);
+  saveCartToStorage();
+  updateCartBadge();
+  renderCartPage();
+}
+
+function calcCartTotal() {
+  return cart.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
+}
 
 // ===== HELPERS =====
 function calcPriceMeta(p) {
@@ -107,7 +171,7 @@ function calcPriceMeta(p) {
   return { price, mrp, hasMrp, discount };
 }
 
-// create a card element (with ❤️ Save button)
+// ===== PRODUCT CARDS =====
 function createProductCard(p) {
   const card = document.createElement('div');
   card.className = 'product-card';
@@ -132,21 +196,30 @@ function createProductCard(p) {
           <i class="fab fa-${p.platform}"></i>
         </a>
         <button class="fav-btn">❤️ Save</button>
+        <button class="cart-btn">+ Cart</button>
       </div>
     </div>
   `;
 
   const favBtn = card.querySelector('.fav-btn');
   favBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // do not open detail when saving
+    e.stopPropagation();
     handleFavouriteClick(p, favBtn);
   });
 
-  // Clicking card (except buttons) opens detail page
+  const cartBtn = card.querySelector('.cart-btn');
+  cartBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    addToCart(p);
+    cartBtn.textContent = 'Added';
+    setTimeout(() => (cartBtn.textContent = '+ Cart'), 800);
+  });
+
   card.addEventListener('click', (e) => {
     const isBuyBtn = e.target.closest('.buy-btn');
     const isFavBtn = e.target.closest('.fav-btn');
-    if (isBuyBtn || isFavBtn) return;
+    const isCartBtn = e.target.closest('.cart-btn');
+    if (isBuyBtn || isFavBtn || isCartBtn) return;
 
     currentProduct = p;
     renderProductDetail();
@@ -164,43 +237,46 @@ function renderProductDetail() {
   const p = currentProduct;
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
 
- container.innerHTML = `
-  <div style="display:flex;flex-direction:column;gap:12px;">
-    <div class="product-image big-card" style="height:120px;">
-      <i class="fas fa-cogs"></i>
+  container.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="product-image big-card" style="height:120px;">
+        <i class="fas fa-cogs"></i>
+      </div>
+
+      <div>
+        <h2 style="font-size:1.1rem;margin-bottom:4px;">${p.name}</h2>
+        <p style="font-size:0.85rem;color:#6b7280;">Category: ${p.category || '-'}</p>
+        <p style="font-size:0.85rem;color:#6b7280;">Platform: ${p.platform || '-'}</p>
+      </div>
+
+      <div style="font-size:1rem;font-weight:600;">
+        ₹${price}
+        ${hasMrp ? `<span class="old-price">₹${mrp}</span>` : ''}
+        ${discount ? `<span class="discount">${discount}% off</span>` : ''}
+      </div>
+
+      <a href="${p.url || '#'}" target="_blank" rel="noopener"
+         class="primary-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+        Go to ${p.platform ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1) : 'seller'}
+        <i class="fas fa-external-link-alt"></i>
+      </a>
+
+      <p style="font-size:0.75rem;color:#9ca3af;">
+        Price, stock and delivery details are shown on the seller page.
+      </p>
+      <p style="font-size:0.75rem;color:#6b7280;">
+        Some links on DroneDealz.in are affiliate links, which means DroneDealz may earn a small commission if you buy through them at no extra cost to you.
+      </p>
+
+      <button class="primary-btn" style="background:#22c55e;color:#ffffff;" id="addDetailToCart">
+        + Add to cart
+      </button>
+
+      <button class="primary-btn" style="background:#e5e7eb;color:#111827;" id="backToHomeBtn">
+        ← Back to Home
+      </button>
     </div>
-
-    <div>
-      <h2 style="font-size:1.1rem;margin-bottom:4px;">${p.name}</h2>
-      <p style="font-size:0.85rem;color:#6b7280;">Category: ${p.category || '-'}</p>
-      <p style="font-size:0.85rem;color:#6b7280;">Platform: ${p.platform || '-'}</p>
-    </div>
-
-    <div style="font-size:1rem;font-weight:600;">
-      ₹${price}
-      ${hasMrp ? `<span class="old-price">₹${mrp}</span>` : ''}
-      ${discount ? `<span class="discount">${discount}% off</span>` : ''}
-    </div>
-
-    <a href="${p.url || '#'}" target="_blank" rel="noopener"
-       class="primary-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-      Go to ${p.platform ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1) : 'seller'}
-      <i class="fas fa-external-link-alt"></i>
-    </a>
-
-    <p style="font-size:0.75rem;color:#9ca3af;">
-      Price, stock and delivery details are shown on the seller page.
-    </p>
-    <p style="font-size:0.75rem;color:#6b7280;">
-      Some links on DroneDealz.in are affiliate links, which means DroneDealz may earn a small commission if you buy through them at no extra cost to you.
-    </p>
-
-    <button class="primary-btn" style="background:#e5e7eb;color:#111827;" id="backToHomeBtn">
-      ← Back to Home
-    </button>
-  </div>
-`;
-
+  `;
 
   const backBtn = container.querySelector('#backToHomeBtn');
   if (backBtn) {
@@ -209,13 +285,21 @@ function renderProductDetail() {
     });
   }
 
-  // ---- More products from same category (scroll content) ----
+  const addDetailBtn = container.querySelector('#addDetailToCart');
+  if (addDetailBtn) {
+    addDetailBtn.addEventListener('click', () => {
+      addToCart(p);
+      addDetailBtn.textContent = 'Added';
+      setTimeout(() => (addDetailBtn.textContent = '+ Add to cart'), 800);
+    });
+  }
+
   const relatedWrap = document.createElement('div');
   relatedWrap.style.marginTop = '16px';
 
   const sameCategory = products
     .filter(x => x.id !== p.id && x.category === p.category)
-    .slice(0, 8); // show up to 8
+    .slice(0, 8);
 
   if (sameCategory.length) {
     relatedWrap.innerHTML = `
@@ -297,7 +381,7 @@ async function renderFavourites(userId) {
   }
 }
 
-// ===== HOME: render + category filter + sort =====
+// ===== HOME (render + filters) =====
 const catButtons = document.querySelectorAll('.cat-btn');
 const homeProductsContainer = document.getElementById('homeProducts');
 const sortSelect = document.getElementById('sortSelect');
@@ -312,7 +396,6 @@ function renderHomeProducts(category = 'all') {
       ? [...products]
       : products.filter(p => p.category === category);
 
-  // apply sort
   const sortValue = sortSelect ? sortSelect.value : 'default';
   const toNumber = x => Number(x || 0);
 
@@ -322,15 +405,10 @@ function renderHomeProducts(category = 'all') {
     filtered.sort((a, b) => toNumber(b.price) - toNumber(a.price));
   }
 
-  // update result count badge
   if (resultCount) {
     const badgeNumber = resultCount.querySelector('.result-count-badge span');
     const count = filtered.length;
-
-    if (badgeNumber) {
-      badgeNumber.textContent = count;
-    }
-
+    if (badgeNumber) badgeNumber.textContent = count;
     resultCount.style.display = count > 0 ? 'block' : 'none';
   }
 
@@ -340,7 +418,6 @@ function renderHomeProducts(category = 'all') {
   });
 }
 
-// set up category buttons
 if (catButtons && homeProductsContainer) {
   catButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -352,7 +429,6 @@ if (catButtons && homeProductsContainer) {
   });
 }
 
-// sort dropdown change
 if (sortSelect) {
   sortSelect.addEventListener('change', () => {
     const activeBtn = document.querySelector('.cat-btn.active');
@@ -361,7 +437,7 @@ if (sortSelect) {
   });
 }
 
-// ===== SEARCH (Search page + top bar) =====
+// ===== SEARCH =====
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 const topSearchInput = document.getElementById('topSearchInput');
@@ -396,14 +472,12 @@ function renderSearchResults(query) {
   });
 }
 
-// search input on Search page
 if (searchInput && searchResults) {
   searchInput.addEventListener('input', (e) => {
     renderSearchResults(e.target.value);
   });
 }
 
-// top search under banner
 if (topSearchInput) {
   topSearchInput.addEventListener('input', (e) => {
     showPage('search', true);
@@ -429,9 +503,7 @@ async function loadProductsFromFirestore() {
   }
 }
 
-loadProductsFromFirestore();
-
-// ===== AUTH: SIGNUP & LOGIN =====
+// ===== AUTH =====
 const signupForm = document.getElementById('signupForm');
 const loginForm = document.getElementById('loginForm');
 
@@ -439,7 +511,6 @@ function showMessage(msg) {
   alert(msg);
 }
 
-// SIGN UP
 if (signupForm) {
   signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -470,7 +541,6 @@ if (signupForm) {
   });
 }
 
-// LOGIN
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -488,7 +558,6 @@ if (loginForm) {
   });
 }
 
-// ===== ACCOUNT + ADMIN VISIBILITY =====
 const accountPage = document.getElementById('account');
 const adminSection = document.getElementById('admin');
 
@@ -531,7 +600,6 @@ auth.onAuthStateChanged(async (user) => {
   }
 });
 
-// LOG OUT helper (called from Account page button)
 window.droneLogout = async function () {
   try {
     await auth.signOut();
@@ -542,7 +610,7 @@ window.droneLogout = async function () {
   }
 };
 
-// ===== SIMPLE ADMIN: ADD PRODUCT TO FIRESTORE =====
+// ===== ADMIN: ADD PRODUCT =====
 window.addEventListener('load', () => {
   const adminProductForm = document.getElementById('adminProductForm');
   const adminStatus = document.getElementById('adminStatus');
@@ -587,7 +655,6 @@ window.addEventListener('load', () => {
         adminStatus.innerHTML = '<p>Saved to Firestore collection <strong>products</strong>.</p>';
       }
 
-      // optional: reload products so new one appears immediately
       await loadProductsFromFirestore();
     } catch (err) {
       console.error('Error saving product:', err);
@@ -598,3 +665,67 @@ window.addEventListener('load', () => {
     }
   });
 });
+
+// ===== CART PAGE RENDER =====
+function renderCartPage() {
+  const cartPage = document.getElementById('cart');
+  if (!cartPage) return;
+
+  let container = cartPage.querySelector('.cart-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'cart-container';
+    cartPage.appendChild(container);
+  }
+
+  if (!cart.length) {
+    container.innerHTML = `
+      <p class="cart-empty">Your cart is empty. Add parts from Home or Search.</p>
+    `;
+    return;
+  }
+
+  const total = calcCartTotal();
+  container.innerHTML = `
+    <div class="cart-summary">
+      <span class="cart-summary-title">Cart total</span>
+      <span class="cart-summary-amount">₹${total}</span>
+    </div>
+    <div class="cart-items"></div>
+    <p class="cart-note">
+      Cart is only a helper list. Checkout, payment and delivery happen on Amazon / Flipkart.
+    </p>
+  `;
+
+  const listEl = container.querySelector('.cart-items');
+
+  cart.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'cart-item';
+    row.innerHTML = `
+      <div class="cart-item-main">
+        <span class="cart-item-name">${item.name}</span>
+        <span class="cart-item-meta">${item.category} • ₹${item.price} × ${item.qty}</span>
+      </div>
+      <div class="cart-item-actions">
+        <button class="cart-remove" data-id="${item.id}">Remove</button>
+        ${item.url ? `<a href="${item.url}" target="_blank" rel="noopener" class="cart-buy-link">Buy</a>` : ''}
+      </div>
+    `;
+    listEl.appendChild(row);
+  });
+
+  listEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.cart-remove');
+    if (!btn) return;
+    const id = btn.getAttribute('data-id');
+    if (!id) return;
+    removeFromCart(id);
+  });
+}
+
+// ===== INIT =====
+loadCartFromStorage();
+updateCartBadge();
+loadProductsFromFirestore();
+renderCartPage();
