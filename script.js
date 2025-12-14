@@ -164,39 +164,43 @@ function renderProductDetail() {
   const p = currentProduct;
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
 
-  container.innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div class="product-image big-card" style="height:120px;">
-        <i class="fas fa-cogs"></i>
-      </div>
-
-      <div>
-        <h2 style="font-size:1.1rem;margin-bottom:4px;">${p.name}</h2>
-        <p style="font-size:0.85rem;color:#6b7280;">Category: ${p.category || '-'}</p>
-        <p style="font-size:0.85rem;color:#6b7280;">Platform: ${p.platform || '-'}</p>
-      </div>
-
-      <div style="font-size:1rem;font-weight:600;">
-        ₹${price}
-        ${hasMrp ? `<span class="old-price">₹${mrp}</span>` : ''}
-        ${discount ? `<span class="discount">${discount}% off</span>` : ''}
-      </div>
-
-      <a href="${p.url || '#'}" target="_blank" rel="noopener"
-         class="primary-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-        Go to ${p.platform ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1) : 'seller'}
-        <i class="fas fa-external-link-alt"></i>
-      </a>
-
-      <p style="font-size:0.75rem;color:#9ca3af;">
-        Price, stock and delivery details are shown on the seller page.
-      </p>
-
-      <button class="primary-btn" style="background:#e5e7eb;color:#111827;" id="backToHomeBtn">
-        ← Back to Home
-      </button>
+ container.innerHTML = `
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div class="product-image big-card" style="height:120px;">
+      <i class="fas fa-cogs"></i>
     </div>
-  `;
+
+    <div>
+      <h2 style="font-size:1.1rem;margin-bottom:4px;">${p.name}</h2>
+      <p style="font-size:0.85rem;color:#6b7280;">Category: ${p.category || '-'}</p>
+      <p style="font-size:0.85rem;color:#6b7280;">Platform: ${p.platform || '-'}</p>
+    </div>
+
+    <div style="font-size:1rem;font-weight:600;">
+      ₹${price}
+      ${hasMrp ? `<span class="old-price">₹${mrp}</span>` : ''}
+      ${discount ? `<span class="discount">${discount}% off</span>` : ''}
+    </div>
+
+    <a href="${p.url || '#'}" target="_blank" rel="noopener"
+       class="primary-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+      Go to ${p.platform ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1) : 'seller'}
+      <i class="fas fa-external-link-alt"></i>
+    </a>
+
+    <p style="font-size:0.75rem;color:#9ca3af;">
+      Price, stock and delivery details are shown on the seller page.
+    </p>
+    <p style="font-size:0.75rem;color:#6b7280;">
+      Some links on DroneDealz.in are affiliate links, which means DroneDealz may earn a small commission if you buy through them at no extra cost to you.
+    </p>
+
+    <button class="primary-btn" style="background:#e5e7eb;color:#111827;" id="backToHomeBtn">
+      ← Back to Home
+    </button>
+  </div>
+`;
+
 
   const backBtn = container.querySelector('#backToHomeBtn');
   if (backBtn) {
