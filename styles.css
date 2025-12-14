@@ -965,3 +965,39 @@ p {
   padding-left: 16px;
   padding-right: 16px;
 }
+/* Guides page visual styling */
+#guides {
+  background: #f3f4f6;
+}
+
+#guides h2 {
+  font-size: 1.3rem;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.guides-subtitle {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 4px 16px 10px;
+}
+
+/* Slightly different card style inside Guides */
+#guides .info-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+  padding-top: 12px;
+  padding-bottom: 14px;
+}
+
+#guides .info-card h3 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+#guides .info-card p {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
