@@ -98,6 +98,7 @@ if (hamburger && navMenu) {
 
 // ===== PRODUCT DATA (now loaded from Firestore) =====
 let products = [];
+let currentProduct = null; // for detail page
 
 // ===== SMALL HELPERS =====
 
@@ -134,9 +135,75 @@ function createProductCard(p) {
   `;
 
   const favBtn = card.querySelector('.fav-btn');
-  favBtn.addEventListener('click', () => handleFavouriteClick(p, favBtn));
+  favBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // do not open detail when saving
+    handleFavouriteClick(p, favBtn);
+  });
+
+  // Clicking card (except buttons) opens detail page
+  card.addEventListener('click', (e) => {
+    const isBuyBtn = e.target.closest('.buy-btn');
+    const isFavBtn = e.target.closest('.fav-btn');
+    if (isBuyBtn || isFavBtn) return;
+
+    currentProduct = p;
+    renderProductDetail();
+    showPage('productDetail', true);
+  });
 
   return card;
+}
+
+// render product detail content
+function renderProductDetail() {
+  const container = document.getElementById('productDetailContent');
+  if (!container || !currentProduct) return;
+
+  const p = currentProduct;
+  const price = Number(p.price || 0);
+  const mrp = Number(p.mrp || 0);
+  const hasMrp = mrp > price && mrp > 0;
+  const discount = hasMrp ? Math.round((mrp - price) / mrp * 100) : null;
+
+  container.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="product-image big-card" style="height:120px;">
+        <i class="fas fa-cogs"></i>
+      </div>
+
+      <div>
+        <h2 style="font-size:1.1rem;margin-bottom:4px;">${p.name}</h2>
+        <p style="font-size:0.85rem;color:#6b7280;">Category: ${p.category || '-'}</p>
+        <p style="font-size:0.85rem;color:#6b7280;">Platform: ${p.platform || '-'}</p>
+      </div>
+
+      <div style="font-size:1rem;font-weight:600;">
+        ₹${price}
+        ${hasMrp ? `<span class="old-price">₹${mrp}</span>` : ''}
+        ${discount ? `<span class="discount">${discount}% off</span>` : ''}
+      </div>
+
+      <a href="${p.url || '#'}" target="_blank" rel="noopener"
+         class="primary-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+        Go to ${p.platform ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1) : 'seller'}
+        <i class="fas fa-external-link-alt"></i>
+      </a>
+
+      <p style="font-size:0.75rem;color:#9ca3af;">
+        Price, stock and delivery details are shown on the seller page.
+      </p>
+
+      <button class="primary-btn" style="background:#e5e7eb;color:#111827;" id="backToHomeBtn">
+        ← Back to Home
+      </button>
+    </div>
+  `;
+  const backBtn = container.querySelector('#backToHomeBtn');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      showPage('home', true);
+    });
+  }
 }
 
 // save favourite to Firestore (array field)
@@ -209,7 +276,7 @@ async function renderFavourites(userId) {
 const catButtons = document.querySelectorAll('.cat-btn');
 const homeProductsContainer = document.getElementById('homeProducts');
 const sortSelect = document.getElementById('sortSelect');
-const resultCount = document.getElementById('resultCount'); // NEW
+const resultCount = document.getElementById('resultCount');
 
 function renderHomeProducts(category = 'all') {
   if (!homeProductsContainer) return;
@@ -230,7 +297,7 @@ function renderHomeProducts(category = 'all') {
     filtered.sort((a, b) => toNumber(b.price) - toNumber(a.price));
   }
 
-    // update result count badge
+  // update result count badge
   if (resultCount) {
     const badgeNumber = resultCount.querySelector('.result-count-badge span');
     const count = filtered.length;
@@ -239,11 +306,8 @@ function renderHomeProducts(category = 'all') {
       badgeNumber.textContent = count;
     }
 
-    // show badge only when there is at least 1 product
     resultCount.style.display = count > 0 ? 'block' : 'none';
   }
-
-  // --------------------------------------
 
   filtered.forEach(p => {
     const card = createProductCard(p);
@@ -284,9 +348,16 @@ function renderSearchResults(query) {
   const q = query.trim().toLowerCase();
   if (!q) return;
 
-  const filtered = products.filter(p =>
-    p.name.toLowerCase().includes(q)
-  );
+  const filtered = products.filter(p => {
+    const name = (p.name || '').toLowerCase();
+    const category = (p.category || '').toLowerCase();
+    const platform = (p.platform || '').toLowerCase();
+    return (
+      name.includes(q) ||
+      category.includes(q) ||
+      platform.includes(q)
+    );
+  });
 
   if (filtered.length === 0) {
     searchResults.innerHTML =
