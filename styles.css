@@ -712,3 +712,25 @@ p {
   margin-left: 4px;
   font-weight: 600;
 }
+/* Result count text under sort */
+.result-count {
+  margin: 4px 16px 8px;
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+.result-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ecfdf5;
+  color: #15803d;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-weight: 500;
+}
+
+.result-count-badge span {
+  font-weight: 600;
+}
+

@@ -209,6 +209,7 @@ async function renderFavourites(userId) {
 const catButtons = document.querySelectorAll('.cat-btn');
 const homeProductsContainer = document.getElementById('homeProducts');
 const sortSelect = document.getElementById('sortSelect');
+const resultCount = document.getElementById('resultCount'); // NEW
 
 function renderHomeProducts(category = 'all') {
   if (!homeProductsContainer) return;
@@ -228,6 +229,21 @@ function renderHomeProducts(category = 'all') {
   } else if (sortValue === 'price-desc') {
     filtered.sort((a, b) => toNumber(b.price) - toNumber(a.price));
   }
+
+    // update result count badge
+  if (resultCount) {
+    const badgeNumber = resultCount.querySelector('.result-count-badge span');
+    const count = filtered.length;
+
+    if (badgeNumber) {
+      badgeNumber.textContent = count;
+    }
+
+    // show badge only when there is at least 1 product
+    resultCount.style.display = count > 0 ? 'block' : 'none';
+  }
+
+  // --------------------------------------
 
   filtered.forEach(p => {
     const card = createProductCard(p);
