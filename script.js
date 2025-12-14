@@ -154,7 +154,7 @@ function createProductCard(p) {
   return card;
 }
 
-// render product detail content
+// render product detail content + related products
 function renderProductDetail() {
   const container = document.getElementById('productDetailContent');
   if (!container || !currentProduct) return;
@@ -198,10 +198,33 @@ function renderProductDetail() {
       </button>
     </div>
   `;
+
   const backBtn = container.querySelector('#backToHomeBtn');
   if (backBtn) {
     backBtn.addEventListener('click', () => {
       showPage('home', true);
+    });
+  }
+
+  // ---- more products from same category under this product ----
+  const relatedWrap = document.createElement('div');
+  relatedWrap.style.marginTop = '16px';
+
+  const sameCategory = products
+    .filter(x => x.id !== p.id && x.category === p.category)
+    .slice(0, 8); // show up to 8
+
+  if (sameCategory.length) {
+    relatedWrap.innerHTML = `
+      <h3 style="font-size:0.95rem;margin:8px 0;">More in ${p.category}</h3>
+      <div class="products-grid" id="detailRelatedGrid"></div>
+    `;
+    container.appendChild(relatedWrap);
+
+    const grid = relatedWrap.querySelector('#detailRelatedGrid');
+    sameCategory.forEach(prod => {
+      const card = createProductCard(prod);
+      grid.appendChild(card);
     });
   }
 }
