@@ -150,7 +150,6 @@ function addToCart(product) {
   saveCartToStorage();
   updateCartBadge();
   renderCartPage();
-  renderHomeCartPreview();
 }
 
 function removeFromCart(productId) {
@@ -158,7 +157,6 @@ function removeFromCart(productId) {
   saveCartToStorage();
   updateCartBadge();
   renderCartPage();
-  renderHomeCartPreview();
 }
 
 function calcCartTotal() {
@@ -181,10 +179,13 @@ function createProductCard(p) {
   card.setAttribute('data-category', p.category || '');
 
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
+  const hasImage = p.image && typeof p.image === 'string';
 
   card.innerHTML = `
     <div class="product-image big-card">
-      <i class="fas fa-cogs"></i>
+      ${hasImage
+        ? `<img src="${p.image}" alt="${p.name}" class="product-img-real">`
+        : `<i class="fas fa-cogs"></i>`}
     </div>
     <div class="product-info">
       <h3>${p.name}</h3>
@@ -243,7 +244,9 @@ function renderProductDetail() {
   container.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:12px;">
       <div class="product-image big-card" style="height:120px;">
-        <i class="fas fa-cogs"></i>
+        ${p.image
+          ? `<img src="${p.image}" alt="${p.name}" class="product-img-real">`
+          : `<i class="fas fa-cogs"></i>`}
       </div>
 
       <div>
@@ -280,6 +283,7 @@ function renderProductDetail() {
       </button>
     </div>
   `;
+
 
   const backBtn = container.querySelector('#backToHomeBtn');
   if (backBtn) {
@@ -735,6 +739,7 @@ window.addEventListener('load', () => {
     const category = document.getElementById('adminProdCategory').value.trim().toLowerCase();
     const platform = document.getElementById('adminProdPlatform').value.trim().toLowerCase();
     const url = document.getElementById('adminProdUrl').value.trim();
+    const image = document.getElementById('adminProdImage')?.value.trim() || '';
 
     if (!name || !price || !category || !platform || !url) {
       alert('Please fill all fields.');
@@ -755,6 +760,7 @@ window.addEventListener('load', () => {
         category,
         platform,
         url,
+        image,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 

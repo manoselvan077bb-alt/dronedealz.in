@@ -102,6 +102,10 @@
           Product URL
           <input type="url" id="adminProdUrl" placeholder="https://..." required>
         </label>
+        <label>
+          Image URL (from Amazon/Flipkart widget)
+          <input type="url" id="adminProdImage" placeholder="https://...">
+        </label>
         <button type="submit" class="primary-btn">Save product</button>
       </form>
       <div class="info-card" id="adminStatus" style="margin-top:10px;">
@@ -158,11 +162,11 @@
     <section class="page" id="deals" data-page="deals">
       <h2>Trending dealz</h2>
       <div class="products-grid" id="dealsProducts">
-        <!-- deals from script.js (optional for later) -->
+        <!-- deals from script.js -->
       </div>
     </section>
 
-    <!-- PRODUCT DETAIL (new) -->
+    <!-- PRODUCT DETAIL -->
     <section class="page" id="productDetail" data-page="productDetail">
       <h2>Product details</h2>
       <div class="info-card" id="productDetailContent">
