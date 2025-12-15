@@ -28,6 +28,10 @@ function showPage(pageId, push = true) {
   bottomItems.forEach(b => {
     b.classList.toggle('active', b.getAttribute('data-page') === pageId);
   });
+
+  if (pageId === 'account') {
+    onAccountPageShown();
+  }
 }
 
 navLinks.forEach(link => {
@@ -132,7 +136,7 @@ function updateCartBadge() {
   badge.textContent = count;
 }
 
-// ==== UPDATED: ADD TO CART WITH IMAGE ====
+// ==== ADD TO CART WITH IMAGE ====
 function addToCart(product) {
   const existing = cart.find(item => item.id === product.id);
 
@@ -493,7 +497,6 @@ if (catButtons && homeProductsContainer) {
   });
 }
 
-
 // ===== SEARCH =====
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
@@ -567,113 +570,6 @@ function renderDealsProducts() {
     dealsProductsContainer.appendChild(card);
   });
 }
-
-// ===== GUIDES (AUTO FROM PRODUCTS) =====
-function renderGuideMotors() {
-  const body = document.getElementById('guideMotorsBody');
-  if (!body) return;
-  body.innerHTML = '';
-
-  const items = products.filter(p => Array.isArray(p.tags) && p.tags.includes('5inch-motor'));
-  items.forEach(p => {
-    const { price } = calcPriceMeta(p);
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${p.name}</td>
-      <td>${p.kv || '-'}</td>
-      <td>₹${price}</td>
-      <td><a href="${p.url || '#'}" target="_blank" rel="noopener">
-        ${p.platform}
-      </a></td>
-    `;
-    body.appendChild(row);
-  });
-}
-
-function renderGuideBuild5000() {
-  const body = document.getElementById('guideBuild5000Body');
-  if (!body) return;
-  body.innerHTML = '';
-
-  const items = products.filter(p => Array.isArray(p.tags) && p.tags.includes('build5000'));
-  items.forEach(p => {
-    const { price } = calcPriceMeta(p);
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${p.category}</td>
-      <td>${p.name}</td>
-      <td>₹${price}</td>
-      <td><a href="${p.url || '#'}" target="_blank" rel="noopener">
-        ${p.platform}
-      </a></td>
-    `;
-    body.appendChild(row);
-  });
-}
-
-function renderGuideMotorsByPrice() {
-  const under1000 = document.getElementById('guideMotorsUnder1000');
-  const under2000 = document.getElementById('guideMotorsUnder2000');
-  if (!under1000 || !under2000) return;
-
-  under1000.innerHTML = '';
-  under2000.innerHTML = '';
-
-  const motors = products.filter(p => p.category === 'motors');
-
-  motors.forEach(p => {
-    const { price } = calcPriceMeta(p);
-    const rowHtml = `
-      <td>${p.name}</td>
-      <td>${p.kv || '-'}</td>
-      <td>₹${price}</td>
-      <td><a href="${p.url || '#'}" target="_blank" rel="noopener">
-        ${p.platform}
-      </a></td>
-    `;
-    if (price <= 1000) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = rowHtml;
-      under1000.appendChild(tr);
-    } else if (price <= 2000) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = rowHtml;
-      under2000.appendChild(tr);
-    }
-  });
-}
-
-// A–F guides using tags guide-a ... guide-f
-function renderGuideGeneric(tagName, tbodyId) {
-  const body = document.getElementById(tbodyId);
-  if (!body) return;
-  body.innerHTML = '';
-
-  const items = products.filter(
-    p => Array.isArray(p.tags) && p.tags.includes(tagName)
-  );
-
-  items.forEach(p => {
-    const { price } = calcPriceMeta(p);
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${p.category}</td>
-      <td>${p.name}</td>
-      <td>₹${price}</td>
-      <td><a href="${p.url || '#'}" target="_blank" rel="noopener">
-        ${p.platform}
-      </a></td>
-    `;
-    body.appendChild(row);
-  });
-}
-
-function renderGuideA() { renderGuideGeneric('guide-a', 'guideA'); }
-function renderGuideB() { renderGuideGeneric('guide-b', 'guideB'); }
-function renderGuideC() { renderGuideGeneric('guide-c', 'guideC'); }
-function renderGuideD() { renderGuideGeneric('guide-d', 'guideD'); }
-function renderGuideE() { renderGuideGeneric('guide-e', 'guideE'); }
-function renderGuideF() { renderGuideGeneric('guide-f', 'guideF'); }
 
 // ===== MINI CART PREVIEW ON HOME =====
 function renderHomeCartPreview() {
@@ -886,6 +782,63 @@ window.droneLogout = async function () {
   }
 };
 
+// ===== UPI ID SAVE + LOAD =====
+async function onAccountPageShown() {
+  const upiInput = document.getElementById('upiIdInput');
+  const upiStatus = document.getElementById('upiStatus');
+  const user = auth.currentUser;
+  if (!upiInput || !upiStatus || !user) return;
+
+  try {
+    const snap = await db.collection('users').doc(user.uid).get();
+    if (snap.exists && snap.data().upiId) {
+      upiInput.value = snap.data().upiId;
+      upiStatus.textContent = 'Saved UPI ID loaded.';
+      upiStatus.style.color = '#6b7280';
+    } else {
+      upiStatus.textContent = '';
+    }
+  } catch (err) {
+    console.error('Error loading UPI ID', err);
+  }
+}
+
+const upiForm = document.getElementById('upiForm');
+if (upiForm) {
+  upiForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const upiInput = document.getElementById('upiIdInput');
+    const upiStatus = document.getElementById('upiStatus');
+    const upiId = upiInput.value.trim();
+    const user = auth.currentUser;
+
+    if (!upiId.includes('@')) {
+      upiStatus.textContent = 'Please enter a valid UPI ID like name@oksbi.';
+      upiStatus.style.color = '#dc2626';
+      return;
+    }
+
+    if (!user) {
+      upiStatus.textContent = 'Log in first to save your UPI ID.';
+      upiStatus.style.color = '#dc2626';
+      return;
+    }
+
+    try {
+      await db.collection('users').doc(user.uid).set(
+        { upiId },
+        { merge: true }
+      );
+      upiStatus.textContent = 'UPI ID saved for cashback.';
+      upiStatus.style.color = '#16a34a';
+    } catch (err) {
+      console.error('Error saving UPI ID', err);
+      upiStatus.textContent = 'Could not save now. Please try again.';
+      upiStatus.style.color = '#dc2626';
+    }
+  });
+}
+
 // ===== ADMIN: ADD PRODUCT =====
 window.addEventListener('load', () => {
   const adminProductForm = document.getElementById('adminProductForm');
@@ -949,6 +902,252 @@ window.addEventListener('load', () => {
   });
 });
 
+// ===== SPIN PAGE LOGIC =====
+const SPIN_SEGMENTS = [10, 20, 30, 40, 50];
+
+// Sum today's confirmed orders and count them
+async function getTodaySpendInfo() {
+  const user = auth.currentUser;
+  if (!user) {
+    return { count: 0, total: 0 };
+  }
+
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+  const startTs = firebase.firestore.Timestamp.fromDate(startOfDay);
+  const endTs = firebase.firestore.Timestamp.fromDate(endOfDay);
+
+  const snap = await db.collection('orders')
+    .where('userId', '==', user.uid)
+    .where('status', '==', 'confirmed')
+    .where('createdAt', '>=', startTs)
+    .where('createdAt', '<', endTs)
+    .get(); // [web:1907][web:1953]
+
+  const count = snap.size;
+  let total = 0;
+  snap.forEach(doc => {
+    const data = doc.data();
+    total += Number(data.amount || 0);
+  });
+
+  return { count, total };
+}
+
+// Decide prize tier from total
+function pickPrizeFromTotal(totalAmount) {
+  if (totalAmount >= 5000) return 50;
+  if (totalAmount >= 4000) return 40;
+  if (totalAmount >= 3000) return 30;
+  if (totalAmount >= 2000) return 20;
+  if (totalAmount >= 1000) return 10;
+  return 0;
+}
+
+function updateSpinProgress(info) {
+  const { count, total } = info;
+  const textEl = document.getElementById('spinProgressText');
+  const fillEl = document.getElementById('spinProgressFill');
+  const btn = document.getElementById('spinButton');
+  if (!textEl || !fillEl || !btn) return;
+
+  const max = 3;
+  const c = Math.min(count, max);
+  textEl.textContent = `Today you bought ${c}/${max} products • ₹${total} total.`;
+  fillEl.style.width = (c / max) * 100 + '%';
+
+  const eligible = c >= 3 && total >= 1000;
+  if (eligible) {
+    btn.disabled = false;
+    btn.textContent = 'Tap to spin';
+  } else {
+    btn.disabled = true;
+    btn.textContent = 'Buy 3 items to unlock';
+  }
+}
+
+// Wheel drawing with separators and fixed top arrow
+function drawWheel(ctx, segments, angleOffset) {
+  const cx = ctx.canvas.width / 2;
+  const cy = ctx.canvas.height / 2;
+  const outerR = Math.min(cx, cy) - 4;
+  const innerR = outerR * 0.78;
+  const slice = (2 * Math.PI) / segments.length;
+
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  // outer rim
+  ctx.beginPath();
+  ctx.arc(cx, cy, outerR, 0, 2 * Math.PI);
+  ctx.fillStyle = '#facc15';
+  ctx.fill();
+
+  // segments + separators
+  segments.forEach((value, i) => {
+    const start = i * slice + angleOffset;
+    const end = start + slice;
+
+    // coloured slice
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, innerR, start, end);
+    ctx.closePath();
+    ctx.fillStyle = i % 2 === 0 ? '#f97373' : '#ef4444';
+    ctx.fill();
+
+    // separator line
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(
+      cx + Math.cos(start) * innerR,
+      cy + Math.sin(start) * innerR
+    );
+    ctx.stroke();
+    ctx.restore();
+
+    // text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 18px Inter, system-ui';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const mid = start + slice / 2;
+    const tx = cx + Math.cos(mid) * (innerR * 0.6);
+    const ty = cy + Math.sin(mid) * (innerR * 0.6);
+    ctx.fillText(`₹${value}`, tx, ty);
+  });
+
+  // center hub outer circle
+ctx.beginPath();
+ctx.arc(cx, cy, innerR * 0.35, 0, 2 * Math.PI);
+ctx.fillStyle = '#facc15';
+ctx.fill();
+
+// inner center circle
+ctx.beginPath();
+ctx.arc(cx, cy, innerR * 0.28, 0, 2 * Math.PI);
+ctx.fillStyle = '#f97316';
+ctx.fill();
+
+// BIG centre arrow pointing up (Amazon style)
+const arrowLen = innerR * 0.5;
+const arrowWidth = innerR * 0.18;
+const tipX = cx;
+const tipY = cy - arrowLen;
+
+ctx.beginPath();
+ctx.moveTo(tipX, tipY); // tip
+ctx.lineTo(cx - arrowWidth / 2, cy - innerR * 0.15);
+ctx.lineTo(cx + arrowWidth / 2, cy - innerR * 0.15);
+ctx.closePath();
+ctx.fillStyle = '#ffffff';
+ctx.fill();
+
+// small screw in middle
+ctx.beginPath();
+ctx.arc(cx, cy, innerR * 0.1, 0, 2 * Math.PI);
+ctx.fillStyle = '#fefce8';
+ctx.fill();
+
+
+  // top arrow pointer (Amazon-style)
+  const pointerWidth = 22;
+  const pointerHeight = 26;
+  const pointerY = cy - outerR - 4;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(cx, pointerY);
+  ctx.lineTo(cx - pointerWidth / 2, pointerY - pointerHeight);
+  ctx.lineTo(cx + pointerWidth / 2, pointerY - pointerHeight);
+  ctx.closePath();
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(0,0,0,0.25)';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetY = 2;
+  ctx.fill();
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.moveTo(cx, pointerY - 2);
+  ctx.lineTo(cx - (pointerWidth * 0.4), pointerY - pointerHeight + 4);
+  ctx.lineTo(cx + (pointerWidth * 0.4), pointerY - pointerHeight + 4);
+  ctx.closePath();
+  ctx.strokeStyle = '#f97316';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function initSpinPage() {
+  const canvas = document.getElementById('spinCanvas');
+  const btn = document.getElementById('spinButton');
+  if (!canvas || !btn) return;
+
+  const ctx = canvas.getContext('2d');
+  let currentAngle = 0;
+  let spinning = false;
+
+  drawWheel(ctx, SPIN_SEGMENTS, currentAngle);
+
+  btn.addEventListener('click', async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert('Log in to use the spin wheel.');
+      return;
+    }
+    if (spinning || btn.disabled) return;
+
+    const info = await getTodaySpendInfo();
+    updateSpinProgress(info);
+    if (info.count < 3 || info.total < 1000) {
+      return;
+    }
+
+    const prizeValue = pickPrizeFromTotal(info.total);
+    if (prizeValue === 0) return;
+
+    const forcedIndex = SPIN_SEGMENTS.findIndex(v => v === prizeValue);
+    if (forcedIndex === -1) return;
+
+    spinning = true;
+    btn.disabled = true;
+    btn.textContent = 'Spinning...';
+
+    const slice = (2 * Math.PI) / SPIN_SEGMENTS.length;
+    const randomSegment = forcedIndex;
+
+    const targetAngle = (Math.PI / 2) - (randomSegment * slice + slice / 2);
+    const extraTurns = 5 * 2 * Math.PI;
+    const finalAngle = targetAngle + extraTurns;
+    const duration = 3000;
+    const start = performance.now();
+
+    function animate(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const angle = currentAngle + (finalAngle - currentAngle) * ease;
+      drawWheel(ctx, SPIN_SEGMENTS, angle);
+      if (t < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        currentAngle = angle;
+        spinning = false;
+        const prize = SPIN_SEGMENTS[randomSegment];
+        btn.textContent = `You won ₹${prize}!`;
+        // TODO: record cashback transaction in Firestore
+      }
+    }
+
+    requestAnimationFrame(animate);
+  });
+
+  getTodaySpendInfo().then(updateSpinProgress);
+}
+
 // ===== LOAD PRODUCTS FROM FIRESTORE & INIT =====
 async function loadProductsFromFirestore() {
   try {
@@ -975,23 +1174,16 @@ async function loadProductsFromFirestore() {
 
     renderHomeProducts('all');
     renderDealsProducts();
-    renderGuideMotors();
-    renderGuideBuild5000();
-    renderGuideMotorsByPrice();
-    renderGuideA();
-    renderGuideB();
-    renderGuideC();
-    renderGuideD();
-    renderGuideE();
-    renderGuideF();
     renderHomeCartPreview();
   } catch (err) {
     console.error('Error loading products from Firestore:', err);
   }
 }
 
+// Initialisation
 loadCartFromStorage();
 updateCartBadge();
 loadProductsFromFirestore();
 renderCartPage();
 renderHomeCartPreview();
+initSpinPage();

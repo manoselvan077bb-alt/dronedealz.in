@@ -1120,3 +1120,170 @@ p {
 .result-count {
   margin: 0 0 2px;
 }
+/* ==== SPIN PAGE ==== */
+
+.spin-wheel-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+#spinCanvas {
+  background: #f9fafb;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+}
+
+.spin-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+#spinProgressFill {
+  height: 100%;
+  width: 0%;
+  background: #22c55e; /* green */
+  transition: width 0.3s ease;
+}
+
+.spin-note,
+.spin-small {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 4px;
+  text-align: center;
+}
+
+#spinButton[disabled] {
+  background: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+/* ==== SPIN PAGE ==== */
+
+.spin-wheel-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+#spinCanvas {
+  display: block;            /* ensure canvas + button are stacked */
+  margin-bottom: 12px;
+  background: #f9fafb;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+}
+
+#spinButton {
+  display: inline-flex;      /* make sure it is visible */
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+}
+
+#spinButton[disabled] {
+  background: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.spin-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+#spinProgressFill {
+  height: 100%;
+  width: 0%;
+  background: #22c55e;
+  transition: width 0.3s ease;
+}
+
+.spin-note,
+.spin-small {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 4px;
+  text-align: center;
+}
+/* ==== SPIN PAGE LOOK ==== */
+
+#spin {
+  background: radial-gradient(circle at top, #fecaca 0, #fee2e2 40%, #ffffff 80%);
+  padding-bottom: 32px;
+}
+
+/* card at top with progress bar */
+#spinStatusCard {
+  border-radius: 16px;
+}
+
+/* wheel + button block */
+.spin-wheel-wrapper {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#spinCanvas {
+  background: radial-gradient(circle at center, #fee2e2 0, #fecaca 60%, #fee2e2 100%);
+  border-radius: 999px;
+  box-shadow: 0 18px 40px rgba(185, 28, 28, 0.35);
+}
+
+/* CTA button under wheel */
+#spinButton {
+  margin-top: 4px;
+  border-radius: 999px;
+  padding: 10px 32px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: linear-gradient(90deg, #facc15, #f97316);
+  color: #111827;
+  border: none;
+}
+
+#spinButton[disabled] {
+  background: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* progress bar */
+.spin-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+#spinProgressFill {
+  height: 100%;
+  width: 0%;
+  background: #22c55e;
+  transition: width 0.3s ease;
+}
+
+.spin-note,
+.spin-small {
+  font-size: 0.8rem;
+  text-align: center;
+  color: #6b7280;
+}

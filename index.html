@@ -152,133 +152,26 @@
       <div class="products-grid" id="dealsProducts"></div>
     </section>
 
-    <!-- GUIDES (still drone-focused for now) -->
-    <section class="page" id="guides" data-page="guides">
-      <h2>Build guides</h2>
-      <p class="guides-subtitle">
-        Ready-made parts combos for motors, ESCs, frames, batteries and propellers.
-      </p>
+    <!-- SPIN -->
+    <section class="page" id="spin" data-page="spin">
+      <h2>Spin &amp; win cashback</h2>
 
-      <div class="info-card">
-        <h3>ESC + motor combos that match</h3>
-        <p style="font-size:0.85rem;">
-          KV vs amp combinations that are safe for beginners.
+      <div class="info-card" id="spinStatusCard">
+        <p id="spinProgressText">Today you bought 0/3 products.</p>
+        <div class="spin-progress-bar">
+          <div id="spinProgressFill"></div>
+        </div>
+        <p class="spin-note">
+          Spin unlocks after 3 confirmed purchases today, and the total of those 3 must be at least ₹1000.
         </p>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Motor KV</th>
-              <th>Max current</th>
-              <th>Suggested ESC</th>
-              <th>Buy ESC</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2205 2300KV</td>
-              <td>≈20A</td>
-              <td>30A ESC</td>
-              <td><a href="#" target="_blank" rel="noopener">Amazon</a></td>
-            </tr>
-            <tr>
-              <td>2207 1700KV</td>
-              <td>≈30A</td>
-              <td>35–40A ESC</td>
-              <td><a href="#" target="_blank" rel="noopener">Flipkart</a></td>
-            </tr>
-          </tbody>
-        </table>
       </div>
 
-      <div class="info-card">
-        <h3>Combo A – Beginner 5&quot; build</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Part</th>
-              <th>Price</th>
-              <th>Platform</th>
-            </tr>
-          </thead>
-          <tbody id="guideA"></tbody>
-        </table>
+      <div class="spin-wheel-wrapper">
+        <canvas id="spinCanvas" width="260" height="260"></canvas>
+        <button class="primary-btn" id="spinButton" disabled>Buy 3 items to unlock</button>
       </div>
 
-      <div class="info-card">
-        <h3>Combo B – Long range build</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Part</th>
-              <th>Price</th>
-              <th>Platform</th>
-            </tr>
-          </thead>
-          <tbody id="guideB"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Combo C – Cinewhoop build</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Part</th>
-              <th>Price</th>
-              <th>Platform</th>
-            </tr>
-          </thead>
-          <tbody id="guideC"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Combo D – Freestyle build</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Part</th>
-              <th>Price</th>
-              <th>Platform</th>
-            </tr>
-          </thead>
-          <tbody id="guideD"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Combo E – Tiny whoop build</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Part</th>
-              <th>Price</th>
-              <th>Platform</th>
-            </tr>
-          </thead>
-          <tbody id="guideE"></tbody>
-        </table>
-      </div>
-
-      <div class="info-card">
-        <h3>Combo F – Experimental build</h3>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Part</th>
-              <th>Price</th>
-              <th>Platform</th>
-            </tr>
-          </thead>
-          <tbody id="guideF"></tbody>
-        </table>
-      </div>
+      <p class="spin-small">Cashback will be sent instantly to your saved UPI ID.</p>
     </section>
 
     <!-- PRODUCT DETAIL -->
@@ -316,10 +209,26 @@
     <section class="page" id="account" data-page="account">
       <h2>Your account</h2>
       <div class="info-card">
-        <p>Sign in to manage your profile and saved favourites.</p>
+        <p>Sign in to manage your profile, cashback UPI ID and saved favourites.</p>
       </div>
       <button class="primary-btn" data-page="login">Go to Log in</button>
       <button class="primary-btn" style="margin-left:8px;" onclick="droneLogout()">Log out</button>
+
+      <!-- UPI ID for instant cashback -->
+      <div class="info-card" style="margin-top:12px;">
+        <h3>Cashback UPI ID</h3>
+        <p style="font-size:0.9rem;">
+          Add your UPI ID (like <strong>name@oksbi</strong>). Cashback from spin wheel will be sent to this ID automatically.
+        </p>
+        <form class="auth-form" id="upiForm">
+          <label>
+            UPI ID
+            <input type="text" id="upiIdInput" placeholder="yourname@oksbi" required>
+          </label>
+          <button type="submit" class="primary-btn">Save UPI ID</button>
+        </form>
+        <p id="upiStatus" class="info-small"></p>
+      </div>
 
       <div class="favourites-card">
         <h3>Your saved favourites</h3>
@@ -407,9 +316,9 @@
       <i class="fas fa-tags"></i>
       <span>Dealz</span>
     </button>
-    <button class="bottom-item" data-page="guides">
-      <i class="fas fa-list"></i>
-      <span>Guides</span>
+    <button class="bottom-item" data-page="spin">
+      <i class="fas fa-sync-alt"></i>
+      <span>Spin</span>
     </button>
     <button class="bottom-item" data-page="cart">
       <i class="fas fa-shopping-cart"></i>
