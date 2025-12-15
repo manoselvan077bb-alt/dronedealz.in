@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dealz – Best Drone Parts Deals in India</title>
-  <meta name="description" content="Best drone motors, frames, ESCs under ₹1000 on Amazon & Flipkart">
+  <title>Dealz – Best Deals in India</title>
+  <meta name="description" content="Best deals on electronics, fashion, home & kitchen, books, computers and mobiles from Amazon & Flipkart">
   <link rel="stylesheet" href="styles.css?v=2">
-
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -55,18 +54,43 @@
     </div>
   </header>
 
-  <!-- Top search -->
-  <section class="top-search">
-    <div class="top-search-inner">
-      <i class="fas fa-search"></i>
-      <input type="text" id="topSearchInput" placeholder="Search motors, frames, ESCs, batteries...">
-      <button id="topSearchVoice"><i class="fas fa-microphone"></i></button>
+  <!-- Dark-blue shell for search + filters -->
+  <div class="top-shell">
+    <div class="top-shell-inner">
+      <!-- Top search -->
+      <section class="top-search">
+        <div class="top-search-inner">
+          <i class="fas fa-search"></i>
+          <input type="text" id="topSearchInput" placeholder="Search electronics, fashion, mobiles...">
+          <button id="topSearchVoice"><i class="fas fa-microphone"></i></button>
+        </div>
+      </section>
+
+      <!-- HOME: category chips + result count + products -->
+      <section class="page active" id="home" data-page="home">
+        <div class="category-row">
+          <button class="cat-btn active" data-category="all">All</button>
+          <button class="cat-btn" data-category="electronics">Electronics</button>
+          <button class="cat-btn" data-category="fashion">Fashion</button>
+          <button class="cat-btn" data-category="home-kitchen">Home &amp; Kitchen</button>
+          <button class="cat-btn" data-category="books">Books</button>
+          <button class="cat-btn" data-category="computers">Computers</button>
+          <button class="cat-btn" data-category="mobiles">Mobiles</button>
+        </div>
+
+        <p id="resultCount" class="result-count">
+          <span class="result-count-badge">
+            <span>0</span> items found
+          </span>
+        </p>
+
+        <div class="products-grid" id="homeProducts"></div>
+      </section>
     </div>
-  </section>
+  </div>
 
-  <!-- Main content -->
+  <!-- Main content (other pages) -->
   <main class="main-content">
-
     <!-- ADMIN -->
     <section class="page" id="admin" data-page="admin">
       <h2>Admin: Products</h2>
@@ -84,12 +108,12 @@
           <input type="number" id="adminProdMrp" placeholder="2499">
         </label>
         <label>
-          Category (motors / esc / frames / batteries / drones / propellers)
-          <input type="text" id="adminProdCategory" required>
+          Category (electronics / fashion / home-kitchen / books / computers / mobiles)
+          <input type="text" id="adminProdCategory" placeholder="electronics" required>
         </label>
         <label>
           Platform (amazon / flipkart)
-          <input type="text" id="adminProdPlatform" required>
+          <input type="text" id="adminProdPlatform" placeholder="amazon" required>
         </label>
         <label>
           Product URL
@@ -101,7 +125,7 @@
         </label>
         <label>
           Guide tags (comma separated, optional)
-          <input type="text" id="adminProdTags" placeholder="5inch-motor, build5000, guide-a">
+          <input type="text" id="adminProdTags" placeholder="electronics, fashion, dealz">
         </label>
         <button type="submit" class="primary-btn">Save product</button>
       </form>
@@ -110,33 +134,12 @@
       </div>
     </section>
 
-    <!-- HOME -->
-    <section class="page active" id="home" data-page="home">
-      <div class="category-row">
-        <button class="cat-btn active" data-category="all">All</button>
-        <button class="cat-btn" data-category="drones">Drones</button>
-        <button class="cat-btn" data-category="motors">Motors</button>
-        <button class="cat-btn" data-category="esc">ESC</button>
-        <button class="cat-btn" data-category="frames">Frames</button>
-        <button class="cat-btn" data-category="batteries">Batteries</button>
-        <button class="cat-btn" data-category="propellers">Propellers</button>
-      </div>
-
-      <p id="resultCount" class="result-count">
-        <span class="result-count-badge">
-          <span>0</span> items found
-        </span>
-      </p>
-
-      <div class="products-grid" id="homeProducts"></div>
-    </section>
-
     <!-- SEARCH -->
     <section class="page" id="search" data-page="search">
       <div class="search-container">
-        <h2>Search parts</h2>
+        <h2>Search products</h2>
         <div class="search-bar">
-          <input type="text" id="searchInput" placeholder="Search motors, ESC, frames, batteries...">
+          <input type="text" id="searchInput" placeholder="Search electronics, fashion, home &amp; kitchen...">
           <button id="searchBtn"><i class="fas fa-search"></i></button>
         </div>
         <div class="products-grid" id="searchResults"></div>
@@ -149,14 +152,13 @@
       <div class="products-grid" id="dealsProducts"></div>
     </section>
 
-    <!-- GUIDES -->
+    <!-- GUIDES (still drone-focused for now) -->
     <section class="page" id="guides" data-page="guides">
       <h2>Build guides</h2>
       <p class="guides-subtitle">
         Ready-made parts combos for motors, ESCs, frames, batteries and propellers.
       </p>
 
-      <!-- ESC + motor combos that match (static) -->
       <div class="info-card">
         <h3>ESC + motor combos that match</h3>
         <p style="font-size:0.85rem;">
@@ -188,9 +190,8 @@
         </table>
       </div>
 
-      <!-- Firestore-driven build combos A–F -->
       <div class="info-card">
-        <h3>Combo A – Beginner 5" build</h3>
+        <h3>Combo A – Beginner 5&quot; build</h3>
         <table class="guide-table">
           <thead>
             <tr>
@@ -286,12 +287,10 @@
 
       <div class="info-card">
         <div class="product-detail-layout">
-          <!-- LEFT: image box -->
           <div class="product-detail-left">
             <div id="detailImageBox"></div>
           </div>
 
-          <!-- RIGHT: title, price, meta, buttons -->
           <div class="product-detail-right">
             <h1 class="product-detail-title" id="detailTitle">Loading product...</h1>
             <p class="product-detail-price" id="detailPrice"></p>
@@ -301,9 +300,8 @@
         </div>
       </div>
 
-      <!-- more products under detail -->
       <div class="info-card" id="moreProductsCard">
-        <h3 style="margin-bottom:8px;">More motors & parts</h3>
+        <h3 style="margin-bottom:8px;">More products</h3>
         <div class="products-grid" id="moreProductsList"></div>
       </div>
     </section>
@@ -318,7 +316,7 @@
     <section class="page" id="account" data-page="account">
       <h2>Your account</h2>
       <div class="info-card">
-        <p>Sign in to manage your profile and saved builds.</p>
+        <p>Sign in to manage your profile and saved favourites.</p>
       </div>
       <button class="primary-btn" data-page="login">Go to Log in</button>
       <button class="primary-btn" style="margin-left:8px;" onclick="droneLogout()">Log out</button>
@@ -326,7 +324,7 @@
       <div class="favourites-card">
         <h3>Your saved favourites</h3>
         <div id="favouritesList" class="favourites-list">
-          <p class="empty-msg">No favourites yet. Save parts from Home or Search.</p>
+          <p class="empty-msg">No favourites yet. Save items from Home or Search.</p>
         </div>
       </div>
     </section>
@@ -383,8 +381,8 @@
     <section class="page" id="about" data-page="about">
       <h2>About Dealz</h2>
       <div class="info-card">
-        <p class="info-highlight">Dealz is a hub that curates affordable drone parts from marketplaces.</p>
-        <p>It helps Indian makers quickly compare motors, ESCs, frames and batteries from popular marketplaces before buying.</p>
+        <p class="info-highlight">Dealz is a hub that curates affordable products from marketplaces.</p>
+        <p>It helps Indian shoppers quickly compare electronics, fashion, home &amp; kitchen and more before buying.</p>
       </div>
     </section>
 

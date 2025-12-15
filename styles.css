@@ -122,7 +122,7 @@ body {
   border-radius: 4px;
 }
 
-/* Banner */
+/* Banner (unused on home now but kept) */
 .banner {
   position: relative;
   max-width: 1100px;
@@ -166,11 +166,23 @@ body {
   color: #e5e7eb;
 }
 
-/* Top search */
-.top-search {
+/* Top shell: dark band under navbar */
+.top-shell {
+  background: #020617;        /* dark blue band */
+  padding: 10px 0 18px;       /* change these to make band taller/shorter */
+}
+
+.top-shell-inner {
   max-width: 1100px;
-  margin: 10px auto 0;
-  padding: 0 16px 6px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Top search (now inside top-shell) */
+.top-search {
+  max-width: none;
+  margin: 0;
+  padding: 0 0 10px;
 }
 
 .top-search-inner {
@@ -230,7 +242,7 @@ body {
 .category-row {
   display: flex;
   gap: 8px;
-  margin: 10px 0 12px;
+  margin: 4px 0 6px;
   overflow-x: auto;
 }
 
@@ -264,6 +276,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  color: #111827;
 }
 
 /* SMALL image box for cards */
@@ -290,16 +303,18 @@ body {
 .product-info h3 {
   font-size: 0.95rem;
   margin-bottom: 4px;
+  color: #111827;
 }
 
 .product-desc {
   font-size: 0.8rem;
-  color: #6b7280;
+  color: #4b5563;
 }
 
 .price {
   font-weight: 600;
   margin-top: 2px;
+  color: #111827;
 }
 
 .old-price {
@@ -313,6 +328,10 @@ body {
 .rating {
   font-size: 0.8rem;
   color: #f59e0b;
+}
+
+.product-card p {
+  color: #111827;
 }
 
 .buy-buttons {
@@ -594,7 +613,8 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 
 .fav-btn:hover {
@@ -696,7 +716,7 @@ p {
 
 /* Result count text */
 .result-count {
-  margin: 4px 16px 8px;
+  margin: 0 0 2px;
   font-size: 0.8rem;
   color: #4b5563;
 }
@@ -1071,4 +1091,32 @@ p {
   .product-detail-right {
     max-width: 100%;
   }
+}
+/* Big dark-blue band for search + filters */
+.top-shell {
+  background: #020617;      /* dark navy */
+  padding: 16px 0 20px;     /* increase/decrease to change height */
+}
+
+/* Center content inside the band */
+.top-shell-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Let the shell control spacing instead of top-search */
+.top-search {
+  max-width: none;
+  margin: 0;
+  padding: 0 0 10px;
+}
+
+/* Slightly tighter spacing under chips and result text */
+.category-row {
+  margin: 10px 0 8px;
+}
+
+.result-count {
+  margin: 0 0 2px;
 }
