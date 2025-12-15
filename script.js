@@ -67,6 +67,50 @@ window.addEventListener('load', () => {
   const startPage = hash && document.getElementById(hash) ? hash : 'home';
   showPage(startPage, false);
 });
+// ===== VOICE SEARCH (top search bar) =====
+const voiceBtn = document.getElementById('topSearchVoice');
+const voiceInput = document.getElementById('topSearchInput');
+
+if (voiceBtn && voiceInput && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-IN';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  let listening = false;
+
+  voiceBtn.addEventListener('click', () => {
+    if (!listening) {
+      recognition.start();
+      listening = true;
+      voiceBtn.classList.add('listening');
+    } else {
+      recognition.stop();
+      listening = false;
+      voiceBtn.classList.remove('listening');
+    }
+  });
+
+  recognition.addEventListener('result', (event) => {
+    const text = event.results[0][0].transcript;
+    voiceInput.value = text;
+    // trigger search page + results
+    showPage('search', true);
+    renderSearchResults(text);
+  });
+
+  recognition.addEventListener('end', () => {
+    listening = false;
+    voiceBtn.classList.remove('listening');
+  });
+} else if (voiceBtn) {
+  // browser does not support Web Speech API
+  voiceBtn.addEventListener('click', () => {
+    alert('Voice search is not supported on this browser. Please type your query.');
+  });
+}
+
 
 // mobile nav toggle
 if (hamburger && navMenu) {
