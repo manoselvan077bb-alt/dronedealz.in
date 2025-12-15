@@ -458,26 +458,16 @@ async function renderFavourites(userId) {
 // ===== HOME =====
 const catButtons = document.querySelectorAll('.cat-btn');
 const homeProductsContainer = document.getElementById('homeProducts');
-const sortSelect = document.getElementById('sortSelect');
 const resultCount = document.getElementById('resultCount');
 
 function renderHomeProducts(category = 'all') {
   if (!homeProductsContainer) return;
   homeProductsContainer.innerHTML = '';
 
-  let filtered =
+  const filtered =
     category === 'all'
       ? [...products]
       : products.filter(p => p.category === category);
-
-  const sortValue = sortSelect ? sortSelect.value : 'default';
-  const toNumber = x => Number(x || 0);
-
-  if (sortValue === 'price-asc') {
-    filtered.sort((a, b) => toNumber(a.price) - toNumber(b.price));
-  } else if (sortValue === 'price-desc') {
-    filtered.sort((a, b) => toNumber(b.price) - toNumber(a.price));
-  }
 
   if (resultCount) {
     const badgeNumber = resultCount.querySelector('.result-count-badge span');
@@ -503,13 +493,6 @@ if (catButtons && homeProductsContainer) {
   });
 }
 
-if (sortSelect) {
-  sortSelect.addEventListener('change', () => {
-    const activeBtn = document.querySelector('.cat-btn.active');
-    const cat = activeBtn ? activeBtn.getAttribute('data-category') || 'all' : 'all';
-    renderHomeProducts(cat);
-  });
-}
 
 // ===== SEARCH =====
 const searchInput = document.getElementById('searchInput');

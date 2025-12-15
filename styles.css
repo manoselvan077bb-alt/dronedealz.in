@@ -64,6 +64,14 @@ body {
   color: #0ea5e9;
 }
 
+.logo-deal {
+  color: #000000;
+}
+
+.logo-z {
+  color: #2563eb;
+}
+
 /* Nav menu (top links) */
 .nav-menu {
   display: flex;
@@ -239,35 +247,6 @@ body {
 .cat-btn.active {
   background: #22c55e;
   color: #ffffff;
-}
-
-/* Sort row */
-.sort-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  margin: 8px 16px 4px;
-  font-size: 0.9rem;
-  color: #4b5563;
-}
-
-.sort-label {
-  font-weight: 500;
-}
-
-#sortSelect {
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  font-size: 0.9rem;
-  outline: none;
-}
-
-#sortSelect:focus {
-  border-color: #22c55e;
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3);
 }
 
 /* Products grid */
@@ -584,7 +563,7 @@ p {
   margin-bottom: 6px;
 }
 
-info-highlight {
+.info-highlight {
   font-weight: 600;
   color: #111827;
 }
@@ -715,7 +694,7 @@ info-highlight {
   font-weight: 600;
 }
 
-/* Result count text under sort */
+/* Result count text */
 .result-count {
   margin: 4px 16px 8px;
   font-size: 0.8rem;
@@ -809,10 +788,22 @@ info-highlight {
 }
 
 .cart-item-main {
-  max-width: 70%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-item-thumb img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.cart-item-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
 .cart-item-name {
@@ -1030,7 +1021,7 @@ info-highlight {
   top: 50%;
   transform: translateY(-50%);
   border: none;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0, 0, 0, 0.55);
   color: #fff;
   width: 36px;
   height: 52px;
@@ -1080,22 +1071,4 @@ info-highlight {
   .product-detail-right {
     max-width: 100%;
   }
-}
-.cart-item-main {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.cart-item-thumb img {
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 6px;
-  flex-shrink: 0;
-}
-
-.cart-item-text {
-  display: flex;
-  flex-direction: column;
 }
