@@ -856,10 +856,6 @@ window.addEventListener('load', () => {
     const platform = document.getElementById('adminProdPlatform').value.trim().toLowerCase();
     const url = document.getElementById('adminProdUrl').value.trim();
     const image = document.getElementById('adminProdImage')?.value.trim() || '';
-    const tagsRaw = document.getElementById('adminProdTags')?.value.trim() || '';
-    const tags = tagsRaw
-      ? tagsRaw.split(',').map(t => t.trim().toLowerCase()).filter(Boolean)
-      : [];
 
     if (!name || !price || !category || !platform || !url) {
       alert('Please fill all fields.');
@@ -881,7 +877,6 @@ window.addEventListener('load', () => {
         platform,
         url,
         image,
-        tags,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
@@ -1022,39 +1017,38 @@ function drawWheel(ctx, segments, angleOffset) {
   });
 
   // center hub outer circle
-ctx.beginPath();
-ctx.arc(cx, cy, innerR * 0.35, 0, 2 * Math.PI);
-ctx.fillStyle = '#facc15';
-ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR * 0.35, 0, 2 * Math.PI);
+  ctx.fillStyle = '#facc15';
+  ctx.fill();
 
-// inner center circle
-ctx.beginPath();
-ctx.arc(cx, cy, innerR * 0.28, 0, 2 * Math.PI);
-ctx.fillStyle = '#f97316';
-ctx.fill();
+  // inner center circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR * 0.28, 0, 2 * Math.PI);
+  ctx.fillStyle = '#f97316';
+  ctx.fill();
 
-// BIG centre arrow pointing up (Amazon style)
-const arrowLen = innerR * 0.5;
-const arrowWidth = innerR * 0.18;
-const tipX = cx;
-const tipY = cy - arrowLen;
+  // BIG centre arrow pointing up
+  const arrowLen = innerR * 0.5;
+  const arrowWidth = innerR * 0.18;
+  const tipX = cx;
+  const tipY = cy - arrowLen;
 
-ctx.beginPath();
-ctx.moveTo(tipX, tipY); // tip
-ctx.lineTo(cx - arrowWidth / 2, cy - innerR * 0.15);
-ctx.lineTo(cx + arrowWidth / 2, cy - innerR * 0.15);
-ctx.closePath();
-ctx.fillStyle = '#ffffff';
-ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(tipX, tipY);
+  ctx.lineTo(cx - arrowWidth / 2, cy - innerR * 0.15);
+  ctx.lineTo(cx + arrowWidth / 2, cy - innerR * 0.15);
+  ctx.closePath();
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
 
-// small screw in middle
-ctx.beginPath();
-ctx.arc(cx, cy, innerR * 0.1, 0, 2 * Math.PI);
-ctx.fillStyle = '#fefce8';
-ctx.fill();
+  // small screw in middle
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR * 0.1, 0, 2 * Math.PI);
+  ctx.fillStyle = '#fefce8';
+  ctx.fill();
 
-
-  // top arrow pointer (Amazon-style)
+  // top arrow pointer (optional outer marker)
   const pointerWidth = 22;
   const pointerHeight = 26;
   const pointerY = cy - outerR - 4;
