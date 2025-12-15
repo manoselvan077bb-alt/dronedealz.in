@@ -67,50 +67,6 @@ window.addEventListener('load', () => {
   const startPage = hash && document.getElementById(hash) ? hash : 'home';
   showPage(startPage, false);
 });
-// ===== VOICE SEARCH (top search bar) =====
-const voiceBtn = document.getElementById('topSearchVoice');
-const voiceInput = document.getElementById('topSearchInput');
-
-if (voiceBtn && voiceInput && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'en-IN';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-
-  let listening = false;
-
-  voiceBtn.addEventListener('click', () => {
-    if (!listening) {
-      recognition.start();
-      listening = true;
-      voiceBtn.classList.add('listening');
-    } else {
-      recognition.stop();
-      listening = false;
-      voiceBtn.classList.remove('listening');
-    }
-  });
-
-  recognition.addEventListener('result', (event) => {
-    const text = event.results[0][0].transcript;
-    voiceInput.value = text;
-    // trigger search page + results
-    showPage('search', true);
-    renderSearchResults(text);
-  });
-
-  recognition.addEventListener('end', () => {
-    listening = false;
-    voiceBtn.classList.remove('listening');
-  });
-} else if (voiceBtn) {
-  // browser does not support Web Speech API
-  voiceBtn.addEventListener('click', () => {
-    alert('Voice search is not supported on this browser. Please type your query.');
-  });
-}
-
 
 // mobile nav toggle
 if (hamburger && navMenu) {
@@ -1007,7 +963,7 @@ function updateSpinProgress(info) {
   }
 }
 
-// Wheel drawing with separators and fixed top arrow
+// Wheel drawing with separators and centre arrow + top marker
 function drawWheel(ctx, segments, angleOffset) {
   const cx = ctx.canvas.width / 2;
   const cy = ctx.canvas.height / 2;
@@ -1028,7 +984,6 @@ function drawWheel(ctx, segments, angleOffset) {
     const start = i * slice + angleOffset;
     const end = start + slice;
 
-    // coloured slice
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, innerR, start, end);
@@ -1036,7 +991,6 @@ function drawWheel(ctx, segments, angleOffset) {
     ctx.fillStyle = i % 2 === 0 ? '#f97373' : '#ef4444';
     ctx.fill();
 
-    // separator line
     ctx.save();
     ctx.strokeStyle = 'rgba(255,255,255,0.95)';
     ctx.lineWidth = 2;
@@ -1049,7 +1003,6 @@ function drawWheel(ctx, segments, angleOffset) {
     ctx.stroke();
     ctx.restore();
 
-    // text
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 18px Inter, system-ui';
     ctx.textAlign = 'center';
@@ -1072,7 +1025,7 @@ function drawWheel(ctx, segments, angleOffset) {
   ctx.fillStyle = '#f97316';
   ctx.fill();
 
-  // BIG centre arrow pointing up
+  // big centre arrow
   const arrowLen = innerR * 0.5;
   const arrowWidth = innerR * 0.18;
   const tipX = cx;
@@ -1086,13 +1039,13 @@ function drawWheel(ctx, segments, angleOffset) {
   ctx.fillStyle = '#ffffff';
   ctx.fill();
 
-  // small screw in middle
+  // screw
   ctx.beginPath();
   ctx.arc(cx, cy, innerR * 0.1, 0, 2 * Math.PI);
   ctx.fillStyle = '#fefce8';
   ctx.fill();
 
-  // top arrow pointer (optional outer marker)
+  // top pointer marker
   const pointerWidth = 22;
   const pointerHeight = 26;
   const pointerY = cy - outerR - 4;
@@ -1164,6 +1117,29 @@ function initSpinPage() {
     const duration = 3000;
     const start = performance.now();
 
+    async function onSpinEnd() {
+      const prize = SPIN_SEGMENTS[randomSegment];
+      btn.textContent = `You won ₹${prize}!`;
+
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const userSnap = await db.collection('users').doc(user.uid).get();
+          const upiId = userSnap.exists ? userSnap.data().upiId : null;
+
+          await db.collection('cashbackRequests').add({
+            userId: user.uid,
+            amount: prize,
+            upiId: upiId || null,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            status: 'pending'
+          });
+        } catch (err) {
+          console.error('Error creating cashback request', err);
+        }
+      }
+    }
+
     function animate(now) {
       const t = Math.min((now - start) / duration, 1);
       const ease = 1 - Math.pow(1 - t, 3);
@@ -1174,9 +1150,7 @@ function initSpinPage() {
       } else {
         currentAngle = angle;
         spinning = false;
-        const prize = SPIN_SEGMENTS[randomSegment];
-        btn.textContent = `You won ₹${prize}!`;
-        // TODO: record cashback transaction in Firestore
+        onSpinEnd();
       }
     }
 
