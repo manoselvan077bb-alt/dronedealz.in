@@ -865,6 +865,9 @@ if (upiForm) {
       );
       upiStatus.textContent = 'UPI ID saved for cashback.';
       upiStatus.style.color = '#16a34a';
+
+      // refresh spin eligibility when UPI is saved
+      getTodaySpendInfo().then(updateSpinProgress);
     } catch (err) {
       console.error('Error saving UPI ID', err);
       upiStatus.textContent = 'Could not save now. Please try again.';
@@ -934,11 +937,21 @@ window.addEventListener('load', () => {
 // ===== SPIN PAGE LOGIC =====
 const SPIN_SEGMENTS = [10, 20, 30, 40, 50];
 
-// Sum today's confirmed orders and count them
+// Sum today's confirmed orders + check UPI
 async function getTodaySpendInfo() {
   const user = auth.currentUser;
   if (!user) {
-    return { count: 0, total: 0 };
+    return { count: 0, total: 0, hasUpi: false };
+  }
+
+  // check UPI ID
+  let hasUpi = false;
+  try {
+    const userSnap = await db.collection('users').doc(user.uid).get();
+    const data = userSnap.exists ? userSnap.data() : {};
+    hasUpi = !!(data.upiId && String(data.upiId).includes('@'));
+  } catch (e) {
+    console.error('Error checking UPI ID for spin:', e);
   }
 
   const now = new Date();
@@ -962,7 +975,7 @@ async function getTodaySpendInfo() {
     total += Number(data.amount || 0);
   });
 
-  return { count, total };
+  return { count, total, hasUpi };
 }
 
 // Decide prize tier from total
@@ -976,7 +989,7 @@ function pickPrizeFromTotal(totalAmount) {
 }
 
 function updateSpinProgress(info) {
-  const { count, total } = info;
+  const { count, total, hasUpi } = info;
   const textEl = document.getElementById('spinProgressText');
   const fillEl = document.getElementById('spinProgressFill');
   const btn = document.getElementById('spinButton');
@@ -987,14 +1000,22 @@ function updateSpinProgress(info) {
   textEl.textContent = `Today you bought ${c}/${max} products • ₹${total} total.`;
   fillEl.style.width = (c / max) * 100 + '%';
 
-  const eligible = c >= 3 && total >= 1000;
-  if (eligible) {
-    btn.disabled = false;
-    btn.textContent = 'Tap to spin';
-  } else {
+  const eligibleByOrders = c >= 3 && total >= 1000;
+
+  if (!eligibleByOrders) {
     btn.disabled = true;
     btn.textContent = 'Buy 3 items to unlock';
+    return;
   }
+
+  if (!hasUpi) {
+    btn.disabled = true;
+    btn.textContent = 'Add UPI ID in Account to unlock';
+    return;
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Tap to spin';
 }
 
 // Wheel drawing with separators and centre arrow + top marker
@@ -1128,6 +1149,11 @@ function initSpinPage() {
 
     const info = await getTodaySpendInfo();
     updateSpinProgress(info);
+
+    if (!info.hasUpi) {
+      alert('Please add your UPI ID in the Account page to receive cashback.');
+      return;
+    }
     if (info.count < 3 || info.total < 1000) {
       return;
     }
