@@ -158,9 +158,9 @@
           <div id="spinProgressFill"></div>
         </div>
         <p class="spin-note">
-          Spin unlocks after 3 confirmed purchases today, and the total of those 3 must be at least ₹1000.
-        </p>
-      </div>
+  Spin unlocks after 3 confirmed purchases today, and the total of those 3 must be at least ₹999.
+</p>
+
 
       <div class="spin-wheel-wrapper">
         <canvas id="spinCanvas" width="260" height="260"></canvas>
@@ -170,26 +170,21 @@
       <p class="spin-small">Cashback will be sent instantly to your saved UPI ID.</p>
     </section>
 
-    <!-- PRODUCT DETAIL -->
     <section class="page" id="productDetail" data-page="productDetail">
+  <div class="top-shell">
+    <div class="top-shell-inner">
       <h2>Product details</h2>
 
-      <div class="info-card">
-        <div class="product-detail-layout">
-          <div class="product-detail-left">
-            <div id="detailImageBox"></div>
-          </div>
+      <div class="product-detail-card">
+        <div class="product-detail-left">
+          <div id="detailImageBox"></div>
+        </div>
 
-          <div class="product-detail-right">
-            <h1 class="product-detail-title" id="detailTitle">Loading product...</h1>
-            <p class="product-detail-price" id="detailPrice"></p>
-            <p class="product-detail-meta" id="detailMeta"></p>
-            <div class="buy-buttons" id="detailBuyButtons"></div>
-            <!-- Affiliate note in product detail -->
-            <p class="affiliate-note">
-              This is an affiliate link. Dealz may earn a small commission from your purchase at no extra cost to you. [web:2105][web:2120]
-            </p>
-          </div>
+        <div class="product-detail-right">
+          <h1 class="product-detail-title" id="detailTitle">Loading product...</h1>
+          <p class="product-detail-price" id="detailPrice"></p>
+          <p class="product-detail-meta" id="detailMeta"></p>
+          <div class="buy-buttons" id="detailBuyButtons"></div>
         </div>
       </div>
 
@@ -197,7 +192,12 @@
         <h3 style="margin-bottom:8px;">More products</h3>
         <div class="products-grid" id="moreProductsList"></div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
+
+
+
 
     <!-- CART -->
     <section class="page" id="cart" data-page="cart">

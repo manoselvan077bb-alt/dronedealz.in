@@ -5,7 +5,9 @@ const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 const bottomItems = document.querySelectorAll('.bottom-item');
 
+
 const ADMIN_EMAIL = 'testweb123@gmail.com';
+
 
 function showPage(pageId, push = true) {
   navLinks.forEach(l => {
@@ -34,6 +36,7 @@ function showPage(pageId, push = true) {
   }
 }
 
+
 navLinks.forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
@@ -42,12 +45,14 @@ navLinks.forEach(link => {
   });
 });
 
+
 bottomItems.forEach(btn => {
   btn.addEventListener('click', () => {
     const page = btn.getAttribute('data-page');
     if (page) showPage(page, true);
   });
 });
+
 
 const goLoginBtn = document.querySelector('#account .primary-btn[data-page="login"]');
 if (goLoginBtn) {
@@ -57,16 +62,19 @@ if (goLoginBtn) {
   });
 }
 
+
 window.addEventListener('popstate', (event) => {
   const pageId = event.state && event.state.page ? event.state.page : 'home';
   showPage(pageId, false);
 });
+
 
 window.addEventListener('load', () => {
   const hash = location.hash.replace('#', '');
   const startPage = hash && document.getElementById(hash) ? hash : 'home';
   showPage(startPage, false);
 });
+
 
 // mobile nav toggle
 if (hamburger && navMenu) {
@@ -87,12 +95,15 @@ if (hamburger && navMenu) {
   });
 }
 
+
 // ===== PRODUCT DATA =====
 let products = [];
 let currentProduct = null;
 
+
 // ===== CART (localStorage) =====
 let cart = [];
+
 
 function loadCartFromStorage() {
   try {
@@ -104,6 +115,7 @@ function loadCartFromStorage() {
   }
 }
 
+
 function saveCartToStorage() {
   try {
     localStorage.setItem('dd_cart', JSON.stringify(cart));
@@ -112,9 +124,11 @@ function saveCartToStorage() {
   }
 }
 
+
 function getCartCount() {
   return cart.reduce((sum, item) => sum + (item.qty || 1), 0);
 }
+
 
 function updateCartBadge() {
   const cartBtn = document.querySelector('.bottom-item[data-page="cart"]');
@@ -135,6 +149,7 @@ function updateCartBadge() {
   }
   badge.textContent = count;
 }
+
 
 // ==== ADD TO CART WITH IMAGE ====
 function addToCart(product) {
@@ -165,6 +180,7 @@ function addToCart(product) {
   renderHomeCartPreview();
 }
 
+
 function removeFromCart(productId) {
   cart = cart.filter(item => item.id !== productId);
   saveCartToStorage();
@@ -173,9 +189,11 @@ function removeFromCart(productId) {
   renderHomeCartPreview();
 }
 
+
 function calcCartTotal() {
   return cart.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
 }
+
 
 // ===== HELPERS =====
 function calcPriceMeta(p) {
@@ -185,6 +203,7 @@ function calcPriceMeta(p) {
   const discount = hasMrp ? Math.round((mrp - price) / mrp * 100) : null;
   return { price, mrp, hasMrp, discount };
 }
+
 
 // ===== PRODUCT CARD COMPONENT =====
 function createProductCard(p) {
@@ -250,6 +269,7 @@ function createProductCard(p) {
 
   return card;
 }
+
 
 // ===== PRODUCT DETAIL (SCROLLABLE GALLERY) =====
 function renderProductDetail() {
@@ -328,6 +348,17 @@ function renderProductDetail() {
   `;
   metaEl.textContent = `${p.category || '-'} • ${p.platform || '-'}`;
 
+  // Affiliate sentence just for product details
+  const affiliateNote = document.createElement('p');
+  affiliateNote.className = 'product-detail-meta';
+  affiliateNote.style.fontSize = '0.8rem';
+  affiliateNote.style.color = '#6b7280';
+  affiliateNote.style.marginTop = '4px';
+  affiliateNote.textContent =
+    'As an Amazon & Flipkart affiliate, Dealz may earn a commission from qualifying purchases.';
+  const detailRight = document.querySelector('#productDetail .product-detail-right');
+  if (detailRight) detailRight.appendChild(affiliateNote);
+
   btnBox.innerHTML = `
     <a href="${p.url || '#'}" target="_blank" rel="noopener"
        class="buy-btn ${p.platform}">
@@ -354,6 +385,7 @@ function renderProductDetail() {
 
   renderMoreProducts();
 }
+
 
 // ===== MORE PRODUCTS UNDER DETAIL =====
 function renderMoreProducts() {
@@ -394,6 +426,7 @@ function renderMoreProducts() {
   });
 }
 
+
 // ===== FAVOURITES (Firestore) =====
 async function handleFavouriteClick(product, buttonEl) {
   const user = auth.currentUser;
@@ -421,6 +454,7 @@ async function handleFavouriteClick(product, buttonEl) {
     alert('Could not save. Try again.');
   }
 }
+
 
 async function renderFavourites(userId) {
   const listEl = document.getElementById('favouritesList');
@@ -459,10 +493,12 @@ async function renderFavourites(userId) {
   }
 }
 
+
 // ===== HOME =====
 const catButtons = document.querySelectorAll('.cat-btn');
 const homeProductsContainer = document.getElementById('homeProducts');
 const resultCount = document.getElementById('resultCount');
+
 
 function renderHomeProducts(category = 'all') {
   if (!homeProductsContainer) return;
@@ -486,6 +522,7 @@ function renderHomeProducts(category = 'all') {
   });
 }
 
+
 if (catButtons && homeProductsContainer) {
   catButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -497,11 +534,13 @@ if (catButtons && homeProductsContainer) {
   });
 }
 
+
 // ===== SEARCH =====
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 const topSearchInput = document.getElementById('topSearchInput');
 const topSearchVoice = document.getElementById('topSearchVoice');
+
 
 function renderSearchResults(query) {
   if (!searchResults) return;
@@ -533,11 +572,13 @@ function renderSearchResults(query) {
   });
 }
 
+
 if (searchInput && searchResults) {
   searchInput.addEventListener('input', (e) => {
     renderSearchResults(e.target.value);
   });
 }
+
 
 if (topSearchInput) {
   topSearchInput.addEventListener('input', (e) => {
@@ -545,6 +586,7 @@ if (topSearchInput) {
     renderSearchResults(e.target.value);
   });
 }
+
 
 // ===== VOICE SEARCH (MIC) FOR TOP SEARCH =====
 if (topSearchVoice && topSearchInput) {
@@ -579,8 +621,10 @@ if (topSearchVoice && topSearchInput) {
   }
 }
 
+
 // ===== DEALZ (high-discount products) =====
 const dealsProductsContainer = document.getElementById('dealsProducts');
+
 
 function renderDealsProducts() {
   if (!dealsProductsContainer) return;
@@ -604,6 +648,7 @@ function renderDealsProducts() {
     dealsProductsContainer.appendChild(card);
   });
 }
+
 
 // ===== MINI CART PREVIEW ON HOME =====
 function renderHomeCartPreview() {
@@ -643,6 +688,7 @@ function renderHomeCartPreview() {
     </button>
   `;
 }
+
 
 // ===== CART PAGE RENDER =====
 function renderCartPage() {
@@ -709,13 +755,16 @@ function renderCartPage() {
   });
 }
 
+
 // ===== AUTH =====
 const signupForm = document.getElementById('signupForm');
 const loginForm = document.getElementById('loginForm');
 
+
 function showMessage(msg) {
   alert(msg);
 }
+
 
 if (signupForm) {
   signupForm.addEventListener('submit', async (e) => {
@@ -747,6 +796,7 @@ if (signupForm) {
   });
 }
 
+
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -764,8 +814,10 @@ if (loginForm) {
   });
 }
 
+
 const accountPage = document.getElementById('account');
 const adminSection = document.getElementById('admin');
+
 
 auth.onAuthStateChanged(async (user) => {
   if (!accountPage) return;
@@ -806,6 +858,7 @@ auth.onAuthStateChanged(async (user) => {
   }
 });
 
+
 window.droneLogout = async function () {
   try {
     await auth.signOut();
@@ -815,6 +868,7 @@ window.droneLogout = async function () {
     console.error(e);
   }
 };
+
 
 // ===== UPI ID SAVE + LOAD =====
 async function onAccountPageShown() {
@@ -836,6 +890,7 @@ async function onAccountPageShown() {
     console.error('Error loading UPI ID', err);
   }
 }
+
 
 const upiForm = document.getElementById('upiForm');
 if (upiForm) {
@@ -875,6 +930,7 @@ if (upiForm) {
     }
   });
 }
+
 
 // ===== ADMIN: ADD PRODUCT =====
 window.addEventListener('load', () => {
@@ -934,8 +990,10 @@ window.addEventListener('load', () => {
   });
 });
 
+
 // ===== SPIN PAGE LOGIC =====
 const SPIN_SEGMENTS = [10, 20, 30, 40, 50];
+
 
 // Sum today's confirmed orders + check UPI
 async function getTodaySpendInfo() {
@@ -978,15 +1036,17 @@ async function getTodaySpendInfo() {
   return { count, total, hasUpi };
 }
 
+
 // Decide prize tier from total
 function pickPrizeFromTotal(totalAmount) {
   if (totalAmount >= 5000) return 50;
   if (totalAmount >= 4000) return 40;
   if (totalAmount >= 3000) return 30;
   if (totalAmount >= 2000) return 20;
-  if (totalAmount >= 1000) return 10;
+  if (totalAmount >= 999) return 10; // was 1000
   return 0;
 }
+
 
 function updateSpinProgress(info) {
   const { count, total, hasUpi } = info;
@@ -1000,7 +1060,7 @@ function updateSpinProgress(info) {
   textEl.textContent = `Today you bought ${c}/${max} products • ₹${total} total.`;
   fillEl.style.width = (c / max) * 100 + '%';
 
-  const eligibleByOrders = c >= 3 && total >= 1000;
+  const eligibleByOrders = c >= 3 && total >= 999; // was 1000
 
   if (!eligibleByOrders) {
     btn.disabled = true;
@@ -1017,6 +1077,7 @@ function updateSpinProgress(info) {
   btn.disabled = false;
   btn.textContent = 'Tap to spin';
 }
+
 
 // Wheel drawing with separators and centre arrow + top marker
 function drawWheel(ctx, segments, angleOffset) {
@@ -1128,6 +1189,7 @@ function drawWheel(ctx, segments, angleOffset) {
   ctx.stroke();
 }
 
+
 function initSpinPage() {
   const canvas = document.getElementById('spinCanvas');
   const btn = document.getElementById('spinButton');
@@ -1154,7 +1216,7 @@ function initSpinPage() {
       alert('Please add your UPI ID in the Account page to receive cashback.');
       return;
     }
-    if (info.count < 3 || info.total < 1000) {
+    if (info.count < 3 || info.total < 999) { // was 1000
       return;
     }
 
@@ -1220,6 +1282,7 @@ function initSpinPage() {
   getTodaySpendInfo().then(updateSpinProgress);
 }
 
+
 // ===== LOAD PRODUCTS FROM FIRESTORE & INIT =====
 async function loadProductsFromFirestore() {
   try {
@@ -1251,6 +1314,7 @@ async function loadProductsFromFirestore() {
     console.error('Error loading products from Firestore:', err);
   }
 }
+
 
 // Initialisation
 loadCartFromStorage();
