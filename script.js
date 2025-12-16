@@ -501,6 +501,7 @@ if (catButtons && homeProductsContainer) {
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 const topSearchInput = document.getElementById('topSearchInput');
+const topSearchVoice = document.getElementById('topSearchVoice');
 
 function renderSearchResults(query) {
   if (!searchResults) return;
@@ -543,6 +544,39 @@ if (topSearchInput) {
     showPage('search', true);
     renderSearchResults(e.target.value);
   });
+}
+
+// ===== VOICE SEARCH (MIC) FOR TOP SEARCH =====
+if (topSearchVoice && topSearchInput) {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    topSearchVoice.addEventListener('click', () => {
+      alert('Voice search is not supported on this browser. Please type your search.');
+    });
+  } else {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-IN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    topSearchVoice.addEventListener('click', () => {
+      recognition.start();
+    });
+
+    recognition.addEventListener('result', (event) => {
+      const transcript = event.results[0][0].transcript || '';
+      topSearchInput.value = transcript;
+      showPage('search', true);
+      renderSearchResults(transcript);
+    });
+
+    recognition.addEventListener('error', (event) => {
+      console.error('Voice search error:', event.error);
+      alert('Could not use voice search. Please try again or type your query.');
+    });
+  }
 }
 
 // ===== DEALZ (high-discount products) =====
@@ -919,7 +953,7 @@ async function getTodaySpendInfo() {
     .where('status', '==', 'confirmed')
     .where('createdAt', '>=', startTs)
     .where('createdAt', '<', endTs)
-    .get(); // [web:1907][web:1953]
+    .get();
 
   const count = snap.size;
   let total = 0;
