@@ -1,3 +1,35 @@
+/*********************************************************
+ * WALLET SYSTEM (SAFE – ADD ONLY)
+ *********************************************************/
+let walletAvailable = 0;
+let walletWithdrawn = 0;
+
+function loadWallet() {
+  walletAvailable = Number(localStorage.getItem('walletAvailable') || 0);
+  walletWithdrawn = Number(localStorage.getItem('walletWithdrawn') || 0);
+  updateWalletUI();
+}
+
+function saveWallet() {
+  localStorage.setItem('walletAvailable', walletAvailable);
+  localStorage.setItem('walletWithdrawn', walletWithdrawn);
+}
+
+function updateWalletUI() {
+  const a = document.getElementById('walletAvailable');
+  const w = document.getElementById('walletWithdrawn');
+  if (a) a.textContent = walletAvailable;
+  if (w) w.textContent = walletWithdrawn;
+}
+
+// admin/backend trigger later
+function confirmCommissionAndPayout(amount) {
+  if (walletAvailable < amount) return;
+  walletAvailable -= amount;
+  walletWithdrawn += amount;
+  saveWallet();
+  updateWalletUI();
+}
 // ===== SIMPLE NAVIGATION (with phone back support) =====
 const navLinks = document.querySelectorAll('.nav-link');
 const pages = document.querySelectorAll('.page');
@@ -70,9 +102,11 @@ window.addEventListener('popstate', (event) => {
 
 
 window.addEventListener('load', () => {
-  const hash = location.hash.replace('#', '');
+  const hash = location.hash.replace("#", "");
   const startPage = hash && document.getElementById(hash) ? hash : 'home';
   showPage(startPage, false);
+
+  loadWallet(); // ✅ ADD THIS LINE (ONLY THIS)
 });
 
 
