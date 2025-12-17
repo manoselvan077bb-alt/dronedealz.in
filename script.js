@@ -1032,6 +1032,8 @@ const SPIN_SEGMENTS = [10, 20, 30, 40, 50];
 // Sum today's confirmed orders + check UPI
 async function getTodaySpendInfo() {
   const user = auth.currentUser;
+  
+
   if (!user) {
     return { count: 0, total: 0, hasUpi: false };
   }
@@ -1274,27 +1276,32 @@ function initSpinPage() {
     const start = performance.now();
 
     async function onSpinEnd() {
-      const prize = SPIN_SEGMENTS[randomSegment];
-      btn.textContent = `You won ₹${prize}!`;
+  const prize = SPIN_SEGMENTS[randomSegment];
+  btn.textContent = `You won ₹${prize}!`;
 
-      const user = auth.currentUser;
-      if (user) {
-        try {
-          const userSnap = await db.collection('users').doc(user.uid).get();
-          const upiId = userSnap.exists ? userSnap.data().upiId : null;
+  // ✅ STEP 5 — ADD TO WALLET (LOCKED)
+  walletAvailable += prize;
+  saveWallet();
+  updateWalletUI();
 
-          await db.collection('cashbackRequests').add({
-            userId: user.uid,
-            amount: prize,
-            upiId: upiId || null,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            status: 'pending'
-          });
-        } catch (err) {
-          console.error('Error creating cashback request', err);
-        }
-      }
+  const user = auth.currentUser;
+  if (user) {
+    try {
+      const userSnap = await db.collection('users').doc(user.uid).get();
+      const upiId = userSnap.exists ? userSnap.data().upiId : null;
+
+      await db.collection('cashbackRequests').add({
+        userId: user.uid,
+        amount: prize,
+        upiId: upiId || null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        status: 'pending'
+      });
+    } catch (err) {
+      console.error('Error creating cashback request', err);
     }
+  }
+}
 
     function animate(now) {
       const t = Math.min((now - start) / duration, 1);
