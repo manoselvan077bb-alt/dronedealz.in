@@ -1669,3 +1669,18 @@ p {
     max-width: 100%;
   }
 }
+.logo-img {
+  width: 40px;      /* increase/decrease */
+  height: 40px;
+  border-radius: 50%;  /* keep circle, or remove if logo is square */
+  object-fit: cover;
+}
+.logo-deal {
+  font-weight: 700;
+  color: #000000;
+}
+
+.logo-z {
+  font-weight: 700;
+  color: #ff7900;   /* orange */
+}
