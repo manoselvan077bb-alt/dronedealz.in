@@ -1323,30 +1323,49 @@ function initSpinPage() {
   getTodaySpendInfo().then(updateSpinProgress);
 }
 async function getTodaySpendInfo() {
-  const user = firebase.auth().currentUser;
-  if (!user) return null;
+  const user = auth.currentUser;
+  if (!user) {
+    return { count: 0, total: 0, hasUpi: false };
+  }
 
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
+  // ✅ Check UPI
+  let hasUpi = false;
+  try {
+    const userSnap = await db.collection('users').doc(user.uid).get();
+    const data = userSnap.exists ? userSnap.data() : {};
+    hasUpi = !!(data.upiId && String(data.upiId).includes('@'));
+  } catch (e) {
+    console.error('Error checking UPI ID for spin:', e);
+  }
 
-  const snapshot = await firebase.firestore()
-    .collection("orders")
-    .where("userId", "==", user.uid)
-    .where("status", "==", "confirmed")
-    .where("createdAt", ">=", firebase.firestore.Timestamp.fromDate(startOfDay))
-    .orderBy("createdAt", "desc")   // 🔴 IMPORTANT
+  // ✅ Today range
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+  const startTs = firebase.firestore.Timestamp.fromDate(startOfDay);
+  const endTs = firebase.firestore.Timestamp.fromDate(endOfDay);
+
+  const snap = await db.collection('orders')
+    .where('userId', '==', user.uid)
+    .where('status', '==', 'confirmed')
+    .where('createdAt', '>=', startTs)
+    .where('createdAt', '<', endTs)
+    .orderBy('createdAt', 'desc')
     .get();
 
   let total = 0;
-  snapshot.forEach(doc => {
-    total += doc.data().amount || 0;
+  snap.forEach(doc => {
+    total += Number(doc.data().amount || 0);
   });
 
   return {
-    count: snapshot.size,
-    total
+    count: snap.size,
+    total,
+    hasUpi
   };
 }
+
 
 
 // ===== LOAD PRODUCTS FROM FIRESTORE & INIT =====
