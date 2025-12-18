@@ -1364,3 +1364,26 @@ loadProductsFromFirestore();
 renderCartPage();
 renderHomeCartPreview();
 initSpinPage();
+// ===== TEST ORDER CREATION (FOR DEVELOPMENT ONLY) =====
+window.createTestOrder = async function () {
+  const user = firebase.auth().currentUser;
+
+  if (!user) {
+    alert("Please login first");
+    return;
+  }
+
+  try {
+    await db.collection("orders").add({
+      userId: user.uid,
+      amount: 1200,
+      status: "confirmed",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp() // ⏱️ IMPORTANT
+    });
+
+    alert("Test order created successfully");
+    console.log("Order created with correct timestamp");
+  } catch (err) {
+    console.error("Error creating order:", err);
+  }
+};
