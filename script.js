@@ -1322,6 +1322,31 @@ function initSpinPage() {
 
   getTodaySpendInfo().then(updateSpinProgress);
 }
+async function getTodaySpendInfo() {
+  const user = firebase.auth().currentUser;
+  if (!user) return null;
+
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const snapshot = await firebase.firestore()
+    .collection("orders")
+    .where("userId", "==", user.uid)
+    .where("status", "==", "confirmed")
+    .where("createdAt", ">=", firebase.firestore.Timestamp.fromDate(startOfDay))
+    .orderBy("createdAt", "desc")   // 🔴 IMPORTANT
+    .get();
+
+  let total = 0;
+  snapshot.forEach(doc => {
+    total += doc.data().amount || 0;
+  });
+
+  return {
+    count: snapshot.size,
+    total
+  };
+}
 
 
 // ===== LOAD PRODUCTS FROM FIRESTORE & INIT =====
