@@ -1032,13 +1032,12 @@ const SPIN_SEGMENTS = [10, 20, 30, 40, 50];
 // Sum today's confirmed orders + check UPI
 async function getTodaySpendInfo() {
   const user = auth.currentUser;
-  
 
   if (!user) {
     return { count: 0, total: 0, hasUpi: false };
   }
 
-  // check UPI ID
+  // ✅ Check UPI (THIS LINE IS CORRECT)
   let hasUpi = false;
   try {
     const userSnap = await db.collection('users').doc(user.uid).get();
@@ -1048,6 +1047,7 @@ async function getTodaySpendInfo() {
     console.error('Error checking UPI ID for spin:', e);
   }
 
+  // ✅ Today time range
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
@@ -1055,22 +1055,27 @@ async function getTodaySpendInfo() {
   const startTs = firebase.firestore.Timestamp.fromDate(startOfDay);
   const endTs = firebase.firestore.Timestamp.fromDate(endOfDay);
 
+  // ✅ FIXED QUERY (timestamp-safe)
   const snap = await db.collection('orders')
     .where('userId', '==', user.uid)
     .where('status', '==', 'confirmed')
     .where('createdAt', '>=', startTs)
     .where('createdAt', '<', endTs)
+    .orderBy('createdAt') // 🔴 REQUIRED
     .get();
 
-  const count = snap.size;
   let total = 0;
   snap.forEach(doc => {
-    const data = doc.data();
-    total += Number(data.amount || 0);
+    total += Number(doc.data().amount || 0);
   });
 
-  return { count, total, hasUpi };
+  return {
+    count: snap.size,
+    total,
+    hasUpi
+  };
 }
+
 
 
 // Decide prize tier from total
@@ -1322,49 +1327,7 @@ function initSpinPage() {
 
   getTodaySpendInfo().then(updateSpinProgress);
 }
-async function getTodaySpendInfo() {
-  const user = auth.currentUser;
-  if (!user) {
-    return { count: 0, total: 0, hasUpi: false };
-  }
 
-  // ✅ Check UPI
-  let hasUpi = false;
-  try {
-    const userSnap = await db.collection('users').doc(user.uid).get();
-    const data = userSnap.exists ? userSnap.data() : {};
-    hasUpi = !!(data.upiId && String(data.upiId).includes('@'));
-  } catch (e) {
-    console.error('Error checking UPI ID for spin:', e);
-  }
-
-  // ✅ Today range
-  const now = new Date();
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-
-  const startTs = firebase.firestore.Timestamp.fromDate(startOfDay);
-  const endTs = firebase.firestore.Timestamp.fromDate(endOfDay);
-
-  const snap = await db.collection('orders')
-    .where('userId', '==', user.uid)
-    .where('status', '==', 'confirmed')
-    .where('createdAt', '>=', startTs)
-    .where('createdAt', '<', endTs)
-    .orderBy('createdAt', 'desc')
-    .get();
-
-  let total = 0;
-  snap.forEach(doc => {
-    total += Number(doc.data().amount || 0);
-  });
-
-  return {
-    count: snap.size,
-    total,
-    hasUpi
-  };
-}
 
 
 
