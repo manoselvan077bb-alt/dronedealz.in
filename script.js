@@ -1288,8 +1288,13 @@ const targetAngle =
   const prize = SPIN_SEGMENTS[randomSegment];
   btn.textContent = `You won ₹${prize}!`;
 
-  // ✅ STEP 5 — ADD TO WALLET (LOCKED)
-  
+  // ✅ ADD prize to walletAvailable
+  walletAvailable += prize;
+
+  // ✅ Persist wallet (if you already have this function)
+  saveWallet();
+
+  // ✅ Refresh UI
   updateWalletUI();
 
   const user = auth.currentUser;
@@ -1298,6 +1303,7 @@ const targetAngle =
       const userSnap = await db.collection('users').doc(user.uid).get();
       const upiId = userSnap.exists ? userSnap.data().upiId : null;
 
+      // ✅ keep this for future automation
       await db.collection('cashbackRequests').add({
         userId: user.uid,
         amount: prize,
@@ -1310,6 +1316,7 @@ const targetAngle =
     }
   }
 }
+
 
     function animate(now) {
       const t = Math.min((now - start) / duration, 1);
