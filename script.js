@@ -1401,6 +1401,6 @@ window.createTestOrder = async function () {
 auth.onAuthStateChanged(user => {
   if (!user) return;
 
-  initSpinPage();
+  
   getTodaySpendInfo().then(updateSpinProgress);
 });
