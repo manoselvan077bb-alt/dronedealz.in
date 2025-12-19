@@ -1325,7 +1325,7 @@ function initSpinPage() {
     requestAnimationFrame(animate);
   });
 
-  getTodaySpendInfo().then(updateSpinProgress);
+  
 }
 
 
@@ -1394,3 +1394,9 @@ window.createTestOrder = async function () {
     console.error("Error creating order:", err);
   }
 };
+auth.onAuthStateChanged(user => {
+  if (!user) return;
+
+  initSpinPage();
+  getTodaySpendInfo().then(updateSpinProgress);
+});
