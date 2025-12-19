@@ -1288,34 +1288,28 @@ const targetAngle =
   const prize = SPIN_SEGMENTS[randomSegment];
   btn.textContent = `You won ₹${prize}!`;
 
-  // ✅ ADD prize to walletAvailable
-  walletAvailable += prize;
-
-  // ✅ Persist wallet (if you already have this function)
-  saveWallet();
-
-  // ✅ Refresh UI
-  updateWalletUI();
-
   const user = auth.currentUser;
-  if (user) {
-    try {
-      const userSnap = await db.collection('users').doc(user.uid).get();
-      const upiId = userSnap.exists ? userSnap.data().upiId : null;
+  if (!user) return;
 
-      // ✅ keep this for future automation
-      await db.collection('cashbackRequests').add({
-        userId: user.uid,
-        amount: prize,
-        upiId: upiId || null,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        status: 'pending'
-      });
-    } catch (err) {
-      console.error('Error creating cashback request', err);
-    }
+  try {
+    // ✅ RECORD SPIN RESULT (ONLY ONCE)
+    await db.collection('spinWins').add({
+      userId: user.uid,
+      amount: prize,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'credited' // for testing
+    });
+
+    // ✅ NOW UPDATE WALLET ONCE
+    walletAvailable = Number(walletAvailable || 0) + prize;
+    saveWallet();
+    updateWalletUI();
+
+  } catch (err) {
+    console.error('Spin credit error', err);
   }
 }
+
 
 
     function animate(now) {
