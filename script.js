@@ -1,35 +1,3 @@
-/*********************************************************
- * WALLET SYSTEM (SAFE – ADD ONLY)
- *********************************************************/
-let walletAvailable = 0;
-let walletWithdrawn = 0;
-
-function loadWallet() {
-  walletAvailable = Number(localStorage.getItem('walletAvailable') || 0);
-  walletWithdrawn = Number(localStorage.getItem('walletWithdrawn') || 0);
-  updateWalletUI();
-}
-
-function saveWallet() {
-  localStorage.setItem('walletAvailable', walletAvailable);
-  localStorage.setItem('walletWithdrawn', walletWithdrawn);
-}
-
-function updateWalletUI() {
-  const a = document.getElementById('walletAvailable');
-  const w = document.getElementById('walletWithdrawn');
-  if (a) a.textContent = walletAvailable;
-  if (w) w.textContent = walletWithdrawn;
-}
-
-// admin/backend trigger later
-function confirmCommissionAndPayout(amount) {
-  if (walletAvailable < amount) return;
-  walletAvailable -= amount;
-  walletWithdrawn += amount;
-  saveWallet();
-  updateWalletUI();
-}
 // ===== SIMPLE NAVIGATION (with phone back support) =====
 const navLinks = document.querySelectorAll('.nav-link');
 const pages = document.querySelectorAll('.page');
@@ -1300,10 +1268,7 @@ const targetAngle =
       status: 'credited' // for testing
     });
 
-    // ✅ NOW UPDATE WALLET ONCE
-    walletAvailable = Number(walletAvailable || 0) + prize;
-    saveWallet();
-    updateWalletUI();
+    
 
   } catch (err) {
     console.error('Spin credit error', err);
@@ -1375,32 +1340,9 @@ loadProductsFromFirestore();
 renderCartPage();
 renderHomeCartPreview();
 initSpinPage();
-// ===== TEST ORDER CREATION (FOR DEVELOPMENT ONLY) =====
-window.createTestOrder = async function () {
-  const user = firebase.auth().currentUser;
 
-  if (!user) {
-    alert("Please login first");
-    return;
-  }
-
-  try {
-    await db.collection("orders").add({
-      userId: user.uid,
-      amount: 1200,
-      status: "confirmed",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp() // ⏱️ IMPORTANT
-    });
-
-    alert("Test order created successfully");
-    console.log("Order created with correct timestamp");
-  } catch (err) {
-    console.error("Error creating order:", err);
-  }
-};
 auth.onAuthStateChanged(user => {
   if (!user) return;
 
-  
   getTodaySpendInfo().then(updateSpinProgress);
 });
