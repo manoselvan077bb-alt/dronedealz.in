@@ -1274,7 +1274,11 @@ function initSpinPage() {
     const slice = (2 * Math.PI) / SPIN_SEGMENTS.length;
     const randomSegment = forcedIndex;
 
-    const targetAngle = (Math.PI / 2) - (randomSegment * slice + slice / 2);
+    const pointerOffset = -Math.PI / 2; // arrow at top (12 o'clock)
+
+const targetAngle =
+  pointerOffset - (randomSegment * slice + slice / 2);
+
     const extraTurns = 5 * 2 * Math.PI;
     const finalAngle = targetAngle + extraTurns;
     const duration = 3000;
@@ -1285,8 +1289,7 @@ function initSpinPage() {
   btn.textContent = `You won ₹${prize}!`;
 
   // ✅ STEP 5 — ADD TO WALLET (LOCKED)
-  walletAvailable += prize;
-  saveWallet();
+  
   updateWalletUI();
 
   const user = auth.currentUser;
