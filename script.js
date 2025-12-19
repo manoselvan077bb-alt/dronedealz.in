@@ -1057,12 +1057,12 @@ async function getTodaySpendInfo() {
 
   // ✅ FIXED QUERY (timestamp-safe)
   const snap = await db.collection('orders')
-    .where('userId', '==', user.uid)
-    .where('status', '==', 'confirmed')
-    .where('createdAt', '>=', startTs)
-    .where('createdAt', '<', endTs)
-    .orderBy('createdAt') // 🔴 REQUIRED
-    .get();
+  .where('userId', '==', user.uid)
+  .where('status', '==', 'confirmed')
+  .where('createdAt', '>=', startTs)
+  .where('createdAt', '<', endTs)
+  .orderBy('createdAt', 'desc') // ✅ MUST MATCH INDEX
+  .get();
 
   let total = 0;
   snap.forEach(doc => {
