@@ -1064,18 +1064,20 @@ function updateSpinProgress(info) {
   const btn = document.getElementById('spinButton');
   if (!textEl || !fillEl || !btn) return;
 
-  const max = 3;
-  const c = Math.min(count, max);
-  textEl.textContent = `Today you bought ${c}/${max} products • ₹${total} total.`;
-  fillEl.style.width = (c / max) * 100 + '%';
+  const max = 2;
+const c = Math.min(count, max);
 
-  const eligibleByOrders = c >= 3 && total >= 999; // was 1000
+textEl.textContent = `Today you bought ${c}/${max} products • ₹${total} total.`;
+fillEl.style.width = (c / max) * 100 + '%';
 
-  if (!eligibleByOrders) {
-    btn.disabled = true;
-    btn.textContent = 'Buy 3 items to unlock';
-    return;
-  }
+const eligibleByOrders = c >= 2 && total >= 999;
+
+if (!eligibleByOrders) {
+  btn.disabled = true;
+  btn.textContent = 'Buy 2 items to unlock';
+  return;
+}
+
 
   if (!hasUpi) {
     btn.disabled = true;
@@ -1197,6 +1199,20 @@ function drawWheel(ctx, segments, angleOffset) {
   ctx.lineWidth = 2;
   ctx.stroke();
 }
+async function getTodaySpinCount(userId) {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+  const snap = await db.collection('spinWins')
+    .where('userId', '==', userId)
+    .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(start))
+    .where('createdAt', '<', firebase.firestore.Timestamp.fromDate(end))
+    .get();
+
+  return snap.size;
+}
+
 
 
 function initSpinPage() {
@@ -1225,9 +1241,16 @@ function initSpinPage() {
       alert('Please add your UPI ID in the Account page to receive cashback.');
       return;
     }
-    if (info.count < 3 || info.total < 999) { // was 1000
-      return;
-    }
+    const spinsUsedToday = await getTodaySpinCount(user.uid);
+const spinsAllowed = Math.floor(info.count / 2);
+
+if (info.total < 999 || spinsUsedToday >= spinsAllowed) {
+  btn.disabled = true;
+  btn.textContent = 'Buy more items to unlock spin';
+  return;
+}
+
+
 
     const prizeValue = pickPrizeFromTotal(info.total);
     if (prizeValue === 0) return;
@@ -1236,7 +1259,7 @@ function initSpinPage() {
     if (forcedIndex === -1) return;
 
     spinning = true;
-    btn.disabled = true;
+    
     btn.textContent = 'Spinning...';
 
     const slice = (2 * Math.PI) / SPIN_SEGMENTS.length;
