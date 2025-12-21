@@ -998,7 +998,7 @@ const SPIN_SEGMENTS = [10, 20, 30, 40, 50];
 
 
 // Sum today's confirmed orders + check UPI
-async function getTodaySpendInfo() {
+ /*async function getTodaySpendInfo() {
   const user = auth.currentUser;
 
   if (!user) {
@@ -1043,11 +1043,12 @@ async function getTodaySpendInfo() {
     hasUpi
   };
 }
+  */
 
 
 
 // Decide prize tier from total
-function pickPrizeFromTotal(totalAmount) {
+  /*function pickPrizeFromTotal(totalAmount) {
   if (totalAmount >= 5000) return 50;
   if (totalAmount >= 4000) return 40;
   if (totalAmount >= 3000) return 30;
@@ -1087,7 +1088,7 @@ if (!eligibleByOrders) {
 
   btn.disabled = false;
   btn.textContent = 'Tap to spin';
-}
+} */
 
 
 // Wheel drawing with separators and centre arrow + top marker
@@ -1199,7 +1200,7 @@ function drawWheel(ctx, segments, angleOffset) {
   ctx.lineWidth = 2;
   ctx.stroke();
 }
-async function getTodaySpinCount(userId) {
+  /*async function getTodaySpinCount(userId) {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
@@ -1212,7 +1213,7 @@ async function getTodaySpinCount(userId) {
 
   return snap.size;
 }
-
+*/
 
 function initSpinPage() {
   const canvas = document.getElementById('spinCanvas');
