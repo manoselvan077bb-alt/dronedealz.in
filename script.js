@@ -74,7 +74,7 @@ window.addEventListener('load', () => {
   const startPage = hash && document.getElementById(hash) ? hash : 'home';
   showPage(startPage, false);
 
-  loadWallet(); // ✅ ADD THIS LINE (ONLY THIS)
+  // loadWallet(); ❌ DISABLED (wallet backend not ready)
 });
 
 
@@ -924,7 +924,7 @@ if (upiForm) {
       upiStatus.style.color = '#16a34a';
 
       // refresh spin eligibility when UPI is saved
-      getTodaySpendInfo().then(updateSpinProgress);
+      //getTodaySpendInfo().then(updateSpinProgress);
     } catch (err) {
       console.error('Error saving UPI ID', err);
       upiStatus.textContent = 'Could not save now. Please try again.';
