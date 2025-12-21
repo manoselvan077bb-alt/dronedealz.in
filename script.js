@@ -1226,11 +1226,14 @@ function initSpinPage() {
 
   drawWheel(ctx, SPIN_SEGMENTS, currentAngle);
 
-  // 🔒 Check if already spun (after login)
+  // 🔒 lock check (REAL MODE)
   const uid = auth.currentUser?.uid;
   if (uid && localStorage.getItem(`spin_used_${uid}`)) {
     btn.disabled = true;
     btn.textContent = 'Spin Used 🎉';
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'Tap to spin';
   }
 
   btn.addEventListener('click', () => {
@@ -1243,7 +1246,6 @@ function initSpinPage() {
     if (spinning) return;
 
     if (localStorage.getItem(`spin_used_${user.uid}`)) {
-      alert('You already used your spin.');
       btn.disabled = true;
       btn.textContent = 'Spin Used 🎉';
       return;
@@ -1256,7 +1258,7 @@ function initSpinPage() {
     const slice = (2 * Math.PI) / SPIN_SEGMENTS.length;
     const randomSegment = Math.floor(Math.random() * SPIN_SEGMENTS.length);
 
-    const pointerOffset = -Math.PI / 2; // arrow at top
+    const pointerOffset = -Math.PI / 2;
     const targetAngle =
       pointerOffset - (randomSegment * slice + slice / 2);
 
@@ -1290,13 +1292,15 @@ function initSpinPage() {
 
     alert(`🎉 You won ₹${prize}\n(credited after verification)`);
 
+    // 🔐 REAL MODE LOCK
     localStorage.setItem(`spin_used_${uid}`, 'true');
     localStorage.setItem(`spin_time_${uid}`, Date.now());
 
-    btn.textContent = 'Spin Used 🎉';
     btn.disabled = true;
+    btn.textContent = 'Spin Used 🎉';
   }
 }
+
 
 
 // ===== LOAD PRODUCTS FROM FIRESTORE & INIT =====
@@ -1343,5 +1347,5 @@ initSpinPage();
 auth.onAuthStateChanged(user => {
   if (!user) return;
 
-  getTodaySpendInfo().then(updateSpinProgress);
+ // getTodaySpendInfo().then(updateSpinProgress);
 });
