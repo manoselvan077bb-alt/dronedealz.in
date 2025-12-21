@@ -1,24 +1,61 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users: only owner can read/write
+    // =========================
+    // USERS
+    // =========================
     match /users/{userId} {
-      allow read, write: if request.auth != null
-                         && request.auth.uid == userId;
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // User can create profile once
+      allow create: if request.auth != null && request.auth.uid == userId;
+
+      // User can update ONLY safe fields (NOT wallet)
+      allow update: if request.auth != null
+        && request.auth.uid == userId
+        && !('wallet' in request.resource.data);
+
+      // Never allow delete
+      allow delete: if false;
     }
 
-    // Orders: user can read only their own orders
+    // =========================
+    // ORDERS
+    // =========================
     match /orders/{orderId} {
       allow read: if request.auth != null
-                  && request.auth.uid == resource.data.userId;
-      allow write: if request.auth != null;
+        && request.auth.uid == resource.data.userId;
+
+      // User can create orders
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.userId;
+
+      // User CANNOT update or delete orders
+      allow update, delete: if false;
     }
 
-    // Products: public read
-    match /products/{productId} {
-      allow read: if true;
-      allow write: if request.auth != null;
+    // =========================
+    // SPIN RECORDS
+    // =========================
+    match /spins/{spinId} {
+      allow read: if request.auth != null
+        && request.auth.uid == resource.data.userId;
+
+      // User can create spin ONCE per day (checked in frontend)
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.userId;
+
+      // User can NEVER edit spin result
+      allow update, delete: if false;
+    }
+
+    // =========================
+    // ADMIN ONLY (future use)
+    // =========================
+    match /admin/{docId} {
+      allow read, write: if false;
     }
   }
 }

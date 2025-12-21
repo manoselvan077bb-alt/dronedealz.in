@@ -1214,7 +1214,6 @@ async function getTodaySpinCount(userId) {
 }
 
 
-
 function initSpinPage() {
   const canvas = document.getElementById('spinCanvas');
   const btn = document.getElementById('spinButton');
@@ -1226,101 +1225,77 @@ function initSpinPage() {
 
   drawWheel(ctx, SPIN_SEGMENTS, currentAngle);
 
-  btn.addEventListener('click', async () => {
+  // 🔒 Check if already spun (after login)
+  const uid = auth.currentUser?.uid;
+  if (uid && localStorage.getItem(`spin_used_${uid}`)) {
+    btn.disabled = true;
+    btn.textContent = 'Spin Used 🎉';
+  }
+
+  btn.addEventListener('click', () => {
     const user = auth.currentUser;
     if (!user) {
       alert('Log in to use the spin wheel.');
       return;
     }
-    if (spinning || btn.disabled) return;
 
-    const info = await getTodaySpendInfo();
-    updateSpinProgress(info);
+    if (spinning) return;
 
-    if (!info.hasUpi) {
-      alert('Please add your UPI ID in the Account page to receive cashback.');
+    if (localStorage.getItem(`spin_used_${user.uid}`)) {
+      alert('You already used your spin.');
+      btn.disabled = true;
+      btn.textContent = 'Spin Used 🎉';
       return;
     }
-    const spinsUsedToday = await getTodaySpinCount(user.uid);
-const spinsAllowed = Math.floor(info.count / 2);
-
-if (info.total < 999 || spinsUsedToday >= spinsAllowed) {
-  btn.disabled = true;
-  btn.textContent = 'Buy more items to unlock spin';
-  return;
-}
-
-
-
-    const prizeValue = pickPrizeFromTotal(info.total);
-    if (prizeValue === 0) return;
-
-    const forcedIndex = SPIN_SEGMENTS.findIndex(v => v === prizeValue);
-    if (forcedIndex === -1) return;
 
     spinning = true;
-    
+    btn.disabled = true;
     btn.textContent = 'Spinning...';
 
     const slice = (2 * Math.PI) / SPIN_SEGMENTS.length;
-    const randomSegment = forcedIndex;
+    const randomSegment = Math.floor(Math.random() * SPIN_SEGMENTS.length);
 
-    const pointerOffset = -Math.PI / 2; // arrow at top (12 o'clock)
-
-const targetAngle =
-  pointerOffset - (randomSegment * slice + slice / 2);
+    const pointerOffset = -Math.PI / 2; // arrow at top
+    const targetAngle =
+      pointerOffset - (randomSegment * slice + slice / 2);
 
     const extraTurns = 5 * 2 * Math.PI;
     const finalAngle = targetAngle + extraTurns;
     const duration = 3000;
     const start = performance.now();
 
-    async function onSpinEnd() {
-  const prize = SPIN_SEGMENTS[randomSegment];
-  btn.textContent = `You won ₹${prize}!`;
-
-  const user = auth.currentUser;
-  if (!user) return;
-
-  try {
-    // ✅ RECORD SPIN RESULT (ONLY ONCE)
-    await db.collection('spinWins').add({
-      userId: user.uid,
-      amount: prize,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      status: 'credited' // for testing
-    });
-
-    
-
-  } catch (err) {
-    console.error('Spin credit error', err);
-  }
-}
-
-
-
     function animate(now) {
       const t = Math.min((now - start) / duration, 1);
       const ease = 1 - Math.pow(1 - t, 3);
       const angle = currentAngle + (finalAngle - currentAngle) * ease;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawWheel(ctx, SPIN_SEGMENTS, angle);
+
       if (t < 1) {
         requestAnimationFrame(animate);
       } else {
         currentAngle = angle;
         spinning = false;
-        onSpinEnd();
+        finishSpin(user.uid, randomSegment);
       }
     }
 
     requestAnimationFrame(animate);
   });
 
-  
+  function finishSpin(uid, index) {
+    const prize = SPIN_SEGMENTS[index];
+
+    alert(`🎉 You won ₹${prize}\n(credited after verification)`);
+
+    localStorage.setItem(`spin_used_${uid}`, 'true');
+    localStorage.setItem(`spin_time_${uid}`, Date.now());
+
+    btn.textContent = 'Spin Used 🎉';
+    btn.disabled = true;
+  }
 }
-
-
 
 
 // ===== LOAD PRODUCTS FROM FIRESTORE & INIT =====
