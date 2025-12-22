@@ -1684,3 +1684,59 @@ p {
   font-weight: 700;
   color: #ff7900;   /* orange */
 }
+.product-card {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(0,0,0,.15);
+}
+.product-card img {
+  transition: transform .25s ease;
+}
+.product-card:hover img {
+  transform: scale(1.05);
+}
+.price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #dc2626;
+}
+.mrp {
+  text-decoration: line-through;
+  color: #9ca3af;
+  margin-left: 6px;
+}
+.discount {
+  color: #16a34a;
+  font-weight: 600;
+  margin-left: 6px;
+}
+.product-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.product-actions button {
+  flex: 1;
+}
+.category-chip {
+  transition: all .2s ease;
+}
+.category-chip.active {
+  background: #22c55e;
+  color: #fff;
+}
+.product-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;   /* ✅ ADD THIS LINE */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.product-detail-image {
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.12);
+}
+
+
