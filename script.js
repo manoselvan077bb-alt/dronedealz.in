@@ -222,10 +222,19 @@ function createProductCard(p) {
 
   card.innerHTML = `
     <div class="product-image big-card">
-      ${hasImage
-        ? `<img src="${mainImage}" alt="${p.name}" class="product-img-real">`
-        : `<i class="fas fa-cogs"></i>`}
-    </div>
+  ${hasImage
+    ? `
+      <img
+  src="${mainImage}"
+  alt="${p.name}"
+  class="product-img-real"
+  loading="lazy"
+>
+
+    `
+    : `<i class="fas fa-cogs"></i>`}
+</div>
+
     <div class="product-info">
       <h3>${p.name}</h3>
       <div class="price">
