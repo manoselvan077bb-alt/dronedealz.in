@@ -359,16 +359,21 @@ function renderProductDetail() {
   `;
   metaEl.textContent = `${p.category || '-'} • ${p.platform || '-'}`;
 
-  // Affiliate sentence just for product details
-  const affiliateNote = document.createElement('p');
-  affiliateNote.className = 'product-detail-meta';
-  affiliateNote.style.fontSize = '0.8rem';
-  affiliateNote.style.color = '#6b7280';
-  affiliateNote.style.marginTop = '4px';
-  affiliateNote.textContent =
-    'As an Amazon & Flipkart affiliate, Dealz may earn a commission from qualifying purchases.';
-  const detailRight = document.querySelector('#productDetail .product-detail-right');
-  if (detailRight) detailRight.appendChild(affiliateNote);
+ // REMOVE existing affiliate note (if already added)
+const oldAffiliate = document.querySelector('.product-detail-meta');
+if (oldAffiliate) oldAffiliate.remove();
+
+// ADD affiliate sentence (only once)
+const affiliateNote = document.createElement('p');
+affiliateNote.className = 'product-detail-meta';
+affiliateNote.style.fontSize = '0.8rem';
+affiliateNote.style.color = '#6b7280';
+affiliateNote.style.marginTop = '4px';
+affiliateNote.textContent =
+  'As an Amazon & Flipkart affiliate, Dealz may earn a commission from qualifying purchases.';
+
+const detailRight = document.querySelector('#productDetail .product-detail-right');
+if (detailRight) detailRight.appendChild(affiliateNote);
 
   btnBox.innerHTML = `
     <a href="${p.url || '#'}" target="_blank" rel="noopener"
