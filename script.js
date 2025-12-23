@@ -214,6 +214,9 @@ function createProductCard(p) {
   card.setAttribute('data-category', p.category || '');
 
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
+  const isBestDeal = discount >= 40;
+ 
+
 
   const mainImage = Array.isArray(p.images) && p.images.length
     ? p.images[0]
@@ -222,6 +225,8 @@ function createProductCard(p) {
 
   card.innerHTML = `
     <div class="product-image big-card">
+  ${discount >= 40 ? `<span class="deal-badge">Best Deal 🔥</span>` : ''}
+
   ${hasImage
     ? `
       <img
@@ -288,6 +293,8 @@ function renderProductDetail() {
 
   const p = currentProduct;
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
+  const isBestDeal = discount >= 40;
+
 
   const images = Array.isArray(p.images) && p.images.length
     ? p.images
