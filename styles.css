@@ -1200,9 +1200,12 @@ p {
 
 #detailImageBox img.product-img-real {
   width: 100%;
-  height: 100%;
+  height: auto;          /* ✅ FIX */
+  max-height: 100%;
   object-fit: contain;
+  display: block;
 }
+
 
 
 /* Gallery arrows */
@@ -1990,4 +1993,14 @@ p {
     max-height: none;
     border-radius: 0 !important;
   }
+}
+
+.product-card {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.product-card * {
+  pointer-events: auto;
 }

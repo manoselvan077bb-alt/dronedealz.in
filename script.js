@@ -1,3 +1,5 @@
+
+
 // ===== SIMPLE NAVIGATION (with phone back support) =====
 const navLinks = document.querySelectorAll('.nav-link');
 const pages = document.querySelectorAll('.page');
@@ -100,6 +102,8 @@ if (hamburger && navMenu) {
 
 // ===== PRODUCT DATA =====
 let products = [];
+
+
 let currentProduct = null;
 
 
@@ -211,34 +215,16 @@ function calcPriceMeta(p) {
 function createProductCard(p) {
   const card = document.createElement('div');
   card.className = 'product-card';
-  card.setAttribute('data-category', p.category || '');
+  card.dataset.id = String(p.id);
 
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
-  const isBestDeal = discount >= 40;
- 
-
-
-  const mainImage = Array.isArray(p.images) && p.images.length
-    ? p.images[0]
-    : (p.image || null);
-  const hasImage = !!mainImage;
+  const img = Array.isArray(p.images) && p.images.length ? p.images[0] : p.image || '';
 
   card.innerHTML = `
-    <div class="product-image big-card">
-  ${discount >= 40 ? `<span class="deal-badge">Best Deal 🔥</span>` : ''}
-
-  ${hasImage
-    ? `
-      <img
-  src="${mainImage}"
-  alt="${p.name}"
-  class="product-img-real"
-  loading="lazy"
->
-
-    `
-    : `<i class="fas fa-cogs"></i>`}
-</div>
+    <div class="product-image">
+      ${discount >= 40 ? `<span class="deal-badge">Best Deal 🔥</span>` : ''}
+      ${img ? `<img src="${img}" class="product-img-real">` : `<i class="fas fa-cogs"></i>`}
+    </div>
 
     <div class="product-info">
       <h3>${p.name}</h3>
@@ -247,69 +233,88 @@ function createProductCard(p) {
         ${hasMrp ? `<span class="old-price">₹${mrp}</span>` : ''}
         ${discount ? `<span class="discount">${discount}% off</span>` : ''}
       </div>
+
       <div class="buy-buttons">
-        <a href="${p.url || '#'}" target="_blank" rel="noopener" class="buy-btn ${p.platform}">
-          Buy on ${p.platform ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1) : 'site'}
-          <i class="fab fa-${p.platform}"></i>
-        </a>
-        <button class="fav-btn">❤️ Save</button>
-        <button class="cart-btn"><i class="fas fa-shopping-cart"></i> Cart</button>
+        <a href="${p.url || '#'}" target="_blank" class="buy-btn">Buy</a>
+        <button class="fav-btn">❤️</button>
+        <button class="cart-btn">🛒</button>
       </div>
     </div>
   `;
+card.querySelector('.fav-btn').onclick = (e) => {
+  e.stopPropagation();
+  handleFavouriteClick(p);
+};
 
-  const favBtn = card.querySelector('.fav-btn');
-  favBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    handleFavouriteClick(p, favBtn);
-  });
+card.querySelector('.cart-btn').onclick = (e) => {
+  e.stopPropagation();
+  addToCart(p);
+};
+card.onclick = () => {
+  openProductDetailById(p.id);
+};
+ return card;
+}
+function createRelatedProductCard(p) {
+  const card = document.createElement('div');
+  card.className = 'product-card';
 
-  const cartBtn = card.querySelector('.cart-btn');
-  cartBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    addToCart(p);
-    cartBtn.textContent = 'Added';
-    setTimeout(() => (cartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Cart'), 800);
-  });
+  // REQUIRED
+  card.dataset.id = String(p.id);
 
-  card.addEventListener('click', (e) => {
-    const isBuyBtn = e.target.closest('.buy-btn');
-    const isFavBtn = e.target.closest('.fav-btn');
-    const isCartBtn = e.target.closest('.cart-btn');
-    if (isBuyBtn || isFavBtn || isCartBtn) return;
+  const img =
+  Array.isArray(p.images) && p.images.length
+    ? p.images[0]
+    : (p.imageUrl || p.image || '');
 
-    currentProduct = p;
-    renderProductDetail();
-    showPage('productDetail', true);
-  });
+
+  card.innerHTML = `
+    <div class="product-image">
+      ${img ? `<img src="${img}" class="product-img-real">` : ''}
+    </div>
+    <div class="product-info">
+      <h3>${p.name}</h3>
+      <div class="price">₹${p.price}</div>
+    </div>
+  `;
+
+  // 🔥 THIS FIXES "same product again" bug
+  card.onclick = () => {
+    openProductDetailById(p.id);
+  };
 
   return card;
 }
-
-
 // ===== PRODUCT DETAIL (SCROLLABLE GALLERY) =====
 function renderProductDetail() {
-  if (!currentProduct) return;
+  const box = document.getElementById('detailImageBox');
+  if (!box || !currentProduct) return;
+
+  // HARD RESET
+  box.innerHTML = '';
+
+  // ✅ NORMALIZE + CLONE IMAGES (CRITICAL FIX)
+  const detailImages = Array.isArray(currentProduct.images) && currentProduct.images.length
+    ? [...currentProduct.images]
+    : currentProduct.image
+      ? [currentProduct.image]
+      : currentProduct.imageUrl
+        ? [currentProduct.imageUrl]
+        : [];
 
   const p = currentProduct;
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
-  const isBestDeal = discount >= 40;
-
-
-  const images = Array.isArray(p.images) && p.images.length
-    ? p.images
-    : (p.image ? String(p.image).split(',').map(s => s.trim()).filter(Boolean) : []);
 
   const titleEl = document.getElementById('detailTitle');
   const priceEl = document.getElementById('detailPrice');
   const metaEl  = document.getElementById('detailMeta');
   const btnBox  = document.getElementById('detailBuyButtons');
-  const box     = document.getElementById('detailImageBox');
 
-  if (!titleEl || !priceEl || !metaEl || !btnBox || !box) return;
+  if (!titleEl || !priceEl || !metaEl || !btnBox) return;
 
   let currentIndex = 0;
 
+  // GALLERY STRUCTURE
   box.innerHTML = `
     <button class="gallery-nav gallery-prev" id="detailPrevBtn">&lt;</button>
     <img id="detailImage" class="product-img-real" alt="">
@@ -321,19 +326,22 @@ function renderProductDetail() {
   const nextBtn = document.getElementById('detailNextBtn');
 
   function showImage(idx) {
-    if (!images.length || !mainImg) return;
-    currentIndex = (idx + images.length) % images.length;
-    mainImg.src = images[currentIndex];
+    if (!detailImages.length || !mainImg) return;
+    currentIndex = (idx + detailImages.length) % detailImages.length;
+    mainImg.src = detailImages[currentIndex];
   }
 
-  if (images.length) {
+  // INITIAL IMAGE
+  if (detailImages.length && mainImg) {
     showImage(0);
   } else if (mainImg) {
-    mainImg.removeAttribute('src');
+    mainImg.src = '';
   }
+
   if (mainImg) mainImg.alt = p.name || '';
 
-  if (prevBtn && nextBtn && images.length > 1) {
+  // ARROWS
+  if (prevBtn && nextBtn && detailImages.length > 1) {
     prevBtn.onclick = (e) => {
       e.stopPropagation();
       showImage(currentIndex - 1);
@@ -344,11 +352,12 @@ function renderProductDetail() {
     };
   }
 
+  // IMAGE CLICK (OPEN FULL)
   box.onclick = (e) => {
-    const clickedButton = e.target.closest('.gallery-nav');
-    if (clickedButton) return;
-    if (!images.length) return;
-    const url = images[currentIndex];
+    if (e.target.closest('.gallery-nav')) return;
+    if (!detailImages.length) return;
+
+    const url = detailImages[currentIndex];
     const win = window.open('', '_blank');
     if (win && url) {
       win.document.write(
@@ -358,6 +367,7 @@ function renderProductDetail() {
     }
   };
 
+  // TEXT CONTENT
   titleEl.textContent = p.name || '';
   priceEl.innerHTML = `
     ₹${price}
@@ -366,28 +376,27 @@ function renderProductDetail() {
   `;
   metaEl.textContent = `${p.category || '-'} • ${p.platform || '-'}`;
 
- // REMOVE existing affiliate note (if already added)
-const oldAffiliate = document.querySelector('.product-detail-meta');
-if (oldAffiliate) oldAffiliate.remove();
+  // AFFILIATE NOTE (SINGLE INSTANCE)
+  const oldNote = document.querySelector('.affiliate-note');
+  if (oldNote) oldNote.remove();
 
-// ADD affiliate sentence (only once)
-const affiliateNote = document.createElement('p');
-affiliateNote.className = 'product-detail-meta';
-affiliateNote.style.fontSize = '0.8rem';
-affiliateNote.style.color = '#6b7280';
-affiliateNote.style.marginTop = '4px';
-affiliateNote.textContent =
-  'As an Amazon & Flipkart affiliate, Dealz may earn a commission from qualifying purchases.';
+  const affiliateNote = document.createElement('p');
+  affiliateNote.className = 'affiliate-note';
+  affiliateNote.style.fontSize = '0.8rem';
+  affiliateNote.style.color = '#6b7280';
+  affiliateNote.style.marginTop = '6px';
+  affiliateNote.textContent =
+    'As an Amazon & Flipkart affiliate, Dealz may earn a commission from qualifying purchases.';
 
-const detailRight = document.querySelector('#productDetail .product-detail-right');
-if (detailRight) detailRight.appendChild(affiliateNote);
+  metaEl.parentElement.appendChild(affiliateNote);
 
+  // BUY BUTTONS
   btnBox.innerHTML = `
     <a href="${p.url || '#'}" target="_blank" rel="noopener"
-       class="buy-btn ${p.platform}">
+       class="buy-btn ${p.platform || ''}">
       Buy on ${p.platform
         ? p.platform.charAt(0).toUpperCase() + p.platform.slice(1)
-        : 'site'}
+        : 'Site'}
     </a>
     <button class="cart-btn" id="detailAddToCart">
       <i class="fas fa-shopping-cart"></i> Add to cart
@@ -396,60 +405,42 @@ if (detailRight) detailRight.appendChild(affiliateNote);
 
   const addBtn = document.getElementById('detailAddToCart');
   if (addBtn) {
-    addBtn.addEventListener('click', () => {
+    addBtn.onclick = () => {
       addToCart(p);
       addBtn.textContent = 'Added';
-      setTimeout(
-        () => (addBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to cart'),
-        800
-      );
-    });
+      setTimeout(() => {
+        addBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to cart';
+      }, 800);
+    };
   }
 
+  // MORE PRODUCTS
   renderMoreProducts();
 }
-
-
-// ===== MORE PRODUCTS UNDER DETAIL =====
+// ===== MORE PRODUCTS UNDER DETAIL (FINAL FIX) =====
 function renderMoreProducts() {
   const listEl = document.getElementById('moreProductsList');
-  const card   = document.getElementById('moreProductsCard');
-  if (!listEl || !card) return;
+  const cardBox = document.getElementById('moreProductsCard');
+  if (!listEl || !cardBox || !currentProduct) return;
 
   listEl.innerHTML = '';
 
-  if (!products.length) {
-    card.style.display = 'none';
-    return;
-  }
-
-  const base = currentProduct;
-
   let related = products.filter(p =>
-    base && p.id !== base.id &&
-    (p.category || '').toLowerCase() === (base.category || '').toLowerCase()
+    p.id !== currentProduct.id &&
+    (p.category || '') === (currentProduct.category || '')
   );
 
   if (!related.length) {
-    related = products.filter(p => !base || p.id !== base.id);
+    related = products.filter(p => p.id !== currentProduct.id);
   }
 
-  related = related.slice(0, 8);
-
-  if (!related.length) {
-    card.style.display = 'none';
-    return;
-  }
-
-  card.style.display = 'block';
-
-  related.forEach(p => {
-    const cardEl = createProductCard(p);
-    listEl.appendChild(cardEl);
+  related.slice(0, 8).forEach(p => {
+    // ✅ use FULL product card
+    listEl.appendChild(createProductCard(p));
   });
+
+  cardBox.style.display = related.length ? 'block' : 'none';
 }
-
-
 // ===== FAVOURITES (Firestore) =====
 async function handleFavouriteClick(product, buttonEl) {
   const user = auth.currentUser;
@@ -551,7 +542,7 @@ if (catButtons && homeProductsContainer) {
     btn.addEventListener('click', () => {
       catButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const cat = btn.getAttribute('data-category') || 'all';
+      const cart = btn.getAttribute('data-category') || 'all';
       renderHomeProducts(cat);
     });
   });
@@ -1335,11 +1326,12 @@ async function loadProductsFromFirestore() {
       const data = doc.data();
       let images = [];
 
-      if (Array.isArray(data.images)) {
-        images = data.images;
-      } else if (typeof data.image === 'string' && data.image.trim()) {
-        images = data.image.split(',').map(s => s.trim()).filter(Boolean);
-      }
+if (Array.isArray(data.images) && data.images.length) {
+  images = data.images;
+} else if (typeof data.image === 'string' && data.image.trim()) {
+  images = [data.image.trim()]; // 👈 SINGLE IMAGE FIX
+}
+
 
       return {
         id: doc.id,
@@ -1370,3 +1362,30 @@ auth.onAuthStateChanged(user => {
 
  // getTodaySpendInfo().then(updateSpinProgress);
 });
+
+function openProductDetailById(productId) {
+const found = products.find(
+    p => String(p.id) === String(productId)
+  );
+
+
+  if (!found) {
+    console.error('Product not found:', productId);
+    return;
+  }
+currentProduct = found;
+
+ 
+
+  // hard reset
+  document.getElementById('detailImageBox').innerHTML = '';
+  document.getElementById('detailBuyButtons').innerHTML = '';
+
+  showPage('productDetail', true);
+  renderProductDetail();
+
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+
+
