@@ -219,8 +219,10 @@ function createProductCard(p) {
 
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
   const img = Array.isArray(p.images) && p.images.length
-    ? p.images[0]
-    : p.image || '';
+  ? p.images[0]
+  : typeof p.image === 'string' && p.image.includes(',')
+  ? p.image.split(',')[0].trim()
+  : p.image || '';
 
   card.innerHTML = `
     <div class="product-image">
@@ -296,13 +298,13 @@ function renderProductDetail() {
   box.innerHTML = '';
 
   // ✅ NORMALIZE + CLONE IMAGES (CRITICAL FIX)
-  const detailImages = Array.isArray(currentProduct.images) && currentProduct.images.length
-    ? [...currentProduct.images]
-    : currentProduct.image
-      ? [currentProduct.image]
-      : currentProduct.imageUrl
-        ? [currentProduct.imageUrl]
-        : [];
+  const detailImages = Array.isArray(currentProduct.images)
+  ? currentProduct.images
+  : typeof currentProduct.image === 'string' && currentProduct.image.includes(',')
+  ? currentProduct.image.split(',').map(u => u.trim()).filter(Boolean)
+  : currentProduct.image
+  ? [currentProduct.image]
+  : [];
 
   const p = currentProduct;
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
@@ -456,10 +458,17 @@ function renderHomeProducts(category = 'all') {
   if (!homeProductsContainer) return;
   homeProductsContainer.innerHTML = '';
 
-  const filtered =
-    category === 'all'
-      ? [...products]
-      : products.filter(p => p.category === category);
+  const filtered = products.filter(p => {
+  const cat = (p.category || '').toLowerCase();
+
+  // All tab shows everything
+  if (category === 'all') return true;
+
+  // Products marked as "all" should NOT appear in other categories
+  if (cat === 'all') return false;
+
+  return cat === category;
+});
 
   if (resultCount) {
     const badgeNumber = resultCount.querySelector('.result-count-badge span');
@@ -1269,7 +1278,10 @@ async function loadProductsFromFirestore() {
 if (Array.isArray(data.images) && data.images.length) {
   images = data.images;
 } else if (typeof data.image === 'string' && data.image.trim()) {
-  images = [data.image.trim()]; // 👈 SINGLE IMAGE FIX
+  images = data.image
+    .split(',')
+    .map(u => u.trim())
+    .filter(Boolean);
 }
 
 

@@ -2004,3 +2004,25 @@ p {
 .product-card * {
   pointer-events: auto;
 }
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: #111;
+  color: #fff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.gallery-prev {
+  left: 10px;   /* 👈 LEFT SIDE */
+}
+
+.gallery-next {
+  right: 10px;  /* 👉 RIGHT SIDE */
+}
