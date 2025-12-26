@@ -218,7 +218,9 @@ function createProductCard(p) {
   card.dataset.id = String(p.id);
 
   const { price, mrp, hasMrp, discount } = calcPriceMeta(p);
-  const img = Array.isArray(p.images) && p.images.length ? p.images[0] : p.image || '';
+  const img = Array.isArray(p.images) && p.images.length
+    ? p.images[0]
+    : p.image || '';
 
   card.innerHTML = `
     <div class="product-image">
@@ -236,25 +238,25 @@ function createProductCard(p) {
 
       <div class="buy-buttons">
         <a href="${p.url || '#'}" target="_blank" class="buy-btn">Buy</a>
-        <button class="fav-btn">❤️</button>
         <button class="cart-btn">🛒</button>
       </div>
     </div>
   `;
-card.querySelector('.fav-btn').onclick = (e) => {
-  e.stopPropagation();
-  handleFavouriteClick(p);
-};
 
-card.querySelector('.cart-btn').onclick = (e) => {
-  e.stopPropagation();
-  addToCart(p);
-};
-card.onclick = () => {
-  openProductDetailById(p.id);
-};
- return card;
+  // 🛒 Add to cart (stop opening detail page)
+  card.querySelector('.cart-btn').onclick = (e) => {
+    e.stopPropagation();
+    addToCart(p);
+  };
+
+  // 👉 Open product detail
+  card.onclick = () => {
+    openProductDetailById(p.id);
+  };
+
+  return card;
 }
+
 function createRelatedProductCard(p) {
   const card = document.createElement('div');
   card.className = 'product-card';
@@ -441,71 +443,7 @@ function renderMoreProducts() {
 
   cardBox.style.display = related.length ? 'block' : 'none';
 }
-// ===== FAVOURITES (Firestore) =====
-async function handleFavouriteClick(product, buttonEl) {
-  const user = auth.currentUser;
-  if (!user) {
-    alert('Please log in to save favourites.');
-    return;
-  }
 
-  try {
-    const userRef = db.collection('users').doc(user.uid);
-    await userRef.update({
-      favourites: firebase.firestore.FieldValue.arrayUnion({
-        name: product.name,
-        price: product.price,
-        category: product.category,
-        platform: product.platform,
-        url: product.url || null
-      })
-    });
-    buttonEl.textContent = '✅ Saved';
-    buttonEl.classList.add('saved');
-    renderFavourites(user.uid);
-  } catch (error) {
-    console.error('Error saving favourite:', error);
-    alert('Could not save. Try again.');
-  }
-}
-
-
-async function renderFavourites(userId) {
-  const listEl = document.getElementById('favouritesList');
-  if (!listEl) return;
-
-  listEl.innerHTML = '<p class="empty-msg">Loading favourites...</p>';
-
-  try {
-    const snap = await db.collection('users').doc(userId).get();
-    const data = snap.exists ? snap.data() : {};
-    const favs = data.favourites || [];
-
-    if (!favs.length) {
-      listEl.innerHTML = '<p class="empty-msg">No favourites yet. Save parts from Home or Search.</p>';
-      return;
-    }
-
-    listEl.innerHTML = '';
-    favs.forEach(f => {
-      const item = document.createElement('div');
-      item.className = 'fav-item';
-      item.innerHTML = `
-        <div class="fav-item-main">
-          <span class="fav-item-name">${f.name}</span>
-          <span class="fav-item-meta">${f.category} • ₹${f.price}</span>
-        </div>
-        <a class="fav-item-platform ${f.platform}" href="${f.url || '#'}" target="_blank" rel="noopener">
-          ${f.platform}
-        </a>
-      `;
-      listEl.appendChild(item);
-    });
-  } catch (e) {
-    console.error(e);
-    listEl.innerHTML = '<p class="empty-msg">Could not load favourites.</p>';
-  }
-}
 
 
 // ===== HOME =====
@@ -539,13 +477,15 @@ function renderHomeProducts(category = 'all') {
 
 if (catButtons && homeProductsContainer) {
   catButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      catButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const cart = btn.getAttribute('data-category') || 'all';
-      renderHomeProducts(cat);
-    });
+  btn.addEventListener('click', () => {
+    catButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const category = btn.getAttribute('data-category') || 'all';
+    renderHomeProducts(category);
   });
+});
+
 }
 
 
@@ -1358,9 +1298,16 @@ renderHomeCartPreview();
 initSpinPage();
 
 auth.onAuthStateChanged(user => {
-  if (!user) return;
+  currentUser = user || null;
 
- // getTodaySpendInfo().then(updateSpinProgress);
+  // ✅ ALWAYS show products (login not required)
+  loadProductsFromFirestore();
+
+  // ✅ User-only features
+  if (user) {
+    // getTodaySpendInfo().then(updateSpinProgress);
+    renderFavourites(user.uid);
+  }
 });
 
 function openProductDetailById(productId) {
@@ -1386,6 +1333,5 @@ currentProduct = found;
 
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
-
 
 
