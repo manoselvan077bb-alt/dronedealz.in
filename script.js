@@ -820,9 +820,7 @@ auth.onAuthStateChanged(async (user) => {
     if (adminSection) {
       adminSection.style.display = user.email === ADMIN_EMAIL ? 'block' : 'none';
     }
-
-    await renderFavourites(user.uid);
-  } else {
+} else {
     if (infoCard) {
       infoCard.innerHTML = `
         <p>Sign in to manage your profile and saved builds.</p>
