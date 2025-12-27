@@ -452,23 +452,39 @@ function renderMoreProducts() {
 const catButtons = document.querySelectorAll('.cat-btn');
 const homeProductsContainer = document.getElementById('homeProducts');
 const resultCount = document.getElementById('resultCount');
+let currentSearchText = '';
+
+const topSearchInput = document.getElementById('topSearchInput');
+
+if (topSearchInput) {
+  topSearchInput.addEventListener('input', (e) => {
+    currentSearchText = e.target.value.toLowerCase().trim();
+    renderHomeProducts(activeCategory || 'all');
+  });
+}
+
 
 
 function renderHomeProducts(category = 'all') {
   if (!homeProductsContainer) return;
   homeProductsContainer.innerHTML = '';
 
-  const filtered = products.filter(p => {
+ const filtered = products.filter(p => {
+  const name = (p.name || '').toLowerCase();
   const cat = (p.category || '').toLowerCase();
 
-  // All tab shows everything
-  if (category === 'all') return true;
+  // 🔍 search filter
+  if (currentSearchText && !name.includes(currentSearchText)) {
+    return false;
+  }
 
-  // Products marked as "all" should NOT appear in other categories
+  // 📂 category filter
+  if (category === 'all') return true;
   if (cat === 'all') return false;
 
   return cat === category;
 });
+
 
   if (resultCount) {
     const badgeNumber = resultCount.querySelector('.result-count-badge span');
@@ -501,10 +517,7 @@ if (catButtons && homeProductsContainer) {
 // ===== SEARCH =====
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
-const topSearchInput = document.getElementById('topSearchInput');
 const topSearchVoice = document.getElementById('topSearchVoice');
-
-
 function renderSearchResults(query) {
   if (!searchResults) return;
   searchResults.innerHTML = '';
