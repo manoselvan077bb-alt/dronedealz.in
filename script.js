@@ -1063,6 +1063,15 @@ if (!eligibleByOrders) {
 } */
 
 
+// 🎨 Spin wheel colors (NO yellow segment)
+const SPIN_COLORS = [
+  '#ef4444', // red
+  '#3b82f6', // blue
+  '#22c55e', // green
+  '#a855f7', // purple
+  '#0ea5e9'  // cyan (new, looks premium)
+];
+
 // Wheel drawing with separators and centre arrow + top marker
 function drawWheel(ctx, segments, angleOffset) {
   const cx = ctx.canvas.width / 2;
@@ -1073,7 +1082,7 @@ function drawWheel(ctx, segments, angleOffset) {
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  // outer rim
+  // outer rim (yellow stays)
   ctx.beginPath();
   ctx.arc(cx, cy, outerR, 0, 2 * Math.PI);
   ctx.fillStyle = '#facc15';
@@ -1088,9 +1097,12 @@ function drawWheel(ctx, segments, angleOffset) {
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, innerR, start, end);
     ctx.closePath();
-    ctx.fillStyle = i % 2 === 0 ? '#f97373' : '#ef4444';
+
+    // 🎨 segment colors (no yellow)
+    ctx.fillStyle = SPIN_COLORS[i % SPIN_COLORS.length];
     ctx.fill();
 
+    // separator line
     ctx.save();
     ctx.strokeStyle = 'rgba(255,255,255,0.95)';
     ctx.lineWidth = 2;
@@ -1103,6 +1115,7 @@ function drawWheel(ctx, segments, angleOffset) {
     ctx.stroke();
     ctx.restore();
 
+    // prize text
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 18px Inter, system-ui';
     ctx.textAlign = 'center';
@@ -1172,6 +1185,8 @@ function drawWheel(ctx, segments, angleOffset) {
   ctx.lineWidth = 2;
   ctx.stroke();
 }
+
+
   /*async function getTodaySpinCount(userId) {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
