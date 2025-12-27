@@ -453,7 +453,7 @@ const catButtons = document.querySelectorAll('.cat-btn');
 const homeProductsContainer = document.getElementById('homeProducts');
 const resultCount = document.getElementById('resultCount');
 let currentSearchText = '';
-
+let activePlatform = 'all';
 const topSearchInput = document.getElementById('topSearchInput');
 
 if (topSearchInput) {
