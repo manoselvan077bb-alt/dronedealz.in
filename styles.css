@@ -2004,6 +2004,34 @@ p {
     padding-bottom: 90px; /* bottom-nav height + safe gap */
   }
 }
+/* ===== MOBILE: PRODUCT DETAIL FULL WIDTH FIX ===== */
+@media (max-width: 768px) {
+
+  /* remove side padding from blue shell */
+  #productDetail .top-shell-inner {
+    padding-left: 0;
+    padding-right: 0;
+    max-width: 100%;
+  }
+
+  /* make product card full width */
+  .product-detail-card {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* image container full width */
+  #detailImageBox {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+}
 
 
 
