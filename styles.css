@@ -2033,6 +2033,36 @@ p {
 
 }
 
+/* ===== MOBILE FIX: MORE PRODUCTS FULL WIDTH ===== */
+@media (max-width: 768px) {
+
+  /* remove side padding from container */
+  #productDetail .top-shell-inner {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* remove card look for "More products" */
+  #moreProductsCard {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* force grid to full width */
+  #moreProductsList {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* ensure product cards don’t shrink container */
+  #moreProductsList .product-card {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
 
 
 
