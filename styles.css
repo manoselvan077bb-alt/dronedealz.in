@@ -2064,6 +2064,48 @@ p {
   }
 }
 
+/* ===== FLIPKART STYLE CATEGORY STRIP ===== */
+.category-strip {
+  display: flex;
+  gap: 14px;
+  padding: 12px 12px 8px;
+  overflow-x: auto;
+  background: transparent; /* ✅ FIX */
+  scrollbar-width: none;
+}
+
+
+.category-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.cat-item {
+  min-width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 6px 4px;
+}
+
+.cat-item img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+
+.cat-item span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #111;
+  text-align: center;
+}
+
+.cat-item.active span {
+  color: #2874f0; /* Flipkart blue */
+  font-weight: 600;
+}
 
 
 

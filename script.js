@@ -1,5 +1,3 @@
-
-
 // ===== SIMPLE NAVIGATION (with phone back support) =====
 const navLinks = document.querySelectorAll('.nav-link');
 const pages = document.querySelectorAll('.page');
@@ -449,19 +447,31 @@ function renderMoreProducts() {
 
 
 // ===== HOME =====
-const catButtons = document.querySelectorAll('.cat-btn');
+// ===== HOME (FLIPKART STYLE CATEGORIES) =====
+const catButtons = document.querySelectorAll('.cat-item');
 const homeProductsContainer = document.getElementById('homeProducts');
 const resultCount = document.getElementById('resultCount');
 let currentSearchText = '';
 let activePlatform = 'all';
 const topSearchInput = document.getElementById('topSearchInput');
 
-if (topSearchInput) {
-  topSearchInput.addEventListener('input', (e) => {
-    currentSearchText = e.target.value.toLowerCase().trim();
-    renderHomeProducts(activeCategory || 'all');
+if (catButtons && homeProductsContainer) {
+  catButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+
+      // remove active from all
+      catButtons.forEach(b => b.classList.remove('active'));
+
+      // activate current
+      btn.classList.add('active');
+
+      // filter products
+      const category = btn.getAttribute('data-category') || 'all';
+      renderHomeProducts(category);
+    });
   });
 }
+
 
 
 
@@ -1371,5 +1381,3 @@ currentProduct = found;
 
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
-
-
