@@ -479,22 +479,19 @@ function renderHomeProducts(category = 'all') {
   if (!homeProductsContainer) return;
   homeProductsContainer.innerHTML = '';
 
- const filtered = products.filter(p => {
-  const name = (p.name || '').toLowerCase();
-  const cat = (p.category || '').toLowerCase();
+  const filtered = products.filter(p => {
+    const name = (p.name || '').toLowerCase();
+    const cat = (p.category || '').toLowerCase();
 
-  // 🔍 search filter
-  if (currentSearchText && !name.includes(currentSearchText)) {
-    return false;
-  }
+    if (currentSearchText && !name.includes(currentSearchText)) {
+      return false;
+    }
 
-  // 📂 category filter
-  if (category === 'all') return true;
-  if (cat === 'all') return false;
+    if (category === 'all') return true;
+    if (cat === 'all') return false;
 
-  return cat === category;
-});
-
+    return cat === category;
+  });
 
   if (resultCount) {
     const badgeNumber = resultCount.querySelector('.result-count-badge span');
@@ -510,6 +507,8 @@ function renderHomeProducts(category = 'all') {
 }
 
 
+
+
 if (catButtons && homeProductsContainer) {
   catButtons.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -520,6 +519,7 @@ if (catButtons && homeProductsContainer) {
     renderHomeProducts(category);
   });
 });
+
 
 }
 
@@ -1354,7 +1354,7 @@ auth.onAuthStateChanged(user => {
   // ✅ User-only features
   if (user) {
     // getTodaySpendInfo().then(updateSpinProgress);
-    renderFavourites(user.uid);
+    
   }
 });
 
