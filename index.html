@@ -188,87 +188,51 @@
       <div class="products-grid" id="dealsProducts"></div>
     </section>
 
-    <!-- SPIN -->
-    <section class="page" id="spin" data-page="spin">
-      <h2>Spin &amp; win cashback</h2>
+    <!-- ================= SPIN PAGE ================= -->
+<section class="page" id="spin" data-page="spin">
 
-      <div class="info-card" id="spinStatusCard">
-        <p id="spinProgressText">Today you bought 0/2 products.</p>
-        <div class="spin-progress-bar">
-          <div id="spinProgressFill"></div>
-        </div>
-        <p class="spin-note">
-  Spin unlocks after 2 confirmed purchases today, and the total of those 2 must be at least ₹999.
-</p>
+  <h2>Spin &amp; win cashback</h2>
 
+  <div class="info-card" id="spinStatusCard">
+    <p id="spinProgressText">Today you bought 0/2 products.</p>
 
-      <div class="spin-wheel-wrapper">
-        <canvas id="spinCanvas" width="260" height="260"></canvas>
-        <button class="primary-btn" id="spinButton" disabled>Buy 2 items to unlock</button>
-      </div>
-
-      <p class="spin-small">Your cashback will be added to your wallet and automatically credited to your saved UPI ID after your order is delivered.
-</p>
-    </section>
-
-    <section class="page" id="productDetail" data-page="productDetail">
-  <div class="top-shell">
-    <div class="top-shell-inner">
-      <h2>Product details</h2>
-
-      <div class="product-detail-card">
-        <div class="product-detail-left">
-          <div id="detailImageBox"></div>
-        </div>
-
-        <div class="product-detail-right">
-          <h1 class="product-detail-title" id="detailTitle">Loading product...</h1>
-          <p class="product-detail-price" id="detailPrice"></p>
-          <p class="product-detail-meta" id="detailMeta"></p>
-          <div class="buy-buttons" id="detailBuyButtons"></div>
-        </div>
-      </div>
-
-      <div class="info-card" id="moreProductsCard">
-        <h3 style="margin-bottom:8px;">More products</h3>
-        <div class="products-grid" id="moreProductsList"></div>
-      </div>
+    <div class="spin-progress-bar">
+      <div id="spinProgressFill"></div>
     </div>
+
+    <p class="spin-note">
+      Spin unlocks after 2 confirmed purchases today, and the total of those 2 must be at least ₹999.
+    </p>
   </div>
-</section>
-<!-- WALLET (SAFE ADDITION) -->
-<div class="info-card" id="walletCard" style="margin-top:16px;">
-  <h3>Wallet</h3>
-  <p>👛 Wallet Available Money:
-    <strong>₹<span id="walletAvailable">0</span></strong>
+
+  <div class="spin-wheel-wrapper">
+    <canvas id="spinCanvas" width="260" height="260"></canvas>
+    <button class="primary-btn" id="spinButton" disabled>
+      Buy 2 items to unlock
+    </button>
+  </div>
+
+  <p class="spin-small">
+    Your cashback will be added to your wallet and automatically credited to your saved UPI ID
+    after your order is delivered.
   </p>
-  <p>💸 Withdrawn Money:
-    <strong>₹<span id="walletWithdrawn">0</span></strong>
-  </p>
-</div>
 
+  <div class="info-card" id="walletCard">
+    <h3>Wallet</h3>
+    <p>👛 Wallet Available Money: <strong>₹<span id="walletAvailable">0</span></strong></p>
+    <p>💸 Withdrawn Money: <strong>₹<span id="walletWithdrawn">0</span></strong></p>
+  </div>
 
+  <div class="info-card">
+    <h3>Wallet History</h3>
+    <div id="walletHistoryList" class="history-list"></div>
+  </div>
 
-
-
-    <!-- CART -->
-    <section class="page" id="cart" data-page="cart">
-      <h2>Your cart</h2>
-      <p>Cart features coming soon. Saved items will appear here.</p>
-      
-
-      </section>
-
-    <!-- ACCOUNT -->
-    <section class="page" id="account" data-page="account">
-      <h2>Your account</h2>
-      <div class="info-card">
-        <p>Sign in to manage your profile, cashback UPI ID .</p>
-      </div>
-      <button class="primary-btn" data-page="login">Go to Log in</button>
-      <button class="primary-btn" style="margin-left:8px;" onclick="droneLogout()">Log out</button>
-
-      <!-- UPI ID for instant cashback -->
+  <div class="info-card">
+    <h3>Spin History</h3>
+    <div id="spinHistoryList" class="history-list"></div>
+  </div>
+  <!-- UPI ID for instant cashback -->
       <div class="info-card" style="margin-top:12px;">
         <h3>Cashback UPI ID</h3>
         <p style="font-size:0.9rem;">
@@ -284,11 +248,123 @@
         <p id="upiStatus" class="info-small"></p>
       </div>
 
-      
-      </div>
-    </section>
+</section>
+<!-- ================= END SPIN PAGE ================= -->
+<!-- ================= PRODUCT DETAIL PAGE ================= -->
+<section class="page" id="productDetail" data-page="productDetail">
 
-    <!-- LOGIN -->
+  <div class="top-shell">
+    <div class="top-shell-inner">
+      <h2>Product details</h2>
+
+      <div class="product-detail-card">
+        <div class="product-detail-left">
+          <div id="detailImageBox"></div>
+        </div>
+
+        <div class="product-detail-right">
+          <h1 id="detailTitle">Loading product...</h1>
+          <p id="detailPrice"></p>
+          <p id="detailMeta"></p>
+          <div id="detailBuyButtons"></div>
+        </div>
+      </div>
+
+      <div class="info-card" id="moreProductsCard">
+        <h3>More products</h3>
+        <div id="moreProductsList" class="products-grid"></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+<!-- ================= END PRODUCT DETAIL PAGE ================= -->
+
+
+
+
+    <!-- CART -->
+    <section class="page" id="cart" data-page="cart">
+      <h2>Your cart</h2>
+      <p>Cart features coming soon. Saved items will appear here.</p>
+      
+<p class="cart-sub">Review items before checkout</p>
+<div class="info-card">
+  <div id="cartItems"></div>
+</div>
+<div class="info-card">
+  <h3>Price Details</h3>
+
+  <div class="price-row">
+    <span>Total items</span>
+    <span id="cartItemCount">0</span>
+  </div>
+
+  <div class="price-row">
+    <span>Total price</span>
+    <strong>₹<span id="cartTotal">0</span></strong>
+  </div>
+
+  <hr />
+
+  <button class="primary-btn full" id="proceedToBuyBtn">
+  Proceed to Buy
+</button>
+
+</div>
+
+      
+
+      </section>
+
+    <!-- ACCOUNT -->
+    <!-- ACCOUNT PAGE -->
+<section class="page" id="account" data-page="account">
+
+  <!-- GUEST VIEW -->
+  <div id="guestView">
+    <h3>Your account</h3>
+    <p>Please log in to continue.</p>
+    <button class="primary-btn" id="goToLoginBtn">Go to Log in</button>
+  </div>
+
+  <!-- LOGGED IN VIEW -->
+  <div id="userView" style="display:none">
+
+    <div class="info-card">
+      <h3>Welcome, <span id="userName"></span></h3>
+      <p><span id="userEmail"></span></p>
+    </div>
+
+    <div class="info-card">
+      <h3>Wallet Summary</h3>
+      <div class="wallet-row">
+        <span>Available</span>
+        <strong>₹<span id="walletAvailable">0</span></strong>
+      </div>
+      <div class="wallet-row">
+        <span>Withdrawn</span>
+        <strong>₹<span id="walletWithdrawn">0</span></strong>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>Your Activity</h3>
+      <p>🎡 Spins Used: <span id="spinsUsed">0</span></p>
+      <p>🛒 Orders Completed: <span id="ordersDone">0</span></p>
+      <p>💰 Cashback Earned: ₹<span id="cashbackEarned">0</span></p>
+    </div>
+
+    <div class="info-card">
+  <button class="primary-btn full" id="logoutBtn">Log out</button>
+</div>
+
+
+  </div>
+</section>
+
+      
+ <!-- LOGIN -->
     <section class="page" id="login" data-page="login">
       <h2>Log in</h2>
       <form class="auth-form" id="loginForm">
@@ -407,3 +483,4 @@
   <script src="script.js?v=5"></script>
 </body>
 </html>
+

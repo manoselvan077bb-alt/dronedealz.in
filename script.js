@@ -455,10 +455,10 @@ let currentSearchText = '';
 let activePlatform = 'all';
 const topSearchInput = document.getElementById('topSearchInput');
 
-if (catButtons && homeProductsContainer) {
+// ===== CATEGORY CLICK HANDLER (ONLY ONCE) =====
+if (catButtons.length && homeProductsContainer) {
   catButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-
       // remove active from all
       catButtons.forEach(b => b.classList.remove('active'));
 
@@ -472,27 +472,29 @@ if (catButtons && homeProductsContainer) {
   });
 }
 
-
-
-
+// ===== RENDER HOME PRODUCTS =====
 function renderHomeProducts(category = 'all') {
   if (!homeProductsContainer) return;
+
   homeProductsContainer.innerHTML = '';
 
   const filtered = products.filter(p => {
     const name = (p.name || '').toLowerCase();
     const cat = (p.category || '').toLowerCase();
 
+    // 🔍 search filter
     if (currentSearchText && !name.includes(currentSearchText)) {
       return false;
     }
 
+    // 📂 category filter
     if (category === 'all') return true;
     if (cat === 'all') return false;
 
     return cat === category;
   });
 
+  // ===== RESULT COUNT =====
   if (resultCount) {
     const badgeNumber = resultCount.querySelector('.result-count-badge span');
     const count = filtered.length;
@@ -500,27 +502,11 @@ function renderHomeProducts(category = 'all') {
     resultCount.style.display = count > 0 ? 'block' : 'none';
   }
 
+  // ===== RENDER CARDS =====
   filtered.forEach(p => {
     const card = createProductCard(p);
     homeProductsContainer.appendChild(card);
   });
-}
-
-
-
-
-if (catButtons && homeProductsContainer) {
-  catButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    catButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    const category = btn.getAttribute('data-category') || 'all';
-    renderHomeProducts(category);
-  });
-});
-
-
 }
 
 
@@ -678,67 +664,71 @@ function renderHomeCartPreview() {
 
 // ===== CART PAGE RENDER =====
 function renderCartPage() {
-  const cartPage = document.getElementById('cart');
-  if (!cartPage) return;
+  const cartItemsEl = document.getElementById('cartItems');
+  if (!cartItemsEl) return;
 
-  let container = cartPage.querySelector('.cart-container');
-  if (!container) {
-    container = document.createElement('div');
-    container.className = 'cart-container';
-    cartPage.appendChild(container);
-  }
+  cartItemsEl.innerHTML = '';
 
   if (!cart.length) {
-    container.innerHTML = `
-      <p class="cart-empty">Your cart is empty. Add parts from Home or Search.</p>
+    cartItemsEl.innerHTML = `
+      <p class="cart-empty">Your cart is empty. Add products from Home or Dealz.</p>
     `;
+    updateCartSummary();
     return;
   }
-
-  const total = calcCartTotal();
-  container.innerHTML = `
-    <div class="cart-summary">
-      <span class="cart-summary-title">Cart total</span>
-      <span class="cart-summary-amount">₹${total}</span>
-    </div>
-    <div class="cart-items"></div>
-    <p class="cart-note">
-      Cart is only a helper list. Checkout, payment and delivery happen on Amazon / Flipkart.
-    </p>
-  `;
-
-  const listEl = container.querySelector('.cart-items');
 
   cart.forEach(item => {
     const row = document.createElement('div');
     row.className = 'cart-item';
+
     row.innerHTML = `
       <div class="cart-item-main">
         <div class="cart-item-thumb">
-          ${item.image
-            ? `<img src="${item.image}" alt="${item.name}">`
-            : `<i class="fas fa-cogs"></i>`}
+          ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
         </div>
         <div class="cart-item-text">
-          <span class="cart-item-name">${item.name}</span>
-          <span class="cart-item-meta">${item.category} • ₹${item.price} × ${item.qty}</span>
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-meta">
+            ${item.category} • ₹${item.price} × ${item.qty || 1}
+          </div>
         </div>
       </div>
+
       <div class="cart-item-actions">
         <button class="cart-remove" data-id="${item.id}">Remove</button>
-        ${item.url ? `<a href="${item.url}" target="_blank" rel="noopener" class="cart-buy-link">Buy</a>` : ''}
+        ${item.buyLink ? `<a href="${item.buyLink}" target="_blank" class="cart-buy-link">Buy</a>` : ''}
       </div>
     `;
-    listEl.appendChild(row);
+
+    cartItemsEl.appendChild(row);
   });
 
-  listEl.addEventListener('click', (e) => {
+  cartItemsEl.onclick = (e) => {
     const btn = e.target.closest('.cart-remove');
     if (!btn) return;
-    const id = btn.getAttribute('data-id');
-    if (!id) return;
+    const id = btn.dataset.id;
     removeFromCart(id);
+  };
+
+  updateCartSummary(); // ✅ VERY IMPORTANT
+}
+function updateCartSummary() {
+  const itemsEl = document.getElementById('cartItemCount');
+  const priceEl = document.getElementById('cartTotal');
+
+  if (!itemsEl || !priceEl) return;
+
+  let totalItems = 0;
+  let totalPrice = 0;
+
+  cart.forEach(item => {
+    const qty = item.qty || 1;
+    totalItems += qty;
+    totalPrice += item.price * qty;
   });
+
+  itemsEl.textContent = totalItems;
+  priceEl.textContent = totalPrice;
 }
 
 
@@ -803,14 +793,154 @@ if (loginForm) {
 
 const accountPage = document.getElementById('account');
 const adminSection = document.getElementById('admin');
+// ===== WALLET HISTORY =====
+async function loadWalletHistory(userId) {
+  const list = document.getElementById('walletHistoryList');
+  if (!list) return;
+
+  list.innerHTML = '<p style="color:#9ca3af;">Loading...</p>';
+
+  const snap = await db
+    .collection('users')
+    .doc(userId)
+    .collection('walletHistory')
+    .orderBy('createdAt', 'desc')
+    .get();
+
+  list.innerHTML = '';
+
+  if (snap.empty) {
+    list.innerHTML = '<p style="color:#9ca3af;">No wallet activity yet</p>';
+    return;
+  }
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    const row = document.createElement('div');
+    row.className = 'history-item';
+
+    row.innerHTML = `
+      <div class="history-left">
+        <strong>${d.note || d.type}</strong>
+        <span class="history-status">${d.status}</span>
+      </div>
+      <div class="history-amount ${d.amount > 0 ? 'plus' : 'minus'}">
+        ${d.amount > 0 ? '+' : ''}₹${Math.abs(d.amount)}
+      </div>
+    `;
+
+    list.appendChild(row);
+  });
+}
+// ===== LOAD WALLET SUMMARY =====
+async function loadWalletSummary(userId) {
+  const availableEl = document.getElementById('walletAvailable');
+  const withdrawnEl = document.getElementById('walletWithdrawn');
+
+  if (!availableEl || !withdrawnEl) return;
+
+  try {
+    const snap = await db.collection('users').doc(userId).get();
+
+    if (!snap.exists) {
+      availableEl.textContent = '0';
+      withdrawnEl.textContent = '0';
+      return;
+    }
+
+    const data = snap.data();
+    availableEl.textContent = data.walletAvailable || 0;
+    withdrawnEl.textContent = data.walletWithdrawn || 0;
+
+  } catch (e) {
+    console.error('Wallet summary error:', e);
+  }
+}
+
+
+
+// ===== SPIN HISTORY =====
+async function loadSpinHistory(userId) {
+  const list = document.getElementById('spinHistoryList');
+  if (!list) return;
+
+  list.innerHTML = '<p style="color:#9ca3af;">Loading...</p>';
+
+  const snap = await db
+    .collection('users')
+    .doc(userId)
+    .collection('spinHistory')
+    .orderBy('createdAt', 'desc')
+    .get();
+
+  list.innerHTML = '';
+
+  if (snap.empty) {
+    list.innerHTML = '<p style="color:#9ca3af;">No spins yet</p>';
+    return;
+  }
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    const row = document.createElement('div');
+    row.className = 'history-item';
+
+    row.innerHTML = `
+      <div class="history-left">
+        <strong>🎡 Spin Reward</strong>
+        <span class="history-status">${d.status}</span>
+      </div>
+      <div class="history-amount plus">+₹${d.reward}</div>
+    `;
+
+    list.appendChild(row);
+  });
+}
+// ===== USER ACTIVITY SUMMARY =====
+async function loadUserActivity(userId) {
+  const spinsEl = document.getElementById('spinsUsed');
+  const ordersEl = document.getElementById('ordersCompleted');
+  const cashbackEl = document.getElementById('cashbackEarned');
+
+  if (!spinsEl || !ordersEl || !cashbackEl) return;
+
+  try {
+    const snap = await db.collection('users').doc(userId).get();
+
+    if (!snap.exists) {
+      spinsEl.textContent = 0;
+      ordersEl.textContent = 0;
+      cashbackEl.textContent = '₹0';
+      return;
+    }
+
+    const data = snap.data();
+
+    spinsEl.textContent = data.spinsUsed || 0;
+    ordersEl.textContent = data.ordersCompleted || 0;
+    cashbackEl.textContent = `₹${data.cashbackEarned || 0}`;
+
+  } catch (e) {
+    console.error('Activity load error:', e);
+  }
+}
+
+
 
 
 auth.onAuthStateChanged(async (user) => {
   if (!accountPage) return;
-  const infoCard = accountPage.querySelector('.info-card');
+
+  const guestView = document.getElementById('guestView');
+  const userView = document.getElementById('userView');
 
   if (user) {
-    let displayName = user.email;
+    // ✅ show logged-in UI
+    guestView.style.display = 'none';
+    userView.style.display = 'block';
+
+    // name + email
+    let displayName = user.email.split('@')[0];
     try {
       const snap = await db.collection('users').doc(user.uid).get();
       if (snap.exists && snap.data().name) {
@@ -820,38 +950,58 @@ auth.onAuthStateChanged(async (user) => {
       console.error(e);
     }
 
-    if (infoCard) {
-      infoCard.innerHTML = `
-        <p class="info-highlight">Welcome, ${displayName}</p>
-        <p>You are signed in with <strong>${user.email}</strong>.</p>
-      `;
+    document.getElementById('userName').textContent = displayName;
+    document.getElementById('userEmail').textContent = user.email;
+
+    // wallet + spin
+    loadWalletSummary(user.uid);
+    loadWalletHistory(user.uid);
+    loadSpinHistory(user.uid);
+    loadUserActivity(user.uid);
+
+
+    // admin
+    if (adminSection) {
+      adminSection.style.display =
+        user.email === ADMIN_EMAIL ? 'block' : 'none';
     }
 
-    if (adminSection) {
-      adminSection.style.display = user.email === ADMIN_EMAIL ? 'block' : 'none';
-    }
-} else {
-    if (infoCard) {
-      infoCard.innerHTML = `
-        <p>Sign in to manage your profile and saved builds.</p>
-      `;
-    }
-    if (adminSection) {
-      adminSection.style.display = 'none';
-    }
+  } else {
+  // show guest UI
+  guestView.style.display = 'block';
+  userView.style.display = 'none';
+
+  if (adminSection) adminSection.style.display = 'none';
+
+  // ✅ BIND LOGIN BUTTON HERE (IMPORTANT)
+  const goToLoginBtn = document.getElementById('goToLoginBtn');
+  if (goToLoginBtn) {
+    goToLoginBtn.onclick = () => {
+      showPage('login', true);
+    };
   }
+}
+
 });
+// ===== LOGOUT =====
+const logoutBtn = document.getElementById('logoutBtn');
+
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      await auth.signOut();
+      alert('Logged out successfully');
+      showPage('home', true); // go back to home
+    } catch (err) {
+      console.error('Logout error:', err);
+      alert('Failed to logout');
+    }
+  });
+}
 
 
-window.droneLogout = async function () {
-  try {
-    await auth.signOut();
-    showMessage('Logged out');
-    showPage('home', true);
-  } catch (e) {
-    console.error(e);
-  }
-};
+
+
 
 
 // ===== UPI ID SAVE + LOAD =====
@@ -1285,17 +1435,27 @@ function initSpinPage() {
   });
 
   function finishSpin(uid, index) {
-    const prize = SPIN_SEGMENTS[index];
+  const prize = SPIN_SEGMENTS[index];
 
-    alert(`🎉 You won ₹${prize}\n(credited after verification)`);
+  alert(`🎉 You won ₹${prize}\n(credited after verification)`);
 
-    // 🔐 REAL MODE LOCK
-    localStorage.setItem(`spin_used_${uid}`, 'true');
-    localStorage.setItem(`spin_time_${uid}`, Date.now());
+  // ✅ save spin history
+  db.collection('users')
+    .doc(uid)
+    .collection('spinHistory')
+    .add({
+      reward: prize,
+      status: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
 
-    btn.disabled = true;
-    btn.textContent = 'Spin Used 🎉';
-  }
+  localStorage.setItem(`spin_used_${uid}`, 'true');
+  localStorage.setItem(`spin_time_${uid}`, Date.now());
+
+  btn.disabled = true;
+  btn.textContent = 'Spin Used 🎉';
+}
+
 }
 
 
@@ -1339,24 +1499,15 @@ if (Array.isArray(data.images) && data.images.length) {
 
 // Initialisation
 loadCartFromStorage();
-updateCartBadge();
-loadProductsFromFirestore();
 renderCartPage();
+loadProductsFromFirestore();
+updateCartSummary();   // ✅ THIS IS THE MISSING LINE
+updateCartBadge();
 renderHomeCartPreview();
 initSpinPage();
 
-auth.onAuthStateChanged(user => {
-  currentUser = user || null;
 
-  // ✅ ALWAYS show products (login not required)
-  loadProductsFromFirestore();
 
-  // ✅ User-only features
-  if (user) {
-    // getTodaySpendInfo().then(updateSpinProgress);
-    
-  }
-});
 
 function openProductDetailById(productId) {
 const found = products.find(
@@ -1380,4 +1531,46 @@ currentProduct = found;
   renderProductDetail();
 
   window.scrollTo({ top: 0, behavior: 'instant' });
+}
+const proceedBtn = document.getElementById('proceedToBuyBtn');
+
+if (proceedBtn) {
+  proceedBtn.addEventListener('click', () => {
+    if (!cart || cart.length === 0) {
+      alert('Your cart is empty');
+      return;
+    }
+
+    // Take first product only
+    const product = cart[0];
+
+    if (!product.url) {
+
+      alert('Buy link not available for this product');
+      return;
+    }
+
+    // Save remaining cart for later
+    localStorage.setItem(
+      'pendingCart',
+      JSON.stringify(cart.slice(1))
+    );
+
+    // Redirect to affiliate link
+    window.open(product.url, '_blank');
+
+    alert(
+      'You will be redirected to buy products one by one.\n' +
+      'Please come back after completing this purchase.'
+    );
+  });
+}
+const pending = localStorage.getItem('pendingCart');
+
+if (pending) {
+  cart = JSON.parse(pending);
+  localStorage.removeItem('pendingCart');
+  saveCartToStorage();
+  renderCartPage();
+  updateCartSummary(); // ✅ ADD THIS
 }
