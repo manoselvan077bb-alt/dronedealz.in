@@ -2263,3 +2263,52 @@ p {
   justify-content: space-between;
   margin: 8px 0;
 }
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 14px;
+  max-width: 340px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.modal-actions button {
+  flex: 1;
+}
+/* Secondary (Cancel) button – Professional style */
+.secondary-btn {
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1.5px solid #d1d5db;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.secondary-btn:active {
+  transform: scale(0.97);
+}

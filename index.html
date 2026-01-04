@@ -478,9 +478,24 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
   </script>
+  
+  <!-- BUY FLOW MODAL (GLOBAL) -->
+<div id="buyFlowModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card">
+    <h3>Complete your purchase</h3>
+    <p>
+      You will be redirected to buy products one by one on Amazon / Flipkart.
+      Please return to Dealz after each purchase.
+    </p>
+    <div class="modal-actions">
+      <button id="cancelBuyFlow" class="secondary-btn">Cancel</button>
+      <button id="continueBuyFlow" class="primary-btn">Continue</button>
+    </div>
+  </div>
+</div>
 
   <!-- Main JS -->
   <script src="script.js?v=5"></script>
-</body>
+  </body>
 </html>
 

@@ -696,7 +696,8 @@ function renderCartPage() {
 
       <div class="cart-item-actions">
         <button class="cart-remove" data-id="${item.id}">Remove</button>
-        ${item.buyLink ? `<a href="${item.buyLink}" target="_blank" class="cart-buy-link">Buy</a>` : ''}
+        ${item.url ? `<a href="${item.url}" target="_blank" class="cart-buy-link">Buy</a>` : ''}
+
       </div>
     `;
 
@@ -1532,39 +1533,9 @@ currentProduct = found;
 
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
-const proceedBtn = document.getElementById('proceedToBuyBtn');
 
-if (proceedBtn) {
-  proceedBtn.addEventListener('click', () => {
-    if (!cart || cart.length === 0) {
-      alert('Your cart is empty');
-      return;
-    }
 
-    // Take first product only
-    const product = cart[0];
 
-    if (!product.url) {
-
-      alert('Buy link not available for this product');
-      return;
-    }
-
-    // Save remaining cart for later
-    localStorage.setItem(
-      'pendingCart',
-      JSON.stringify(cart.slice(1))
-    );
-
-    // Redirect to affiliate link
-    window.open(product.url, '_blank');
-
-    alert(
-      'You will be redirected to buy products one by one.\n' +
-      'Please come back after completing this purchase.'
-    );
-  });
-}
 const pending = localStorage.getItem('pendingCart');
 
 if (pending) {
@@ -1572,5 +1543,59 @@ if (pending) {
   localStorage.removeItem('pendingCart');
   saveCartToStorage();
   renderCartPage();
-  updateCartSummary(); // ✅ ADD THIS
+  updateCartSummary();
+}
+
+// ===== BUY FLOW (PROCEED TO BUY) =====
+const proceedBtn = document.getElementById('proceedToBuyBtn');
+const modal = document.getElementById('buyFlowModal');
+const cancelBtn = document.getElementById('cancelBuyFlow');
+const continueBtn = document.getElementById('continueBuyFlow');
+
+if (proceedBtn) {
+  proceedBtn.onclick = () => {
+    console.log('Proceed clicked');
+
+    if (!cart || !cart.length) {
+      alert('Cart is empty');
+      return;
+    }
+
+    // single item
+    if (cart.length === 1) {
+      const item = cart[0];
+      if (!item.url) {
+        alert('Buy link not available');
+        return;
+      }
+      window.open(item.url, '_blank');
+      return;
+    }
+
+    // multiple items
+    modal.style.display = 'flex';
+  };
+}
+
+if (cancelBtn) {
+  cancelBtn.onclick = () => {
+    modal.style.display = 'none';
+  };
+}
+
+if (continueBtn) {
+  continueBtn.onclick = () => {
+    modal.style.display = 'none';
+
+    const first = cart[0];
+    const remaining = cart.slice(1);
+
+    if (!first.url) {
+      alert('Buy link not available');
+      return;
+    }
+
+    localStorage.setItem('pendingCart', JSON.stringify(remaining));
+    window.open(first.url, '_blank');
+  };
 }
