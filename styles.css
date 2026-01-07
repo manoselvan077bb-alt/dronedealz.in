@@ -2454,3 +2454,18 @@ body.account-open .guest-card {
   font-size: 0.95rem;
 }
 
+/* ===== CART CLICK FIX ===== */
+
+.cart-item-main {
+  cursor: pointer;
+}
+
+.cart-item-actions {
+  position: relative;
+  z-index: 2;
+}
+
+.cart-item-main {
+  position: relative;
+  z-index: 1;
+}

@@ -197,16 +197,18 @@ function addToCart(product) {
     existing.qty += 1;
   } else {
     cart.push({
-  id: product.id,
+  id: product.id,              // cart item id
+  productId: product.id,       // ✅ ADD THIS LINE (VERY IMPORTANT)
   name: product.name,
   price: Number(product.price || 0),
-  mrp: Number(product.mrp || product.price || 0), // ✅ IMPORTANT
+  mrp: Number(product.mrp || product.price || 0),
   platform: product.platform,
   url: product.url || null,
   category: product.category,
   image: image,
   qty: 1
 });
+
 
 
   }
@@ -723,7 +725,8 @@ function renderCartPage() {
     row.className = 'cart-item';
 
     row.innerHTML = `
-      <div class="cart-item-main">
+      <div class="cart-item-main cart-open-product" data-product-id="${item.productId}">
+
         <div class="cart-item-thumb">
           ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
         </div>
@@ -756,6 +759,13 @@ function renderCartPage() {
     }
     return;
   }
+  // OPEN PRODUCT DETAIL
+  const productArea = e.target.closest('.cart-open-product');
+if (productArea) {
+  const productId = productArea.dataset.productId;
+  openProductFromCart(productId);
+  return;
+}
 
   // REMOVE button
   const removeBtn = e.target.closest('.cart-remove');
@@ -763,6 +773,74 @@ function renderCartPage() {
     removeFromCart(removeBtn.dataset.id);
   }
 };
+function renderCartPage() {
+  const cartItemsEl = document.getElementById('cartItems');
+  if (!cartItemsEl) return;
+
+  cartItemsEl.innerHTML = '';
+
+  if (!cart.length) {
+    cartItemsEl.innerHTML = `
+      <p class="cart-empty">Your cart is empty. Add products from Home or Dealz.</p>
+    `;
+    updateCartSummary();
+    return;
+  }
+
+  // 1️⃣ RENDER CART ITEMS
+  cart.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'cart-item';
+
+    row.innerHTML = `
+      <div class="cart-item-main cart-open-product" data-product-id="${item.productId}">
+        <div class="cart-item-thumb">
+          ${item.image ? `<img src="${item.image}">` : ''}
+        </div>
+        <div class="cart-item-text">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-meta">
+            ${item.category} • ₹${item.price} × ${item.qty || 1}
+          </div>
+        </div>
+      </div>
+
+      <div class="cart-item-actions">
+        <button class="cart-remove" data-id="${item.id}">Remove</button>
+        ${item.url ? `<button class="cart-buy-link" data-id="${item.id}">Buy</button>` : ''}
+      </div>
+    `;
+
+    cartItemsEl.appendChild(row);
+  });
+
+  // 2️⃣ 👉 PASTE CLICK HANDLER **HERE**
+  cartItemsEl.onclick = (e) => {
+    const buyBtn = e.target.closest('.cart-buy-link');
+    if (buyBtn) {
+      const id = buyBtn.dataset.id;
+      const item = cart.find(i => i.id === id);
+      if (item) generateTrackingIdAndRedirect(item);
+      return;
+    }
+
+    const productArea = e.target.closest('.cart-open-product');
+    if (productArea) {
+      const productId = productArea.dataset.productId;
+      openProductFromCart(productId);
+      return;
+    }
+
+    const removeBtn = e.target.closest('.cart-remove');
+    if (removeBtn) {
+      removeFromCart(removeBtn.dataset.id);
+    }
+  };
+
+  // 3️⃣ SUMMARY
+  updateCartSummary();
+}
+
 
 
   updateCartSummary(); // ✅ VERY IMPORTANT
@@ -799,6 +877,20 @@ function updateCartSummary() {
     savingsRow.style.display = 'none';
   }
 }
+
+function openProductFromCart(productId) {
+  const product = products.find(p => String(p.id) === String(productId));
+
+  if (!product) {
+    console.error('Product not found:', productId);
+    return;
+  }
+
+  currentProduct = product; // ✅ FULL OBJECT
+  showPage('productDetail', true);
+  renderProductDetail();    // ✅ YOU ALREADY HAVE THIS FUNCTION
+}
+
 
 
 // ===== AUTH =====
