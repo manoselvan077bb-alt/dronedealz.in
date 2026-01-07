@@ -197,15 +197,18 @@ function addToCart(product) {
     existing.qty += 1;
   } else {
     cart.push({
-      id: product.id,
-      name: product.name,
-      price: Number(product.price || 0),
-      platform: product.platform,
-      url: product.url || null,
-      category: product.category,
-      image: image,
-      qty: 1
-    });
+  id: product.id,
+  name: product.name,
+  price: Number(product.price || 0),
+  mrp: Number(product.mrp || product.price || 0), // ✅ IMPORTANT
+  platform: product.platform,
+  url: product.url || null,
+  category: product.category,
+  image: image,
+  qty: 1
+});
+
+
   }
   saveCartToStorage();
   updateCartBadge();
@@ -767,20 +770,34 @@ function renderCartPage() {
 function updateCartSummary() {
   const itemsEl = document.getElementById('cartItemCount');
   const priceEl = document.getElementById('cartTotal');
+  const savingsRow = document.getElementById('cartSavingsRow');
+  const savingsEl = document.getElementById('cartSavings');
 
   if (!itemsEl || !priceEl) return;
 
   let totalItems = 0;
   let totalPrice = 0;
+  let totalSavings = 0;
 
   cart.forEach(item => {
     const qty = item.qty || 1;
     totalItems += qty;
     totalPrice += item.price * qty;
+
+    if (item.mrp && item.mrp > item.price) {
+      totalSavings += (item.mrp - item.price) * qty;
+    }
   });
 
   itemsEl.textContent = totalItems;
   priceEl.textContent = totalPrice;
+
+  if (savingsRow && totalSavings > 0) {
+    savingsEl.textContent = totalSavings;
+    savingsRow.style.display = 'flex';
+  } else if (savingsRow) {
+    savingsRow.style.display = 'none';
+  }
 }
 
 

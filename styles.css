@@ -2445,4 +2445,12 @@ body.account-open .guest-card {
   font-size: 0.85rem;
   color: #16a34a;
 }
+.savings-row {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.savings-amount {
+  font-size: 0.95rem;
+}
 
