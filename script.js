@@ -10,32 +10,50 @@ const ADMIN_EMAIL = 'testweb123@gmail.com';
 
 
 function showPage(pageId, push = true) {
-  navLinks.forEach(l => {
-    const target = l.getAttribute('data-page');
-    l.classList.toggle('active', target === pageId);
+
+  // ===== FORCE RESET =====
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
   });
 
-  pages.forEach(p => p.classList.remove('active'));
-  const pageEl = document.getElementById(pageId);
-  if (pageEl) pageEl.classList.add('active');
+  document.body.classList.remove('account-open');
 
+  // ===== ACTIVATE PAGE =====
+  const pageEl = document.getElementById(pageId);
+  if (pageEl) {
+    pageEl.classList.add('active');
+  }
+
+  // ===== FORCE ACCOUNT MODE =====
+  if (pageId === 'account') {
+    document.body.classList.add('account-open');
+  }
+
+  // ===== NAV LINKS =====
+  navLinks.forEach(l => {
+    l.classList.toggle(
+      'active',
+      l.getAttribute('data-page') === pageId
+    );
+  });
+
+  bottomItems.forEach(b => {
+    b.classList.toggle(
+      'active',
+      b.getAttribute('data-page') === pageId
+    );
+  });
+
+  // ===== HISTORY =====
   if (push) {
     history.pushState({ page: pageId }, '', '#' + pageId);
   }
 
+  // ===== MOBILE MENU CLOSE =====
   if (window.innerWidth <= 768 && navMenu) {
     navMenu.style.display = 'none';
   }
-
-  bottomItems.forEach(b => {
-    b.classList.toggle('active', b.getAttribute('data-page') === pageId);
-  });
-
-  if (pageId === 'account') {
-    onAccountPageShown();
-  }
 }
-
 
 navLinks.forEach(link => {
   link.addEventListener('click', (e) => {
@@ -61,6 +79,17 @@ if (goLoginBtn) {
     showPage('login', true);
   });
 }
+// ===== INLINE PAGE LINKS (Create account, Login links inside forms) =====
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a[data-page]');
+  if (!link) return;
+
+  e.preventDefault();
+  const page = link.getAttribute('data-page');
+  if (page) {
+    showPage(page, true);
+  }
+});
 
 
 window.addEventListener('popstate', (event) => {
@@ -200,6 +229,8 @@ function calcCartTotal() {
 
 
 // ===== HELPERS =====
+
+
 function calcPriceMeta(p) {
   const price = Number(p.price || 0);
   const mrp = Number(p.mrp || 0);
@@ -243,16 +274,23 @@ function createProductCard(p) {
     </div>
   `;
 
-  // 🛒 Add to cart (stop opening detail page)
-  card.querySelector('.cart-btn').onclick = (e) => {
-    e.stopPropagation();
-    addToCart(p);
-  };
+  // ✅ BUY button
+card.querySelector('.buy-btn').onclick = (e) => {
+  e.stopPropagation();
+  generateTrackingIdAndRedirect(p);
+};
 
-  // 👉 Open product detail
-  card.onclick = () => {
-    openProductDetailById(p.id);
-  };
+// ✅ ADD TO CART button (FIXED)
+card.querySelector('.cart-btn').onclick = (e) => {
+  e.stopPropagation();
+  addToCart(p);
+};
+
+// 👉 Open product detail ONLY when clicking card
+card.onclick = () => {
+  openProductDetailById(p.id);
+};
+
 
   return card;
 }
@@ -696,7 +734,7 @@ function renderCartPage() {
 
       <div class="cart-item-actions">
         <button class="cart-remove" data-id="${item.id}">Remove</button>
-        ${item.url ? `<a href="${item.url}" target="_blank" class="cart-buy-link">Buy</a>` : ''}
+        ${item.url ? `<button class="cart-buy-link" data-id="${item.id}">Buy</button>` : ''}
 
       </div>
     `;
@@ -705,11 +743,24 @@ function renderCartPage() {
   });
 
   cartItemsEl.onclick = (e) => {
-    const btn = e.target.closest('.cart-remove');
-    if (!btn) return;
-    const id = btn.dataset.id;
-    removeFromCart(id);
-  };
+  // BUY button
+  const buyBtn = e.target.closest('.cart-buy-link');
+  if (buyBtn) {
+    const id = buyBtn.dataset.id;
+    const item = cart.find(i => i.id === id);
+    if (item) {
+      generateTrackingIdAndRedirect(item);
+    }
+    return;
+  }
+
+  // REMOVE button
+  const removeBtn = e.target.closest('.cart-remove');
+  if (removeBtn) {
+    removeFromCart(removeBtn.dataset.id);
+  }
+};
+
 
   updateCartSummary(); // ✅ VERY IMPORTANT
 }
@@ -1502,11 +1553,10 @@ if (Array.isArray(data.images) && data.images.length) {
 loadCartFromStorage();
 renderCartPage();
 loadProductsFromFirestore();
-updateCartSummary();   // ✅ THIS IS THE MISSING LINE
+updateCartSummary();
 updateCartBadge();
 renderHomeCartPreview();
 initSpinPage();
-
 
 
 
@@ -1545,57 +1595,53 @@ if (pending) {
   renderCartPage();
   updateCartSummary();
 }
+async function generateTrackingIdAndRedirect(item) {
+  const user = auth.currentUser;
 
-// ===== BUY FLOW (PROCEED TO BUY) =====
-const proceedBtn = document.getElementById('proceedToBuyBtn');
-const modal = document.getElementById('buyFlowModal');
-const cancelBtn = document.getElementById('cancelBuyFlow');
-const continueBtn = document.getElementById('continueBuyFlow');
-
-if (proceedBtn) {
-  proceedBtn.onclick = () => {
-    console.log('Proceed clicked');
-
-    if (!cart || !cart.length) {
-      alert('Cart is empty');
-      return;
-    }
-
-    // single item
-    if (cart.length === 1) {
-      const item = cart[0];
-      if (!item.url) {
-        alert('Buy link not available');
-        return;
-      }
-      window.open(item.url, '_blank');
-      return;
-    }
-
-    // multiple items
-    modal.style.display = 'flex';
-  };
+if (!user) {
+  alert('Session expired. Please login again.');
+  showPage('login', true);
+  return;
 }
 
-if (cancelBtn) {
-  cancelBtn.onclick = () => {
-    modal.style.display = 'none';
-  };
-}
 
-if (continueBtn) {
-  continueBtn.onclick = () => {
-    modal.style.display = 'none';
-
-    const first = cart[0];
-    const remaining = cart.slice(1);
-
-    if (!first.url) {
-      alert('Buy link not available');
-      return;
+  try {
+    if (!item || !item.url) {
+      throw new Error('Buy link not available');
     }
 
-    localStorage.setItem('pendingCart', JSON.stringify(remaining));
-    window.open(first.url, '_blank');
-  };
+    // ✅ create ONE order
+    const orderRef = await db.collection('orders').add({
+      userId: user.uid,
+      productId: item.id,
+      productTitle: item.name,
+      price: Number(item.price || 0),
+
+      affiliateStatus: 'clicked',
+      commissionStatus: 'pending',
+      cashbackStatus: 'pending',
+      cashbackAmount: 0,
+
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    const trackingId = `DZ_${user.uid}_${orderRef.id}`;
+
+    await orderRef.update({ trackingId });
+
+    // ✅ affiliate tracking
+    const url = new URL(item.url);
+    if (item.platform === 'amazon') {
+      url.searchParams.set('ascsubtag', trackingId);
+    } else if (item.platform === 'flipkart') {
+      url.searchParams.set('affExtParam1', trackingId);
+    }
+
+    // ✅ redirect
+    window.location.href = url.toString();
+
+  } catch (err) {
+    console.error(err);
+    alert('Something went wrong. Try again.');
+  }
 }

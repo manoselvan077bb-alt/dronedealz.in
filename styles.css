@@ -266,6 +266,8 @@ body {
 }
 
 
+
+
 .category-row {
   display: flex;
   gap: 8px;
@@ -2312,3 +2314,114 @@ p {
 .secondary-btn:active {
   transform: scale(0.97);
 }
+/* ========================================= */
+/* ✅ ACCOUNT PAGE – FINAL CLEAN FIX */
+/* (with animations + pulse) */
+/* ========================================= */
+
+/* Hide navbar + top shell on account */
+body.account-open .navbar,
+body.account-open .top-shell {
+  display: none !important;
+}
+
+/* Remove ALL layout spacing */
+body.account-open,
+body.account-open main,
+body.account-open .main-content,
+body.account-open .page {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Fullscreen account page */
+body.account-open #account.page.active {
+  position: fixed !important;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+/* Center guest view */
+body.account-open #guestView {
+  position: absolute !important;
+  inset: 0;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  animation: fadeIn 0.4s ease;
+}
+
+/* Guest card */
+body.account-open .guest-card {
+  background: #ffffff;
+  padding: 32px 36px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+
+  animation: slideUp 0.5s ease;
+}
+
+/* Text */
+.guest-card h2 {
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.guest-card p {
+  color: #6b7280;
+  margin-bottom: 22px;
+  font-size: 0.95rem;
+}
+
+/* ================= */
+/* 🔔 BUTTON PULSE */
+/* ================= */
+.pulse {
+  animation: pulse 1.8s infinite;
+}
+
+/* ================= */
+/* 🎞 ANIMATIONS */
+/* ================= */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34,197,94,0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(34,197,94,0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34,197,94,0);
+  }
+}
+
+/* Bottom nav always on top */
+.bottom-nav {
+  z-index: 10000;
+}
+
