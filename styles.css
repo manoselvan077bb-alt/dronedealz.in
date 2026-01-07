@@ -2424,4 +2424,25 @@ body.account-open .guest-card {
 .bottom-nav {
   z-index: 10000;
 }
+.cart-header {
+  margin-bottom: 20px;
+}
+
+.cart-header h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.cart-subtitle {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 6px;
+}
+
+.cart-trust {
+  font-size: 0.85rem;
+  color: #16a34a;
+}
 
