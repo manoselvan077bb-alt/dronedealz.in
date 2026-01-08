@@ -24,10 +24,11 @@ function showPage(pageId, push = true) {
     pageEl.classList.add('active');
   }
 
-  // ===== FORCE ACCOUNT MODE =====
-  if (pageId === 'account') {
-    document.body.classList.add('account-open');
-  }
+  // ===== FORCE ACCOUNT MODE (GUEST ONLY) =====
+if (pageId === 'account' && !auth.currentUser) {
+  document.body.classList.add('account-open');
+}
+
 
   // ===== NAV LINKS =====
   navLinks.forEach(l => {
@@ -1096,9 +1097,11 @@ auth.onAuthStateChanged(async (user) => {
   const userView = document.getElementById('userView');
 
   if (user) {
-    // ✅ show logged-in UI
-    guestView.style.display = 'none';
-    userView.style.display = 'block';
+  // ✅ FULL RESET (IMPORTANT)
+  document.body.classList.remove('account-open');
+
+  guestView.style.display = 'none';
+  userView.style.display = 'block';
 
     // name + email
     let displayName = user.email.split('@')[0];

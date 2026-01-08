@@ -2469,3 +2469,130 @@ body.account-open .guest-card {
   position: relative;
   z-index: 1;
 }
+/* ===== SUPPORT PAGE PRO ===== */
+
+.support-page {
+  padding-bottom: 40px;
+}
+
+/* HERO */
+.support-hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.support-hero h1 {
+  font-size: 1.9rem;
+}
+
+.support-hero p {
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+/* ACTION CARDS */
+.support-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.support-box {
+  background: #fff;
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  transition: transform 0.3s ease;
+}
+
+.support-box:hover {
+  transform: translateY(-6px);
+}
+
+.support-emoji {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.support-email {
+  margin-top: 8px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.support-meta {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* TIMELINE */
+.support-timeline {
+  margin-top: 36px;
+  background: #f9fafb;
+  border-radius: 18px;
+  padding: 22px;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.timeline-item span {
+  width: 28px;
+  height: 28px;
+  background: #16a34a;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+/* FAQ */
+.support-faq {
+  margin-top: 36px;
+}
+
+.faq-item {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.faq-item h4 {
+  margin-bottom: 6px;
+}
+
+/* FOOTER */
+.support-bottom {
+  margin-top: 32px;
+  text-align: center;
+  color: #374151;
+}
+
+/* ANIMATION */
+.fade-up {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.fade-up.delay-1 { animation-delay: 0.1s }
+.fade-up.delay-2 { animation-delay: 0.2s }
+.fade-up.delay-3 { animation-delay: 0.3s }
+.fade-up.delay-4 { animation-delay: 0.4s }
+.fade-up.delay-5 { animation-delay: 0.5s }
+.fade-up.delay-6 { animation-delay: 0.6s }
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
