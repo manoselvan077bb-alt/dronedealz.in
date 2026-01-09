@@ -197,68 +197,88 @@
     </section>
 
     <!-- ================= SPIN PAGE ================= -->
-<section class="page" id="spin" data-page="spin">
+  <section class="page" id="spin" data-page="spin">
 
-  <h2>Spin &amp; win cashback</h2>
+  <div class="spin-container">
 
-  <div class="info-card" id="spinStatusCard">
-    <p id="spinProgressText">Today you bought 0/2 products.</p>
-
-    <div class="spin-progress-bar">
-      <div id="spinProgressFill"></div>
+    <!-- HEADER -->
+    <div class="spin-header">
+      <h2>Spin & Win Cashback 🎁</h2>
+      <p>Complete purchases and win real cashback</p>
     </div>
 
-    <p class="spin-note">
-      Spin unlocks after 2 confirmed purchases today, and the total of those 2 must be at least ₹999.
-    </p>
-  </div>
+    <!-- STATUS CARD -->
+    <div class="spin-card spin-status">
+      <p id="spinProgressText">Today you bought 0/2 products</p>
 
-  <div class="spin-wheel-wrapper">
-    <canvas id="spinCanvas" width="260" height="260"></canvas>
-    <button class="primary-btn" id="spinButton" disabled>
-      Buy 2 items to unlock
-    </button>
-  </div>
-
-  <p class="spin-small">
-    Your cashback will be added to your wallet and automatically credited to your saved UPI ID
-    after your order is delivered.
-  </p>
-
-  <div class="info-card" id="walletCard">
-    <h3>Wallet</h3>
-    <p>👛 Wallet Available Money: <strong>₹<span id="spinWalletAvailable">0</span></strong></p>
-<p>💸 Withdrawn Money: <strong>₹<span id="spinWalletWithdrawn">0</span></strong></p>
-
-  </div>
-
-  <div class="info-card">
-    <h3>Wallet History</h3>
-    <div id="walletHistoryList" class="history-list"></div>
-  </div>
-
-  <div class="info-card">
-    <h3>Spin History</h3>
-    <div id="spinHistoryList" class="history-list"></div>
-  </div>
-  <!-- UPI ID for instant cashback -->
-      <div class="info-card" style="margin-top:12px;">
-        <h3>Cashback UPI ID</h3>
-        <p style="font-size:0.9rem;">
-          Add your UPI ID (like <strong>name@oksbi</strong>). Cashback from spin wheel will be sent to this ID automatically.
-        </p>
-        <form class="auth-form" id="upiForm">
-          <label>
-            UPI ID
-            <input type="text" id="upiIdInput" placeholder="yourname@oksbi" required>
-          </label>
-          <button type="submit" class="primary-btn">Save UPI ID</button>
-        </form>
-        <p id="upiStatus" class="info-small"></p>
+      <div class="spin-progress">
+        <div id="spinProgressFill"></div>
       </div>
 
+      <small>
+        Spin unlocks after 2 confirmed purchases (₹999 total)
+      </small>
+    </div>
+
+    <!-- WHEEL -->
+    <div class="spin-wheel-card">
+      <canvas id="spinCanvas" width="260" height="260"></canvas>
+
+      <button class="spin-cta" id="spinButton" disabled>
+        Buy 2 items to unlock
+      </button>
+
+      <p class="spin-hint">
+        Cashback will be credited after order delivery
+      </p>
+    </div>
+
+    <!-- WALLET -->
+    <div class="spin-card">
+      <h3>Wallet</h3>
+      <div class="wallet-row">
+        <span>Available</span>
+        <strong>₹<span id="spinWalletAvailable">0</span></strong>
+      </div>
+      <div class="wallet-row">
+        <span>Withdrawn</span>
+        <strong>₹<span id="spinWalletWithdrawn">0</span></strong>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="spin-card">
+      <h3>Wallet History</h3>
+      <div id="walletHistoryList" class="history-list"></div>
+    </div>
+
+    <div class="spin-card">
+      <h3>Spin History</h3>
+      <div id="spinHistoryList" class="history-list"></div>
+    </div>
+
+    <!-- UPI -->
+    <div class="spin-card">
+      <h3>Cashback UPI ID</h3>
+      <p class="upi-note">
+        Cashback will be sent automatically to this UPI ID
+      </p>
+
+      <form class="auth-form" id="upiForm">
+        <label>
+          UPI ID
+          <input type="text" id="upiIdInput" placeholder="name@oksbi" required>
+        </label>
+        <button class="spin-cta">Save UPI ID</button>
+      </form>
+
+      <p id="upiStatus" class="info-small"></p>
+    </div>
+
+  </div>
+
 </section>
-<!-- ================= END SPIN PAGE ================= -->
+
 <!-- ================= PRODUCT DETAIL PAGE ================= -->
 <section class="page" id="productDetail" data-page="productDetail">
 
